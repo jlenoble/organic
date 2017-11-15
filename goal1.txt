@@ -1,0 +1,30 @@
+Make this empty project into a global command.
+When typing anywhere 'organic', an 'hello world' is printed.
+
+> npm init
+> npm link
+> organic
+
+Not found.
+
+Add in package.json:
+"bin": {
+  "organic": "index.js"
+}
+
+> npm link
+
+File missing.
+
+Create 'index.js':
+console.log('hello world');
+
+> npm link
+> organic
+
+Forgot #! /usr/bin/env node
+
+> organic
+hello world
+
+Goal is reached.
