@@ -18,5 +18,8 @@
   "homepage": "https://github.com/jlenoble/organic#readme",
   "bin": {
     "organic": "index.js"
+  },
+  "devDependencies": {
+    "gulp": "git://github.com/gulpjs/gulp.git#4.0"
   }
 }
