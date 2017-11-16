@@ -1,1 +1,1 @@
-# wupjs-organic
+# Organic
