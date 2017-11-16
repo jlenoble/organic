@@ -1,0 +1,40 @@
+Factoring out transpilation
+
+File gulp/helpers/transpile.js:
+
+import gulp from 'gulp';
+import babel from 'gulp-babel';
+import newer from 'gulp-newer';
+import debug from 'gulp-debug';
+
+const transpile = ({glob, dest}) => () => {
+  return gulp.src(glob, {
+    base: process.cwd(),
+  })
+    .pipe(newer(dest))
+    .pipe(debug())
+    .pipe(babel())
+    .pipe(gulp.dest(dest));
+};
+
+export default transpile;
+
+Now gulp/build.js becomes:
+
+import gulp from 'gulp';
+import transpile from './helpers/transpile';
+
+const glob = '*.js';
+const dest = 'build';
+
+gulp.task('build', transpile({glob, dest}));
+
+and gulp/gulp.js:
+
+import gulp from 'gulp';
+import transpile from './helpers/transpile';
+
+const glob = 'gulp/**/*.js';
+const dest = 'build';
+
+gulp.task('gulp', transpile({glob, dest}));

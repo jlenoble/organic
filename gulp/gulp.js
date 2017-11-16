@@ -1,12 +1,7 @@
 import gulp from 'gulp';
-import babel from 'gulp-babel';
-import newer from 'gulp-newer';
-import debug from 'gulp-debug';
+import transpile from './helpers/transpile';
 
-gulp.task('gulp', () => {
-  return gulp.src('gulp/**/*.js', {base: '.'})
-    .pipe(newer('build'))
-    .pipe(debug())
-    .pipe(babel())
-    .pipe(gulp.dest('build'));
-});
+const glob = 'gulp/**/*.js';
+const dest = 'build';
+
+gulp.task('gulp', transpile({glob, dest}));

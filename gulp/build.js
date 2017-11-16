@@ -1,8 +1,7 @@
 import gulp from 'gulp';
-import babel from 'gulp-babel';
+import transpile from './helpers/transpile';
 
-gulp.task('build', () => {
-  return gulp.src('*.js')
-    .pipe(babel())
-    .pipe(gulp.dest('build'));
-});
+const glob = '*.js';
+const dest = 'build';
+
+gulp.task('build', transpile({glob, dest}));
