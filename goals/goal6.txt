@@ -1,0 +1,110 @@
+Create a simple line numbering tool using ANTLR4
+
+> npm i -save-dev gulp-antlr4 chai
+(chai is a peer dependency of child-process-data)
+
+Grammar Line.g4:
+
+grammar Line;
+
+file
+: terminatedLine* line EOF
+;
+
+terminatedLine
+: line EOL
+;
+
+line
+: CHAR*
+;
+
+EOL
+: ('\r\n'|[\n\r\u2028\u2029])
+;
+
+CHAR
+: .
+;
+
+Translator LineCounter.js:
+
+import {LineListener} from '../parsers/LineListener';
+
+export class LineCounter extends LineListener {
+  constructor (...args) {
+    super(...args);
+
+    this.counter = 0;
+  }
+
+  enterLine (ctx) {
+    this.counter++;
+
+    console.log(`${this.counter}) ${ctx.getText()}`);
+  }
+}
+
+gulp/build.js modified:
+
+import gulp from 'gulp';
+import transpile from './helpers/transpile';
+
+const glob = 'translators/*.js';
+const dest = 'build';
+
+gulp.task('build', transpile({glob, dest}));
+
+gulp/number.js:
+
+import gulp from 'gulp';
+import {makeTranslator, translate} from './helpers/translate';
+
+const grammarGlob = 'grammars/Line.g4';
+const dataGlob = 'gulpfile.js';
+
+const parserDir = 'build/parsers';
+const listenerDir = 'build/translators';
+
+const grammar = 'Line';
+const listener = 'LineCounter';
+const rule = 'file';
+
+gulp.task('number', gulp.series(
+  makeTranslator({
+    glob: grammarGlob, dest: parserDir
+  }),
+  translate({
+    glob: dataGlob,
+    grammar, parserDir, listener, listenerDir, rule
+  })
+));
+
+gulp/helpers/translate.js:
+
+import gulp from 'gulp';
+import antlr4 from 'gulp-antlr4';
+import newer from 'gulp-newer';
+import debug from 'gulp-debug';
+
+const makeTranslator = ({glob, dest}) => () => {
+  return gulp.src(glob, {
+    base: process.cwd(),
+  })
+    .pipe(newer(dest))
+    .pipe(debug())
+    .pipe(antlr4(dest));
+};
+
+const translate = ({
+  glob, grammar, parserDir, listener, listenerDir, rule,
+}) => () => {
+  return gulp.src(glob, {
+    base: process.cwd(),
+  })
+    .pipe(antlr4({
+      grammar, parserDir, listener, listenerDir, rule,
+    }))
+};
+
+export {makeTranslator, translate};
