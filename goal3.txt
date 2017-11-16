@@ -1,0 +1,34 @@
+Transpile a file using Babel.
+
+Install Babel:
+
+> npm i --save-dev babel-core babel-presets-env babel-plugin-add-module-exports
+
+Create file .babelrc:
+
+{
+  "presets": ["env"],
+  "plugins": ["add-module-exports"]
+}
+
+Install gulp-babel:
+
+> npm i -save-dev gulp-babel
+
+Create gulpfile:
+
+const gulp = require('gulp');
+const babel = require('gulp-babel');
+
+gulp.task('default', () => {
+  return gulp.src('*.js')
+    .pipe(babel())
+    .pipe(gulp.dest('build'));
+});
+
+> gulp
+[16:17:27] Using gulpfile ~/Projets/organic/gulpfile.js
+[16:17:27] Starting 'default'...
+[16:17:27] Finished 'default' after 221 ms
+
+Goal is reached.

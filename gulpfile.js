@@ -1,6 +1,8 @@
 const gulp = require('gulp');
+const babel = require('gulp-babel');
 
 gulp.task('default', () => {
-  console.log('hello world');
-  return Promise.resolve();
+  return gulp.src('*.js')
+    .pipe(babel())
+    .pipe(gulp.dest('build'));
 });
