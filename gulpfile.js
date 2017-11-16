@@ -1,23 +1,25 @@
-const gulp = require('gulp');
-const babel = require('gulp-babel');
-const fs = require('fs');
-const path = require('path');
+'use strict';
+
+var gulp = require('gulp');
+var babel = require('gulp-babel');
+var fs = require('fs');
+var path = require('path');
 
 try {
-  const gulpDir = 'build/gulp';
+  var gulpDir = 'build/gulp';
 
-  fs.readdirSync(gulpDir)
-    .filter(filename => {
-      return filename.match(/\.js$/);
-    })
-    .forEach(filename => {
-      require(path.join(process.cwd(), gulpDir, filename));
-    });
+  fs.readdirSync(gulpDir).filter(function (filename) {
+    return filename.match(/\.js$/);
+  }).forEach(function (filename) {
+    require(path.join(process.cwd(), gulpDir, filename));
+  });
 
   gulp.task('default', gulp.series('gulp', 'build'));
 } catch (err) {
-  gulp.task('default', () => {
-    return gulp.src('gulp/**/*.js', {base: '.'})
+  gulp.task('default', function () {
+    return gulp.src('gulp/**/*.js', {
+      base: '.'
+    })
       .pipe(babel())
       .pipe(gulp.dest('build'));
   });
