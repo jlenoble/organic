@@ -1,26 +1,27 @@
 import gulp from 'gulp';
 import antlr4 from 'gulp-antlr4';
-import newer from 'gulp-newer';
+import newer from 'gulp-antlr4-newer';
 import debug from 'gulp-debug';
 
-const makeTranslator = ({glob, dest}) => () => {
-  return gulp.src(glob, {
+const makeListeners = ({grammarGlob, parserDir}) => () => {
+  return gulp.src(grammarGlob, {
     base: process.cwd(),
   })
-    .pipe(newer(dest))
+    .pipe(newer(parserDir))
     .pipe(debug())
-    .pipe(antlr4(dest));
+    .pipe(antlr4(parserDir));
 };
 
 const translate = ({
-  glob, grammar, parserDir, listener, listenerDir, rule,
+  dataGlob, grammar, parserDir, listener, listenerDir, rule, dest
 }) => () => {
-  return gulp.src(glob, {
+  return gulp.src(dataGlob, {
     base: process.cwd(),
   })
     .pipe(antlr4({
       grammar, parserDir, listener, listenerDir, rule,
     }))
+    .pipe(gulp.dest(dest));
 };
 
-export {makeTranslator, translate};
+export {makeListeners, translate};

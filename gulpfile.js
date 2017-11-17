@@ -14,7 +14,7 @@ try {
     require(path.join(process.cwd(), gulpDir, filename));
   });
 
-  gulp.task('default', gulp.series('gulp', 'build', 'number'));
+  gulp.task('default', gulp.series('gulp', 'build:translators', 'number'));
 } catch (err) {
   gulp.task('default', function () {
     return gulp.src('gulp/**/*.js', {

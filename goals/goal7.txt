@@ -1,0 +1,13 @@
+Improve goal6.txt translator
+
+1) It should not regenerate parser files when the grammar is not changed.
+2) It should save the translations with a meaningful name.
+
+Module gulp-antlr4-newer was specifically written as a by-product to
+accomplish the first goal.
+
+Goal 2 works almost out of the box by just adding a gulp.dest(dest) to the
+translate function.
+
+But the translated contains an extra line (due to console.log). Therefore a
+new target is added to the grammar: lastline.

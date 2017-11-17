@@ -12,4 +12,10 @@ export class LineCounter extends LineListener {
 
     console.log(`${this.counter}) ${ctx.getText()}`);
   }
+
+  enterLastline (ctx) {
+    this.counter++;
+
+    process.stdout.write(`${this.counter}) ${ctx.getText()}`);
+  }
 }

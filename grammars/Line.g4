@@ -1,11 +1,15 @@
 grammar Line;
 
 file
-: terminatedLine* line EOF
+: terminatedLine* lastline EOF
 ;
 
 terminatedLine
 : line EOL
+;
+
+lastline
+: CHAR*
 ;
 
 line
