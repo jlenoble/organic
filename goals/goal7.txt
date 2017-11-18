@@ -11,3 +11,5 @@ translate function.
 
 But the translated contains an extra line (due to console.log). Therefore a
 new target is added to the grammar: lastline.
+
+Goal is reached.

@@ -38,3 +38,5 @@ const glob = 'gulp/**/*.js';
 const dest = 'build';
 
 gulp.task('gulp', transpile({glob, dest}));
+
+Goal is reached.

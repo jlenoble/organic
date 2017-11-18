@@ -1,0 +1,11 @@
+Watch files
+
+As of now, this means:
+- regenerate parser files when grammar or translator are modified
+- regenerate translations when parser files are regenerated
+- reload gulp if gulpfile or includes are touched, as well as package.json
+- If package.json, then run npm i automatically
+- transpile all js files, including bin
+- retranspile if preset is changed
+- Catch when files are added or deleted
+- Retroaction when a dest is altered directly
