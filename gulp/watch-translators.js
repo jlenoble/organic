@@ -1,9 +1,5 @@
 import gulp from 'gulp';
+import watch from './helpers/watch';
 import './build-translators';
 
-const glob = 'translators/**/*.js';
-
-gulp.task('watch:translators', gulp.series('build:translators', done => {
-  gulp.watch(glob, gulp.series('build:translators'));
-  done();
-}));
+watch('translators', 'translators/**/*.js');
