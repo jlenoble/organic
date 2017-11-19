@@ -14,13 +14,17 @@ try {
     require(path.join(process.cwd(), gulpDir, filename));
   });
 
-  gulp.task('default', gulp.series('gulp', 'build:translators', 'number'));
+  gulp.task('default', gulp.series('gulp', 'watch:translators', 'number'));
 } catch (err) {
-  gulp.task('default', function () {
-    return gulp.src('gulp/**/*.js', {
-      base: '.'
-    })
-      .pipe(babel())
-      .pipe(gulp.dest('build'));
-  });
+  if (err.message.match(/ENOENT/ || err.message.match(/cannot find/i))) {
+    gulp.task('default', function () {
+      return gulp.src('gulp/**/*.js', {
+        base: '.'
+      })
+        .pipe(babel())
+        .pipe(gulp.dest('build'));
+    });
+  } else {
+    throw err;
+  }
 }
