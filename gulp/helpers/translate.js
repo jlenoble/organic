@@ -3,7 +3,7 @@ import antlr4 from 'gulp-antlr4';
 import newer from 'gulp-antlr4-newer';
 import debug from 'gulp-debug';
 
-const makeListeners = ({grammarGlob, parserDir}) => () => {
+const buildListeners = ({grammarGlob, parserDir}) => () => {
   return gulp.src(grammarGlob, {
     base: process.cwd(),
   })
@@ -24,4 +24,4 @@ const translate = ({
     .pipe(gulp.dest(dest));
 };
 
-export {makeListeners, translate};
+export {buildListeners, translate};
