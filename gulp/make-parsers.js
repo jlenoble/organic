@@ -3,8 +3,9 @@ import antlr4 from 'gulp-antlr4';
 import newer from 'gulp-antlr4-newer';
 import debug from 'gulp-debug';
 
+import {grammarGlob} from './helpers/source-globs';
+
 const taskname = 'make:parsers';
-const grammarGlob = 'grammars/**/*.g4';
 const parserDir = 'build/parsers';
 
 new GulpTask({
