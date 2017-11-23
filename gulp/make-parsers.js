@@ -4,9 +4,9 @@ import newer from 'gulp-antlr4-newer';
 import debug from 'gulp-debug';
 
 import {grammarGlob} from './helpers/source-globs';
+import {parserDir} from './helpers/dirs';
 
 const taskname = 'make:parsers';
-const parserDir = 'build/parsers';
 
 new GulpTask({
   name: taskname,
