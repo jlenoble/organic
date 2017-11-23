@@ -2,6 +2,8 @@
 
 var gulp = require('gulp');
 var babel = require('gulp-babel');
+var newer = require('gulp-newer');
+var debug = require('gulp-debug');
 var fs = require('fs');
 var path = require('path');
 
@@ -14,17 +16,22 @@ try {
     require(path.join(process.cwd(), gulpDir, filename));
   });
 
-  gulp.task('default', gulp.series('gulp', 'watch:translators', 'number'));
+  gulp.task('default', gulp.series('watch:make:parsers'));
 } catch (err) {
-  if (err.message.match(/ENOENT/ || err.message.match(/cannot find/i))) {
-    gulp.task('default', function () {
-      return gulp.src('gulp/**/*.js', {
-        base: '.'
-      })
-        .pipe(babel())
-        .pipe(gulp.dest('build'));
-    });
-  } else {
-    throw err;
-  }
+  // Always try to regenerate gulp includes on error so that this gulp process
+  // has new deps to work with on restart (otherwise if the error were
+  // traced back to a gulp include, then its transpiled version couldn't ever
+  // be generated).
+
+  gulp.task('default', function () {
+    return gulp.src('gulp/**/*.js', {
+      base: '.'
+    })
+      .pipe(newer('build'))
+      .pipe(debug())
+      .pipe(babel())
+      .pipe(gulp.dest('build'));
+  });
+
+  console.error(err);
 }
