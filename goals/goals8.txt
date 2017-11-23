@@ -10,7 +10,7 @@ As of now, this means:
 
 - regenerate parser files when translator are modified
 - regenerate translations when parser files are regenerated
-- reload gulp if gulpfile or includes are touched, as well as package.json
+- reload gulp if gulpfile or includes are touched, as well as package-lock.json
 - If package.json, then run npm i automatically
 - retranspile if preset is changed
 - Catch when files are added or deleted
