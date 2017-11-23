@@ -16,7 +16,8 @@ try {
     require(path.join(process.cwd(), gulpDir, filename));
   });
 
-  gulp.task('default', gulp.series('watch:make:parsers'));
+  gulp.task('default', gulp.parallel('tdd:make:parsers', 'tdd:transpile:gulp',
+    'tdd:transpile:translators'));
 } catch (err) {
   // Always try to regenerate gulp includes on error so that this gulp process
   // has new deps to work with on restart (otherwise if the error were
