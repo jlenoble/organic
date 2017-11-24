@@ -13,5 +13,5 @@ As of now, this means:
 - reload gulp if package-lock.json
 - If package.json, then run npm i automatically
 - retranspile if preset is changed
-- Catch when files are added or deleted
+- Catch when files are added or deleted, especially build/gulp
 - Retroaction when a dest is altered directly

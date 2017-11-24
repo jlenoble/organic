@@ -10,14 +10,16 @@ var path = require('path');
 var chalk = require('chalk');
 var autoreload = require('autoreload-gulp');
 var usePlumbedGulpSrc = require('plumb-gulp').usePlumbedGulpSrc;
+var useOriginalGulpSrc = require('plumb-gulp').useOriginalGulpSrc;
 
-var gulpDir = 'build/gulp';
-var fixGulpDir = 'gulp';
+var gulpSrc = 'gulp/**/*.js';
+var buildDir = 'build';
+var gulpDir = path.join(`${buildDir}`, 'gulp');
 var autoTask = 'tdd';
 
-try {
-  usePlumbedGulpSrc();
+usePlumbedGulpSrc();
 
+try {
   // Attempt to load all include files from gulpDir
   fs.readdirSync(gulpDir).filter(function (filename) {
     return filename.match(/\.js$/);
@@ -29,26 +31,43 @@ try {
   gulp.task('default', autoreload(autoTask, gulpDir));
 } catch (err) {
   // If error, try to regenerate include files
-  gutil.log(chalk.red(err.stack));
-  gutil.log(chalk.green('Attempting to regenerate gulp include files'));
-  gutil.log(chalk.green(
-    'If process returns, fix first the above error'));
-  gutil.log(chalk.green('Then relaunch'));
 
+  // First make sure to abort on first subsequent error
+  useOriginalGulpSrc();
+
+  // define regeneration functions
   function transpileGulp () {
-    return gulp.src('gulp/**/*.js', {
+    return gulp.src(gulpSrc, {
       base: '.'
     })
-      .pipe(newer('build'))
+      .pipe(newer(buildDir))
       .pipe(debug())
       .pipe(babel())
-      .pipe(gulp.dest('build'));
-  };
+      .on('error', function (err) {
+        gutil.log(chalk.red(err.stack));
+      })
+      .pipe(gulp.dest(buildDir));
+  }
 
-  var autoReload = autoreload('default', fixGulpDir);
-  Object.defineProperty(autoReload, 'name', {value: 'autoReload'});
+  function watchGulp (done) {
+    gulp.watch(gulpSrc, transpileGulp);
+    done();
+  }
 
-  gulp.task(autoTask, gulp.series(transpileGulp, autoReload));
+  // Distinguish between missing gulpDir ...
+  if (err.message.match(new RegExp(`no such file or directory, scandir '${
+    gulpDir}'`)) || err.message.match(/Task never defined/) ||
+    err.message.match(/Cannot find module '\.\.?\//)) {
+    gutil.log(chalk.red(err.message));
+    gutil.log(chalk.yellow(`'${gulpDir}/**/*.js' incomplete; Regenerating`));
 
-  gulp.task('default', transpileGulp);
+    // ... And errors due to corrupted files
+  } else {
+    gutil.log(chalk.red(err.stack));
+  }
+
+  gulp.task(autoTask, watchGulp);
+
+  gulp.task('default', gulp.series(transpileGulp, autoreload(
+    autoTask, gulpDir)));
 }
