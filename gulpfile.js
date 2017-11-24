@@ -4,33 +4,38 @@ var gulp = require('gulp');
 var babel = require('gulp-babel');
 var newer = require('gulp-newer');
 var debug = require('gulp-debug');
+var gutil = require('gulp-util');
 var fs = require('fs');
 var path = require('path');
+var chalk = require('chalk');
+var autoreload = require('autoreload-gulp');
+var usePlumbedGulpSrc = require('plumb-gulp').usePlumbedGulpSrc;
+
+var gulpDir = 'build/gulp';
+var fixGulpDir = 'gulp';
+var autoTask = 'tdd';
 
 try {
-  var gulpDir = 'build/gulp';
+  usePlumbedGulpSrc();
 
+  // Attempt to load all include files from gulpDir
   fs.readdirSync(gulpDir).filter(function (filename) {
     return filename.match(/\.js$/);
   }).forEach(function (filename) {
     require(path.join(process.cwd(), gulpDir, filename));
   });
 
-  gulp.task('default', gulp.series(
-    gulp.parallel(
-      'tdd:make:parsers',
-      'tdd:transpile:gulp',
-      'tdd:transpile:translators'
-    ),
-    'number'
-  ));
+  // If success, start infinite dev process with autoreload
+  gulp.task('default', autoreload(autoTask, gulpDir));
 } catch (err) {
-  // Always try to regenerate gulp includes on error so that this gulp process
-  // has new deps to work with on restart (otherwise if the error were
-  // traced back to a gulp include, then its transpiled version couldn't ever
-  // be generated).
+  // If error, try to regenerate include files
+  gutil.log(chalk.red(err.stack));
+  gutil.log(chalk.green('Attempting to regenerate gulp include files'));
+  gutil.log(chalk.green(
+    'If process returns, fix first the above error'));
+  gutil.log(chalk.green('Then relaunch'));
 
-  gulp.task('default', function () {
+  function transpileGulp () {
     return gulp.src('gulp/**/*.js', {
       base: '.'
     })
@@ -38,7 +43,12 @@ try {
       .pipe(debug())
       .pipe(babel())
       .pipe(gulp.dest('build'));
-  });
+  };
 
-  console.error(err);
+  var autoReload = autoreload('default', fixGulpDir);
+  Object.defineProperty(autoReload, 'name', {value: 'autoReload'});
+
+  gulp.task(autoTask, gulp.series(transpileGulp, autoReload));
+
+  gulp.task('default', transpileGulp);
 }

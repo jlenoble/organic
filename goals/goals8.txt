@@ -4,13 +4,13 @@ As of now, this means:
 - regenerate parser files when grammars are modified
 - retranspile gulp js files when touched
 - retranspile translators js files when touched
+- reload gulp if gulpfile or includes are touched
 
 
 
-
-- regenerate parser files when translator are modified
+- regenerate parser files when translator is modified
 - regenerate translations when parser files are regenerated
-- reload gulp if gulpfile or includes are touched, as well as package-lock.json
+- reload gulp if package-lock.json
 - If package.json, then run npm i automatically
 - retranspile if preset is changed
 - Catch when files are added or deleted
