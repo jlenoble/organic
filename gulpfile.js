@@ -27,6 +27,8 @@ try {
     require(path.join(process.cwd(), gulpDir, filename));
   });
 
+  gulp.task(autoTask, gulp.series('tdd:transpile:gulp', 'tdd:number:lines'));
+
   // If success, start infinite dev process with autoreload
   gulp.task('default', autoreload(autoTask, gulpDir));
 } catch (err) {
