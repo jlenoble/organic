@@ -23,7 +23,10 @@ const makeParserPipe = new PolyPipe(
 );
 
 // Translate pipeline factory
-const translatePipe = ({grammar, listener, rule}) => new PolyPipe(
+const translatePipe = ({
+  grammar, listener, rule, translationDir}) => new PolyPipe(
+  [newer, translationDir],
+  debug,
   [antlr4, {grammar, listener, rule, parserDir, listenerDir}]
 );
 
