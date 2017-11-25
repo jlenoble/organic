@@ -5,7 +5,9 @@ As of now, this means:
 - retranspile gulp js files when touched
 - retranspile translators js files when touched
 - reload gulp if gulpfile or includes are touched
-
+- catch when files are added
+- catch when files are deleted
+- must reload gulp process on gulp/**/*.js deletion
 
 
 - regenerate parser files when translator is modified
@@ -13,5 +15,4 @@ As of now, this means:
 - reload gulp if package-lock.json
 - If package.json, then run npm i automatically
 - retranspile if preset is changed
-- Catch when files are added or deleted, especially build/gulp
 - Retroaction when a dest is altered directly
