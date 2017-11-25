@@ -6,7 +6,7 @@ import debug from 'gulp-debug';
 import antlr4 from 'gulp-antlr4';
 import antlr4Newer from 'gulp-antlr4-newer';
 
-import {buildDir, parserDir} from './dirs';
+import {buildDir, parserDir, listenerDir} from './dirs';
 
 // Transpile pipeline
 const transpilePipe = new PolyPipe(
@@ -22,5 +22,10 @@ const makeParserPipe = new PolyPipe(
   [antlr4, parserDir]
 );
 
+// Translate pipeline factory
+const translatePipe = ({grammar, listener, rule}) => new PolyPipe(
+  [antlr4, {grammar, listener, rule, parserDir, listenerDir}]
+);
+
 // Export all
-export {transpilePipe, makeParserPipe};
+export {transpilePipe, makeParserPipe, translatePipe};
