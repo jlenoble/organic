@@ -9,6 +9,7 @@ new GulpTask({
   glob: gulpGlob,
   dest: buildDir,
   pipe: transpilePipe,
+  debug: true,
 });
 
 new GulpTask({
@@ -16,4 +17,5 @@ new GulpTask({
   glob: translatorGlob,
   dest: buildDir,
   pipe: transpilePipe,
+  debug: true,
 });

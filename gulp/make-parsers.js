@@ -9,4 +9,5 @@ new GulpTask({
   glob: grammarGlob,
   dest: parserDir,
   pipe: makeParserPipe,
+  debug: true,
 });
