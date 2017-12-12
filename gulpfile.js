@@ -43,7 +43,7 @@ try {
       base: '.'
     })
       .pipe(newer(buildDir))
-      .pipe(debug())
+      .pipe(debug({title: 'Build gulp include:'}))
       .pipe(babel())
       .on('error', function (err) {
         gutil.log(chalk.red(err.stack));
