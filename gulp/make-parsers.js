@@ -9,7 +9,6 @@ new GulpTask({
   name: 'uncache:translators',
   glob: buildTranslatorGlob,
   pipe: requireUncachePipe,
-  debug: true,
 });
 
 new GulpTask({
@@ -18,5 +17,4 @@ new GulpTask({
   dest: parserDir,
   pipe: makeParserPipe,
   dependsOn: 'uncache:translators',
-  debug: true,
 });

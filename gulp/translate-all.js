@@ -15,5 +15,4 @@ new GulpTask({
   }),
   dest: translationDir,
   dependsOn: 'make:parsers',
-  debug: true,
 });
