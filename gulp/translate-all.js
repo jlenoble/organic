@@ -14,6 +14,6 @@ new GulpTask({
     translationDir,
   }),
   dest: translationDir,
-  dependsOn: ['make:parsers', 'transpile:translators'],
+  dependsOn: 'make:parsers',
   debug: true,
 });

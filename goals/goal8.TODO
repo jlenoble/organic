@@ -9,10 +9,8 @@ As of now, this means:
 - catch when files are deleted
 - must reload gulp process on gulp/**/*.js deletion
 - regenerate translations when data files are modified
-
-
-- regenerate parser files when translator is modified
-- regenerate translations when parser files are regenerated
+- regenerate ALL translations when translator is modified
+- regenerate ALL translations when parser files are regenerated
 
 - reload gulp if package-lock.json
 - If package.json, then run npm i automatically
