@@ -1,29 +1,20 @@
 {
   "name": "organon",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "helps organize my codes",
+  "keywords": [
+    "productivity"
+  ],
+  "bugs": {
+    "url": "https://github.com/jlenoble/organon/issues"
+  },
+  "license": "GPL-3.0-only",
+  "author": {
+    "name": "Jason Lenoble",
+    "email": "jason.lenoble@gmail.com"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jlenoble/organon.git"
-  },
-  "author": "Jason Lenoble",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/jlenoble/organon/issues"
-  },
-  "homepage": "https://github.com/jlenoble/organon#readme",
-  "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "autoreload-gulp": "^0.4.1",
-    "babel-plugin-add-module-exports": "^1.0.2",
-    "gulp": "^4.0.0",
-    "gulp-babel": "^8.0.0",
-    "plumb-gulp": "^0.2.2"
-  },
-  "dependencies": {}
+  }
 }
