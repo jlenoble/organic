@@ -1,12 +1,18 @@
 {
   "name": "organon",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "helps organize my codes",
   "keywords": [
     "productivity"
   ],
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "types": "lib/index.d.ts",
   "bugs": {
-    "url": "https://github.com/jlenoble/organon/issues"
+    "url": "https://github.com/jlenoble/organon/issues",
+    "email": ""
   },
   "license": "GPL-3.0-only",
   "author": {
@@ -16,5 +22,39 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jlenoble/organon.git"
+  },
+  "engines": {
+    "node": ">=10.9.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "@babel/register": "^7.4.4",
+    "@types/chai": "^4.1.7",
+    "@types/gulp": "^4.0.6",
+    "@types/gulp-babel": "^6.1.29",
+    "@types/gulp-cached": "^0.0.31",
+    "@types/gulp-mocha": "^0.0.32",
+    "@types/gulp-newer": "^0.0.31",
+    "@types/gulp-sourcemaps": "^0.0.32",
+    "@typescript-eslint/eslint-plugin": "^1.7.0",
+    "@typescript-eslint/parser": "^1.7.0",
+    "autoreload-gulp": "^0.4.1",
+    "chai": "^4.2.0",
+    "del": "^4.1.1",
+    "eslint-config-google": "^0.12.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "gulp": "^4.0.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-cached": "^1.1.1",
+    "gulp-eslint": "^5.0.0",
+    "gulp-mocha": "^6.0.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "plumb-gulp": "^0.2.2",
+    "prettier": "^1.17.0",
+    "typescript": "^3.4.5"
   }
 }
