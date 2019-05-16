@@ -1,4 +1,4 @@
-import {task} from "gulp";
+import { task } from "gulp";
 import del from "del";
 
 export const distClean = () => {

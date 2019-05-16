@@ -5,6 +5,7 @@
   "keywords": [
     "productivity"
   ],
+  "homepage": "https://github.com/jlenoble/organon#readme",
   "main": "lib/index.js",
   "files": [
     "lib"
@@ -26,27 +27,38 @@
   "engines": {
     "node": ">=10.9.0"
   },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-typescript": "^7.3.3",
     "@babel/register": "^7.4.4",
     "@types/chai": "^4.1.7",
+    "@types/del": "^4.0.0",
+    "@types/eslint": "^4.16.6",
+    "@types/eslint-plugin-prettier": "^2.2.0",
     "@types/gulp": "^4.0.6",
     "@types/gulp-babel": "^6.1.29",
     "@types/gulp-cached": "^0.0.31",
     "@types/gulp-mocha": "^0.0.32",
     "@types/gulp-newer": "^0.0.31",
     "@types/gulp-sourcemaps": "^0.0.32",
-    "@typescript-eslint/eslint-plugin": "^1.7.0",
-    "@typescript-eslint/parser": "^1.7.0",
+    "@types/prettier": "^1.16.4",
+    "@types/typescript": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "autoreload-gulp": "^0.4.1",
+    "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
     "del": "^4.1.1",
-    "eslint-config-google": "^0.12.0",
-    "eslint-config-prettier": "^4.2.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "gulp": "^4.0.1",
+    "eslint": "^5.16.0",
+    "eslint-config-google": "^0.13.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-cached": "^1.1.1",
     "gulp-eslint": "^5.0.0",
@@ -54,7 +66,9 @@
     "gulp-newer": "^1.4.0",
     "gulp-sourcemaps": "^2.6.5",
     "plumb-gulp": "^0.2.2",
-    "prettier": "^1.17.0",
+    "prettier": "^1.17.1",
     "typescript": "^3.4.5"
-  }
+  },
+  "peerDependencies": {},
+  "optionalDependencies": {}
 }

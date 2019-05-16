@@ -1,4 +1,4 @@
-import {task, series} from "gulp";
+import { task, series } from "gulp";
 
 import "./test";
 import "./watch";
