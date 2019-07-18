@@ -45,7 +45,7 @@ export default class Dependencies {
     }
   }
 
-  public async isConsistent(): Promise<boolean> {
+  public async isEventuallyConsistent(): Promise<boolean> {
     let consistent = await this.ready;
 
     for (const dep of this._fromFiles) {
