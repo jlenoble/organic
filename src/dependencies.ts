@@ -57,18 +57,18 @@ export default class Dependencies {
 }
 
 export class ProdDependencies extends Dependencies {
-  public constructor(glob: string | string[], packagePath: string) {
+  public constructor(glob: string | string[], packageDir: string) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pckg = require(path.join(packagePath, "package.json"));
+    const pckg = require(path.join(packageDir, "package.json"));
 
     super(glob, pckg.dependencies);
   }
 }
 
 export class DevDependencies extends Dependencies {
-  public constructor(glob: string | string[], packagePath: string) {
+  public constructor(glob: string | string[], packageDir: string) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pckg = require(path.join(packagePath, "package.json"));
+    const pckg = require(path.join(packageDir, "package.json"));
 
     super(glob, { ...pckg.dependencies, ...pckg.devDependencies });
   }
