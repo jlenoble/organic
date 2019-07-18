@@ -1,16 +1,17 @@
 {
   "generator-wupjs": {
     "createdWith": "0.5.1",
-    "modifiedWith": "0.6.0-3",
+    "modifiedWith": "0.6.0-5",
     "createdOn": "2019-04-20T13:08:06.783Z",
-    "modifiedOn": "2019-05-16T17:39:14.992Z",
+    "modifiedOn": "2019-07-18T11:02:44.012Z",
     "typescript": true,
     "jsx": false,
     "gulp": true,
     "jupyter": false,
     "antlr4": false,
     "extensions": [
-      "ts"
+      "ts",
+      "js"
     ],
     "server": true,
     "client": false,
@@ -25,6 +26,16 @@
     "buildDir": "build",
     "docDir": "doc",
     "libDir": "lib",
-    "gulpDir": "gulp"
+    "gulpDir": "gulp",
+    "monorepo": true,
+    "packagesDir": "packages",
+    "activePackages": [],
+    "staticDir": "src/static",
+    "dataDir": "src/static/data",
+    "visitorDir": "src/static/antlr4",
+    "listenerDir": "src/static/antlr4",
+    "parserDir": "src/static/antlr4/parsers",
+    "grammarDir": "src/static/antlr4/grammars",
+    "hasGulpfilesDir": false
   }
 }

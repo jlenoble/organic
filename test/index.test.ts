@@ -2,13 +2,17 @@ import { expect } from "chai";
 import Organon from "../src/index";
 
 describe("Testing Organon", (): void => {
-  const defaultArgs = [];
+  it("Activating", (): void => {
+    // open package.json
+    // collect deps
+    // select among activated
+    // change en local
+  });
 
-  it("Class Organon can be instanciated", (): void => {
-    expect(
-      (): void => {
-        new Organon(...defaultArgs);
-      }
-    ).not.to.throw();
+  it("Deactivating", (): void => {
+    // open package.json
+    // collect deps
+    // select among activated
+    // change en global
   });
 });
