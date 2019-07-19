@@ -11,6 +11,7 @@ export default class Packages {
 
   protected _prodDeps: ProdDependencies[];
   protected _devDeps: DevDependencies[];
+  protected _localDeps: DevDependencies[];
 
   public constructor(packageDir: string) {
     this._packageDir = path.resolve(packageDir);
@@ -18,6 +19,7 @@ export default class Packages {
 
     this._prodDeps = [];
     this._devDeps = [];
+    this._localDeps = [];
 
     this.ready = this._addPackages().then((): true => true, (): false => false);
   }
@@ -48,15 +50,15 @@ export default class Packages {
   }
 
   public async getLocalDependencies(): Promise<DevDependencies[]> {
-    const localDeps: DevDependencies[] = [];
-
-    for (const dep of await this.getDevDependencies()) {
-      if ((await dep.getLocalDeps()).length > 0) {
-        localDeps.push(dep);
+    if (this._localDeps.length === 0) {
+      for (const dep of await this.getDevDependencies()) {
+        if ((await dep.getLocalDeps()).length > 0) {
+          this._localDeps.push(dep);
+        }
       }
     }
 
-    return localDeps;
+    return [...this._localDeps];
   }
 
   public async getProdDependencies(): Promise<ProdDependencies[]> {
@@ -76,7 +78,7 @@ export default class Packages {
       );
     }
 
-    return this._prodDeps;
+    return [...this._prodDeps];
   }
 
   public async getConsistentProdDependencies(): Promise<ProdDependencies[]> {
@@ -120,7 +122,7 @@ export default class Packages {
       );
     }
 
-    return this._devDeps;
+    return [...this._devDeps];
   }
 
   public async getConsistentDevDependencies(): Promise<DevDependencies[]> {
