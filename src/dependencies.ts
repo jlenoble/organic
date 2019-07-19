@@ -73,7 +73,9 @@ export default class Dependencies {
   }
 
   public async getInconsistencies(): Promise<string[]> {
-    await this.ready;
+    if (!(await this.ready)) {
+      return [];
+    }
 
     const deps: string[] = [];
 
