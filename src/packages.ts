@@ -90,6 +90,50 @@ export default class Packages {
     return Promise.all(deps);
   }
 
+  public async getDevDependencies(): Promise<DevDependencies[]> {
+    if (!(await this.ready)) {
+      return [];
+    }
+
+    if (this._devDeps.length === 0) {
+      this._devDeps = Array.from(
+        this._packages,
+        (pckg): DevDependencies => {
+          return new DevDependencies(
+            ["gulpfile.babel.js", "test/**/*.ts"],
+            path.join(process.cwd(), "packages", pckg)
+          );
+        }
+      );
+    }
+
+    return Promise.all(this._devDeps);
+  }
+
+  public async getConsistentDevDependencies(): Promise<DevDependencies[]> {
+    const deps: DevDependencies[] = [];
+
+    for (const dep of await this.getDevDependencies()) {
+      if (await dep.isEventuallyConsistent()) {
+        deps.push(dep);
+      }
+    }
+
+    return Promise.all(deps);
+  }
+
+  public async getInconsistentDevDependencies(): Promise<DevDependencies[]> {
+    const deps: DevDependencies[] = [];
+
+    for (const dep of await this.getDevDependencies()) {
+      if (!(await dep.isEventuallyConsistent())) {
+        deps.push(dep);
+      }
+    }
+
+    return Promise.all(deps);
+  }
+
   public async getErrorMessage(keys: string | string[]): Promise<string> {
     const messages: string[] = ["The following errors were encountered:"];
 
@@ -101,6 +145,15 @@ export default class Packages {
       switch (key) {
         case "prodInconsistentDeps":
           for (const dep of await this.getInconsistentProdDependencies()) {
+            const message: string = await dep.getErrorMessage();
+            if (message) {
+              messages.push(message);
+            }
+          }
+          break;
+
+        case "devInconsistentDeps":
+          for (const dep of await this.getInconsistentDevDependencies()) {
             const message: string = await dep.getErrorMessage();
             if (message) {
               messages.push(message);
