@@ -65,4 +65,51 @@ export default class Packages {
 
     return Promise.all(this._prodDeps);
   }
+
+  public async getConsistentProdDependencies(): Promise<ProdDependencies[]> {
+    const deps: ProdDependencies[] = [];
+
+    for (const dep of await this.getProdDependencies()) {
+      if (await dep.isEventuallyConsistent()) {
+        deps.push(dep);
+      }
+    }
+
+    return Promise.all(deps);
+  }
+
+  public async getInconsistentProdDependencies(): Promise<ProdDependencies[]> {
+    const deps: ProdDependencies[] = [];
+
+    for (const dep of await this.getProdDependencies()) {
+      if (!(await dep.isEventuallyConsistent())) {
+        deps.push(dep);
+      }
+    }
+
+    return Promise.all(deps);
+  }
+
+  public async getErrorMessage(keys: string | string[]): Promise<string> {
+    const messages: string[] = ["The following errors were encountered:"];
+
+    if (!Array.isArray(keys)) {
+      keys = [keys];
+    }
+
+    for (const key of keys) {
+      switch (key) {
+        case "prodInconsistentDeps":
+          for (const dep of await this.getInconsistentProdDependencies()) {
+            const message: string = await dep.getErrorMessage();
+            if (message) {
+              messages.push(message);
+            }
+          }
+          break;
+      }
+    }
+
+    return messages.length === 1 ? "" : messages.join("\n       - ");
+  }
 }

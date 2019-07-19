@@ -12,18 +12,10 @@ describe("Testing Dependencies classes", (): void => {
 
     const packages = new Packages("packages");
 
-    const badPackages = await packages.getInconsistentProdDependencies();
+    const message = await packages.getErrorMessage("prodInconsistentDeps");
 
-    if (badPackages.length > 0) {
-      const msg: string = (await Promise.all(
-        badPackages.map(
-          async (dep): Promise<string> => {
-            return dep.getErrorMessage();
-          }
-        )
-      )).join("\n");
-
-      throw new Error(msg);
+    if (message) {
+      throw new Error(message);
     }
   });
 
