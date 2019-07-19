@@ -25,7 +25,9 @@ export default class Dependencies {
     this._fromConfig = { ...deps };
     this._fromFiles = new Set();
     this._localDeps = new Set(
-      Object.keys(deps).filter((key): boolean => /^\.\.?\//.test(deps[key]))
+      Object.keys(deps).filter((key): boolean =>
+        /^(?:file|link):\.\.?\//.test(deps[key])
+      )
     );
     this._resolvedFiles = new Set();
 
@@ -78,6 +80,11 @@ export default class Dependencies {
     return consistent;
   }
 
+  public async getLocalDeps(): Promise<string[]> {
+    await this.ready;
+    return Array.from(this._localDeps);
+  }
+
   public async getInconsistencies(): Promise<string[]> {
     if (!(await this.ready)) {
       return [];
@@ -94,13 +101,41 @@ export default class Dependencies {
     return deps;
   }
 
-  public async getErrorMessage(stem: string): Promise<string> {
+  protected async _getErrorMessage({
+    stem,
+    key
+  }: {
+    stem: string;
+    key?: string;
+  }): Promise<string> {
+    if (key === "local") {
+      return this.getLocalErrorMessage(stem);
+    } else {
+      return this.getInconsistencyErrorMessage(stem);
+    }
+  }
+
+  public async getErrorMessage(key?: string): Promise<string> {
+    return key || "";
+  }
+
+  public async getInconsistencyErrorMessage(stem: string): Promise<string> {
     const deps = await this.getInconsistencies();
 
     return deps.length > 0
       ? `${JSON.stringify(
           this._packageName
         )} has inconsistent ${stem} deps: ${JSON.stringify(deps)}`
+      : "";
+  }
+
+  public async getLocalErrorMessage(): Promise<string> {
+    const deps = await this.getLocalDeps();
+
+    return deps.length > 0
+      ? `${JSON.stringify(this._packageName)} has local deps: ${JSON.stringify(
+          deps
+        )}`
       : "";
   }
 }
@@ -115,8 +150,8 @@ export class ProdDependencies extends Dependencies {
     this._packageName = pckg.name;
   }
 
-  public async getErrorMessage(): Promise<string> {
-    return super.getErrorMessage("prod");
+  public async getErrorMessage(key?: string): Promise<string> {
+    return this._getErrorMessage({ stem: "prod", key });
   }
 }
 
@@ -133,7 +168,7 @@ export class DevDependencies extends Dependencies {
     this._packageName = pckg.name;
   }
 
-  public async getErrorMessage(): Promise<string> {
-    return super.getErrorMessage("dev");
+  public async getErrorMessage(key?: string): Promise<string> {
+    return this._getErrorMessage({ stem: "dev", key });
   }
 }

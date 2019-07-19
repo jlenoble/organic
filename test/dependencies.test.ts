@@ -1,12 +1,13 @@
 import Packages from "../src/packages";
 
 describe("Testing dependency consistency of organized packages", (): void => {
+  const packages = new Packages("packages");
+
   it("All packages are consistent with regard to prod deps", async function(): Promise<
     void
   > {
     this.timeout(20000); // eslint-disable-line no-invalid-this
 
-    const packages = new Packages("packages");
     const message = await packages.getErrorMessage("prodInconsistentDeps");
 
     if (message) {
@@ -19,8 +20,17 @@ describe("Testing dependency consistency of organized packages", (): void => {
   > {
     this.timeout(20000); // eslint-disable-line no-invalid-this
 
-    const packages = new Packages("packages");
     const message = await packages.getErrorMessage("devInconsistentDeps");
+
+    if (message) {
+      throw new Error(message);
+    }
+  });
+
+  it("All packages have no local deps", async function(): Promise<void> {
+    this.timeout(20000); // eslint-disable-line no-invalid-this
+
+    const message = await packages.getErrorMessage("haveLocalDeps");
 
     if (message) {
       throw new Error(message);

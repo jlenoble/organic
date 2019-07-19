@@ -47,6 +47,18 @@ export default class Packages {
     }
   }
 
+  public async getLocalDependencies(): Promise<DevDependencies[]> {
+    const localDeps: DevDependencies[] = [];
+
+    for (const dep of await this.getDevDependencies()) {
+      if ((await dep.getLocalDeps()).length > 0) {
+        localDeps.push(dep);
+      }
+    }
+
+    return localDeps;
+  }
+
   public async getProdDependencies(): Promise<ProdDependencies[]> {
     if (!(await this.ready)) {
       return [];
@@ -156,6 +168,15 @@ export default class Packages {
         case "devInconsistentDeps":
           for (const dep of await this.getInconsistentDevDependencies()) {
             const message: string = await dep.getErrorMessage();
+            if (message) {
+              messages.push(message);
+            }
+          }
+          break;
+
+        case "haveLocalDeps":
+          for (const dep of await this.getLocalDependencies()) {
+            const message: string = await dep.getErrorMessage("local");
             if (message) {
               messages.push(message);
             }
