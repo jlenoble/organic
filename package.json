@@ -28,6 +28,7 @@
     "node": ">=10.9.0"
   },
   "dependencies": {
+    "explanation": "^0.1.2",
     "polypath": "^0.7.0",
     "precinct": "^6.1.2"
   },
