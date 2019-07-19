@@ -9,6 +9,12 @@ interface Deps {
 export default class Dependencies {
   public readonly ready: Promise<boolean>;
 
+  public get packageName(): string {
+    return this._packageName;
+  }
+
+  protected _packageName: string = "";
+
   protected _fromConfig: Deps;
   protected _fromFiles: Set<string>;
 
@@ -95,6 +101,8 @@ export class ProdDependencies extends Dependencies {
     const pckg = require(path.join(packageDir, "package.json"));
 
     super(rebaseGlob(glob, packageDir), pckg.dependencies);
+
+    this._packageName = pckg.name;
   }
 }
 
@@ -107,5 +115,7 @@ export class DevDependencies extends Dependencies {
       ...pckg.dependencies,
       ...pckg.devDependencies
     });
+
+    this._packageName = pckg.name;
   }
 }

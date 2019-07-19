@@ -12,30 +12,14 @@ describe("Testing Dependencies classes", (): void => {
 
     const packages = new Packages("packages");
 
-    const allDeps = await packages.getProdDependencies();
+    const badPackages = await packages.getInconsistentProdDependencies();
 
-    const consistencies = await Promise.all(
-      allDeps.map((dep): Promise<boolean> => dep.isEventuallyConsistent())
-    );
-
-    try {
-      expect(consistencies.every((consistency): boolean => consistency)).to.be
-        .true;
-    } catch (e) {
-      const indices: number[] = [];
-      const badPackages = allDeps.filter((dep, i): boolean => {
-        if (!consistencies[i]) {
-          indices.push(i);
-          return true;
-        }
-        return false;
-      });
-
+    if (badPackages.length > 0) {
       const msg: string = (await Promise.all(
         badPackages.map(
-          async (dep, i): Promise<string> => {
+          async (dep): Promise<string> => {
             return `${JSON.stringify(
-              packages[indices[i]]
+              dep.packageName
             )} has inconsistent prod deps: ${JSON.stringify(
               await dep.getInconsistencies()
             )}`;
