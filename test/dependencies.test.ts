@@ -8,7 +8,10 @@ describe("Testing dependency consistency of organized packages", (): void => {
   > {
     this.timeout(20000); // eslint-disable-line no-invalid-this
 
-    const message = await packages.getErrorMessage("prodInconsistentDeps");
+    const message = await packages.getErrorMessage([
+      "prodMissingDeps",
+      "prodExtraDeps"
+    ]);
 
     if (message) {
       throw new Error(message);
@@ -20,7 +23,10 @@ describe("Testing dependency consistency of organized packages", (): void => {
   > {
     this.timeout(20000); // eslint-disable-line no-invalid-this
 
-    const message = await packages.getErrorMessage("devInconsistentDeps");
+    const message = await packages.getErrorMessage([
+      "devMissingDeps",
+      "devExtraDeps"
+    ]);
 
     if (message) {
       throw new Error(message);

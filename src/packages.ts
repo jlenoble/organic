@@ -1,7 +1,10 @@
 import fse from "fs-extra";
 import path from "path";
 import { error } from "explanation";
-import { ProdDependencies, DevDependencies } from "./dependencies";
+import Dependencies, {
+  ProdDependencies,
+  DevDependencies
+} from "./dependencies";
 
 export default class Packages {
   public readonly ready: Promise<boolean>;
@@ -81,30 +84,6 @@ export default class Packages {
     return [...this._prodDeps];
   }
 
-  public async getConsistentProdDependencies(): Promise<ProdDependencies[]> {
-    const deps: ProdDependencies[] = [];
-
-    for (const dep of await this.getProdDependencies()) {
-      if (await dep.isEventuallyConsistent()) {
-        deps.push(dep);
-      }
-    }
-
-    return Promise.all(deps);
-  }
-
-  public async getInconsistentProdDependencies(): Promise<ProdDependencies[]> {
-    const deps: ProdDependencies[] = [];
-
-    for (const dep of await this.getProdDependencies()) {
-      if (!(await dep.isEventuallyConsistent())) {
-        deps.push(dep);
-      }
-    }
-
-    return Promise.all(deps);
-  }
-
   public async getDevDependencies(): Promise<DevDependencies[]> {
     if (!(await this.ready)) {
       return [];
@@ -125,30 +104,6 @@ export default class Packages {
     return [...this._devDeps];
   }
 
-  public async getConsistentDevDependencies(): Promise<DevDependencies[]> {
-    const deps: DevDependencies[] = [];
-
-    for (const dep of await this.getDevDependencies()) {
-      if (await dep.isEventuallyConsistent()) {
-        deps.push(dep);
-      }
-    }
-
-    return Promise.all(deps);
-  }
-
-  public async getInconsistentDevDependencies(): Promise<DevDependencies[]> {
-    const deps: DevDependencies[] = [];
-
-    for (const dep of await this.getDevDependencies()) {
-      if (!(await dep.isEventuallyConsistent())) {
-        deps.push(dep);
-      }
-    }
-
-    return Promise.all(deps);
-  }
-
   public async getErrorMessage(keys: string | string[]): Promise<string> {
     const messages: string[] = ["The following errors were encountered:"];
 
@@ -157,32 +112,33 @@ export default class Packages {
     }
 
     for (const key of keys) {
+      let deps: Promise<Dependencies[]> = Promise.resolve([]);
+      let tag = "";
+
       switch (key) {
-        case "prodInconsistentDeps":
-          for (const dep of await this.getInconsistentProdDependencies()) {
-            const message: string = await dep.getErrorMessage();
-            if (message) {
-              messages.push(message);
-            }
-          }
+        case "prodMissingDeps":
+          deps = this.getProdDependencies();
+          tag = "missing";
           break;
 
-        case "devInconsistentDeps":
-          for (const dep of await this.getInconsistentDevDependencies()) {
-            const message: string = await dep.getErrorMessage();
-            if (message) {
-              messages.push(message);
-            }
-          }
+        case "devMissingDeps":
+          deps = this.getDevDependencies();
+          tag = "missing";
+          break;
+
+        case "prodExtraDeps":
+          deps = this.getProdDependencies();
+          tag = "extra";
+          break;
+
+        case "devExtraDeps":
+          deps = this.getDevDependencies();
+          tag = "extra";
           break;
 
         case "haveLocalDeps":
-          for (const dep of await this.getLocalDependencies()) {
-            const message: string = await dep.getErrorMessage("local");
-            if (message) {
-              messages.push(message);
-            }
-          }
+          deps = this.getLocalDependencies();
+          tag = "local";
           break;
 
         default:
@@ -190,6 +146,13 @@ export default class Packages {
             message: "Unhandled key in getErrorMessage",
             explain: [["key was", key]]
           });
+      }
+
+      for (const dep of await deps) {
+        const message: string = await dep.getErrorMessage(tag);
+        if (message) {
+          messages.push(message);
+        }
       }
     }
 

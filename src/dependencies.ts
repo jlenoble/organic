@@ -68,24 +68,7 @@ export default class Dependencies {
     }
   }
 
-  public async isEventuallyConsistent(): Promise<boolean> {
-    let consistent = await this.ready;
-
-    for (const dep of this._fromFiles) {
-      if (this._fromConfig[dep] === undefined) {
-        consistent = false;
-      }
-    }
-
-    return consistent;
-  }
-
-  public async getLocalDeps(): Promise<string[]> {
-    await this.ready;
-    return Array.from(this._localDeps);
-  }
-
-  public async getInconsistencies(): Promise<string[]> {
+  public async getMissingDeps(): Promise<string[]> {
     if (!(await this.ready)) {
       return [];
     }
@@ -101,6 +84,27 @@ export default class Dependencies {
     return deps;
   }
 
+  public async getExtraDeps(): Promise<string[]> {
+    if (!(await this.ready)) {
+      return [];
+    }
+
+    const deps: string[] = [];
+
+    for (const dep of Object.keys(this._fromConfig)) {
+      if (!this._fromFiles.has(dep)) {
+        deps.push(dep);
+      }
+    }
+
+    return deps;
+  }
+
+  public async getLocalDeps(): Promise<string[]> {
+    await this.ready;
+    return Array.from(this._localDeps);
+  }
+
   protected async _getErrorMessage({
     stem,
     key
@@ -108,24 +112,41 @@ export default class Dependencies {
     stem: string;
     key?: string;
   }): Promise<string> {
-    if (key === "local") {
-      return this.getLocalErrorMessage(stem);
-    } else {
-      return this.getInconsistencyErrorMessage(stem);
+    switch (key) {
+      case "missing":
+        return this.getMissingErrorMessage(stem);
+
+      case "extra":
+        return this.getExtraErrorMessage(stem);
+
+      case "local":
+        return this.getLocalErrorMessage();
     }
+
+    return "";
   }
 
-  public async getErrorMessage(key?: string): Promise<string> {
-    return key || "";
+  public async getErrorMessage(key: string): Promise<string> {
+    return key;
   }
 
-  public async getInconsistencyErrorMessage(stem: string): Promise<string> {
-    const deps = await this.getInconsistencies();
+  public async getMissingErrorMessage(stem: string): Promise<string> {
+    const deps = await this.getMissingDeps();
 
     return deps.length > 0
       ? `${JSON.stringify(
           this._packageName
-        )} has inconsistent ${stem} deps: ${JSON.stringify(deps)}`
+        )} has missing ${stem} deps: ${JSON.stringify(deps)}`
+      : "";
+  }
+
+  public async getExtraErrorMessage(stem: string): Promise<string> {
+    const deps = await this.getExtraDeps();
+
+    return deps.length > 0
+      ? `${JSON.stringify(
+          this._packageName
+        )} has extra ${stem} deps: ${JSON.stringify(deps)}`
       : "";
   }
 
@@ -150,7 +171,7 @@ export class ProdDependencies extends Dependencies {
     this._packageName = pckg.name;
   }
 
-  public async getErrorMessage(key?: string): Promise<string> {
+  public async getErrorMessage(key: string): Promise<string> {
     return this._getErrorMessage({ stem: "prod", key });
   }
 }
@@ -168,7 +189,7 @@ export class DevDependencies extends Dependencies {
     this._packageName = pckg.name;
   }
 
-  public async getErrorMessage(key?: string): Promise<string> {
+  public async getErrorMessage(key: string): Promise<string> {
     return this._getErrorMessage({ stem: "dev", key });
   }
 }
