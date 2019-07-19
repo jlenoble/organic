@@ -64,7 +64,9 @@ export default class Dependencies {
     let consistent = await this.ready;
 
     for (const dep of this._fromFiles) {
-      consistent = consistent && this._fromConfig[dep] !== undefined;
+      if (this._fromConfig[dep] === undefined) {
+        consistent = false;
+      }
     }
 
     return consistent;
