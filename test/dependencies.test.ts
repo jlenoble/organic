@@ -2,6 +2,7 @@ import { expect } from "chai";
 import fse from "fs-extra";
 import path from "path";
 import { ProdDependencies, DevDependencies } from "../src/dependencies";
+import Packages from "../src/packages";
 
 describe("Testing Dependencies classes", (): void => {
   it("All packages are consistent with regard to prod deps", async function(): Promise<
@@ -9,15 +10,9 @@ describe("Testing Dependencies classes", (): void => {
   > {
     this.timeout(20000); // eslint-disable-line no-invalid-this
 
-    const packages: string[] = await fse.readdir(
-      path.join(process.cwd(), "packages")
-    );
+    const packages = new Packages("packages");
 
-    const allDeps = packages
-      .map((pckg): string => path.join(process.cwd(), "packages", pckg))
-      .map(
-        (pckg): ProdDependencies => new ProdDependencies("src/**/*.ts", pckg)
-      );
+    const allDeps = await packages.getProdDependencies();
 
     const consistencies = await Promise.all(
       allDeps.map((dep): Promise<boolean> => dep.isEventuallyConsistent())
