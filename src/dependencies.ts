@@ -93,6 +93,13 @@ export default class Dependencies {
 
     for (const dep of Object.keys(this._fromConfig)) {
       if (!this._fromFiles.has(dep)) {
+        const match = dep.match(/^@types\/(.*)$/);
+
+        if (match && this._fromFiles.has(match[1])) {
+          // not extra because source package is actual dep
+          continue;
+        }
+
         deps.push(dep);
       }
     }
