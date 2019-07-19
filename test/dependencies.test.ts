@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import fse from "fs-extra";
 import path from "path";
-import { ProdDependencies, DevDependencies } from "../src/dependencies";
+import { DevDependencies } from "../src/dependencies";
 import Packages from "../src/packages";
 
 describe("Testing Dependencies classes", (): void => {
@@ -18,11 +18,7 @@ describe("Testing Dependencies classes", (): void => {
       const msg: string = (await Promise.all(
         badPackages.map(
           async (dep): Promise<string> => {
-            return `${JSON.stringify(
-              dep.packageName
-            )} has inconsistent prod deps: ${JSON.stringify(
-              await dep.getInconsistencies()
-            )}`;
+            return dep.getErrorMessage();
           }
         )
       )).join("\n");

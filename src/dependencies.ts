@@ -93,6 +93,16 @@ export default class Dependencies {
 
     return deps;
   }
+
+  public async getErrorMessage(stem: string): Promise<string> {
+    const deps = await this.getInconsistencies();
+
+    return deps.length > 0
+      ? `${JSON.stringify(
+          this._packageName
+        )} has inconsistent ${stem} deps: ${JSON.stringify(deps)}`
+      : "";
+  }
 }
 
 export class ProdDependencies extends Dependencies {
@@ -103,6 +113,10 @@ export class ProdDependencies extends Dependencies {
     super(rebaseGlob(glob, packageDir), pckg.dependencies);
 
     this._packageName = pckg.name;
+  }
+
+  public async getErrorMessage(): Promise<string> {
+    return super.getErrorMessage("prod");
   }
 }
 
@@ -117,5 +131,9 @@ export class DevDependencies extends Dependencies {
     });
 
     this._packageName = pckg.name;
+  }
+
+  public async getErrorMessage(): Promise<string> {
+    return super.getErrorMessage("dev");
   }
 }
