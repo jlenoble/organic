@@ -1,5 +1,6 @@
 import fse from "fs-extra";
 import path from "path";
+import { error } from "explanation";
 import { ProdDependencies, DevDependencies } from "./dependencies";
 
 export default class Packages {
@@ -160,6 +161,12 @@ export default class Packages {
             }
           }
           break;
+
+        default:
+          error({
+            message: "Unhandled key in getErrorMessage",
+            explain: [["key was", key]]
+          });
       }
     }
 
