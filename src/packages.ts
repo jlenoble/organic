@@ -76,7 +76,7 @@ export default class Packages {
       );
     }
 
-    return Promise.all(this._prodDeps);
+    return this._prodDeps;
   }
 
   public async getConsistentProdDependencies(): Promise<ProdDependencies[]> {
@@ -120,7 +120,7 @@ export default class Packages {
       );
     }
 
-    return Promise.all(this._devDeps);
+    return this._devDeps;
   }
 
   public async getConsistentDevDependencies(): Promise<DevDependencies[]> {
