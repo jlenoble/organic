@@ -1,6 +1,7 @@
 import { resolveGlob, rebaseGlob } from "polypath";
 import precinct from "precinct";
 import path from "path";
+import { implicitDevDeps } from "./tools";
 
 interface Deps {
   [name: string]: string;
@@ -92,10 +93,13 @@ export default class Dependencies {
     const deps: string[] = [];
 
     for (const dep of Object.keys(this._fromConfig)) {
-      if (!this._fromFiles.has(dep)) {
+      if (!this._fromFiles.has(dep) && !implicitDevDeps.has(dep)) {
         const match = dep.match(/^@types\/(.*)$/);
 
-        if (match && this._fromFiles.has(match[1])) {
+        if (
+          match &&
+          (this._fromFiles.has(match[1]) || implicitDevDeps.has(match[1]))
+        ) {
           // not extra because source package is actual dep
           continue;
         }
