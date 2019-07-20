@@ -65,7 +65,6 @@
     "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
     "child-process-data": "file:../child-process-data",
-    "child_process": "^1.0.2",
     "del": "^5.0.0",
     "ejs": "^2.6.2",
     "eslint": "^6.0.1",
