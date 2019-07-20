@@ -1,6 +1,7 @@
 import { resolveGlob, rebaseGlob } from "polypath";
 import precinct from "precinct";
 import path from "path";
+import fse from "fs-extra";
 import { Tools } from "./tools";
 
 const tools = new Tools();
@@ -54,7 +55,21 @@ export default class Dependencies {
   }
 
   protected async _addGlob(glob: string | string[]): Promise<void> {
-    const files = await resolveGlob(glob);
+    let files = await resolveGlob(glob);
+
+    if (!files.length && typeof glob === "string" && /\.\*$/.test(glob)) {
+      glob = glob.substring(0, glob.length - 2);
+
+      try {
+        if ((await fse.stat(glob)).isDirectory()) {
+          files = await resolveGlob(glob + "/**");
+        }
+      } catch (e) {
+        if (!/ENOENT/.test(e.message)) {
+          throw e;
+        }
+      }
+    }
 
     for (const file of files) {
       if (this._resolvedFiles.has(file)) {
