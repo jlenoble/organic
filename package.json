@@ -28,7 +28,9 @@
     "node": ">=10.9.0"
   },
   "dependencies": {
+    "@types/fs-extra": "^8.0.0",
     "explanation": "^0.1.2",
+    "fs-extra": "^8.1.0",
     "polypath": "^0.7.0",
     "precinct": "^6.1.2"
   },
@@ -44,7 +46,6 @@
     "@types/ejs": "^2.6.3",
     "@types/eslint": "^4.16.6",
     "@types/eslint-plugin-prettier": "^2.2.0",
-    "@types/fs-extra": "^8.0.0",
     "@types/gulp": "^4.0.6",
     "@types/gulp-babel": "^6.1.29",
     "@types/gulp-cached": "^0.0.31",
@@ -54,7 +55,7 @@
     "@types/gulp-replace": "^0.0.31",
     "@types/gulp-sourcemaps": "^0.0.32",
     "@types/node": "^12.6.8",
-    "@types/prettier": "^1.16.4",
+    "@types/prettier": "^1.18.0",
     "@types/source-map-support": "^0.5.0",
     "@types/stream-to-promise": "^2.2.0",
     "@typescript-eslint/eslint-plugin": "^1.12.0",
@@ -71,7 +72,6 @@
     "eslint-config-google": "^0.13.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "fs-extra": "^8.1.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-cached": "^1.1.1",
