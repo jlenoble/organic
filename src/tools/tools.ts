@@ -26,5 +26,9 @@ export default class Tools extends Deps {
     this._addDeps(this.babel.deps);
     this._addDeps(this.eslint.deps);
     this._addDeps(this.mocha.deps);
+
+    if (options.typescript) {
+      this._addDeps(["typescript", "@types/node"]);
+    }
   }
 }
