@@ -11,7 +11,7 @@ export default class Deps {
   protected _deps: Set<string>;
 
   public get deps(): string[] {
-    return [...this._deps];
+    return [...this._deps].sort();
   }
 
   public constructor() {
