@@ -5,6 +5,7 @@ import Dependencies, {
   ProdDependencies,
   DevDependencies
 } from "./dependencies";
+import Globs from "./globs";
 
 export default class Packages {
   public readonly ready: Promise<boolean>;
@@ -12,6 +13,7 @@ export default class Packages {
   protected _packageDir: string;
   protected _packages: Set<string>;
 
+  protected _globs: Globs;
   protected _prodDeps: ProdDependencies[];
   protected _devDeps: DevDependencies[];
   protected _localDeps: DevDependencies[];
@@ -20,6 +22,7 @@ export default class Packages {
     this._packageDir = path.resolve(packageDir);
     this._packages = new Set();
 
+    this._globs = new Globs();
     this._prodDeps = [];
     this._devDeps = [];
     this._localDeps = [];
@@ -74,7 +77,7 @@ export default class Packages {
         this._packages,
         (pckg): ProdDependencies => {
           return new ProdDependencies(
-            "src/**/*.ts",
+            this._globs.prodGlob,
             path.join(process.cwd(), "packages", pckg)
           );
         }
@@ -94,7 +97,7 @@ export default class Packages {
         this._packages,
         (pckg): DevDependencies => {
           return new DevDependencies(
-            ["gulpfile.babel.js", "test/**/*.ts"],
+            this._globs.devGlob,
             path.join(process.cwd(), "packages", pckg)
           );
         }
