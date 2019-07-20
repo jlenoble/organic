@@ -1,17 +1,25 @@
+import Deps, { Options } from "./common";
 import BabelConfig from "./babel";
 import EslintConfig from "./eslint";
 
-const tools: { [key: string]: string[] } = {
-  babel: new BabelConfig({ babel: true, typescript: true }).deps,
-  eslint: new EslintConfig({ eslint: true, prettier: true }).deps
+const defaultOptions: Options = {
+  babel: true,
+  eslint: true,
+  prettier: true,
+  typescript: true
 };
 
-export const implicitDevDeps: Set<string> = new Set();
+export default class Tools extends Deps {
+  public readonly babel: BabelConfig;
+  public readonly eslint: EslintConfig;
 
-for (const deps of Object.values(tools)) {
-  for (const dep of deps) {
-    implicitDevDeps.add(dep);
+  public constructor(options: Options = defaultOptions) {
+    super();
+
+    this.babel = new BabelConfig(options);
+    this.eslint = new EslintConfig(options);
+
+    this._addDeps(this.babel.deps);
+    this._addDeps(this.eslint.deps);
   }
 }
-
-export default tools;

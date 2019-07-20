@@ -22,4 +22,8 @@ export default class Deps {
       this._deps.add(dep);
     });
   }
+
+  public has(dep: string): boolean {
+    return this._deps.has(dep);
+  }
 }
