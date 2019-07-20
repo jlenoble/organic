@@ -1,6 +1,6 @@
 import Deps, { Options } from "./common";
 
-export class Presets {
+class Presets {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected _presets: (string | [string, any])[];
 
@@ -43,7 +43,7 @@ export class Presets {
   }
 }
 
-export class Plugins {
+class Plugins {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected _plugins: (string | [string, any])[];
 
