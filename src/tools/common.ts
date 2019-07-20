@@ -2,6 +2,7 @@ export interface Options {
   babel?: boolean;
   eslint?: boolean;
   gulp?: boolean;
+  mocha?: boolean;
   prettier?: boolean;
   typescript?: boolean;
 }
