@@ -87,12 +87,14 @@ export default class BabelConfig extends Deps {
   public constructor(options: Options = {}) {
     super();
 
-    this._addDeps(["@babel/core", "@babel/register"]);
-
     this._presets = new Presets(options);
     this._plugins = new Plugins(options);
 
-    this._addDeps(this._presets.deps);
-    this._addDeps(this._plugins.deps);
+    if (options.babel) {
+      this._addDeps(["@babel/core", "@babel/register"]);
+
+      this._addDeps(this._presets.deps);
+      this._addDeps(this._plugins.deps);
+    }
   }
 }
