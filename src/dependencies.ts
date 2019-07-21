@@ -2,7 +2,7 @@ import { resolveGlob, rebaseGlob } from "polypath";
 import precinct from "precinct";
 import path from "path";
 import fse from "fs-extra";
-import { Tools } from "./tools";
+import { Tools, natives } from "./tools";
 
 const tools = new Tools();
 
@@ -35,7 +35,13 @@ export default class Dependencies {
     );
     this._resolvedFiles = new Set();
 
-    this.ready = this._addGlob(glob).then((): true => true, (): false => false);
+    this.ready = this._addGlob(glob).then(
+      (): true => true,
+      (e): false => {
+        console.warn(e);
+        return false;
+      }
+    );
   }
 
   protected async _addDep(deps: string | string[], dir: string): Promise<void> {
@@ -78,11 +84,12 @@ export default class Dependencies {
 
       this._resolvedFiles.add(file);
 
-      const deps = precinct.paperwork(file, {
-        includeCore: false
-      });
+      const deps: string[] = precinct.paperwork(file);
 
-      await this._addDep(deps, path.dirname(file));
+      await this._addDep(
+        deps.filter((dep): boolean => !natives.has(dep)),
+        path.dirname(file)
+      );
     }
   }
 
