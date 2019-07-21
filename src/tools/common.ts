@@ -23,6 +23,16 @@ export default class Deps {
     return [...this._deps.keys()].sort();
   }
 
+  public get dependencies(): Semvers {
+    const deps: Semvers = {};
+
+    this.deps.forEach((dep): void => {
+      deps[dep] = this._deps.get(dep) as string;
+    });
+
+    return deps;
+  }
+
   public constructor() {
     this._deps = new Map();
 
