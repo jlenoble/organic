@@ -17,12 +17,6 @@ export default class TypescriptConfig extends Deps {
             /typescript/.test(dep)
           )
         );
-
-        this._addDeps([
-          "@babel/plugin-proposal-class-properties",
-          "@babel/plugin-proposal-decorators",
-          "@babel/plugin-proposal-object-rest-spread"
-        ]);
       }
 
       if (eslint) {
