@@ -3,7 +3,7 @@
     "createdWith": "0.5.1",
     "modifiedWith": "0.6.0-5",
     "createdOn": "2019-04-20T13:08:06.783Z",
-    "modifiedOn": "2019-07-20T10:33:18.652Z",
+    "modifiedOn": "2019-07-21T15:10:09.065Z",
     "typescript": true,
     "jsx": false,
     "gulp": true,
@@ -29,13 +29,9 @@
     "gulpDir": "gulp",
     "monorepo": true,
     "packagesDir": "packages",
-    "activePackages": [],
-    "staticDir": "src/static",
-    "dataDir": "src/static/data",
-    "visitorDir": "src/static/antlr4",
-    "listenerDir": "src/static/antlr4",
-    "parserDir": "src/static/antlr4/parsers",
-    "grammarDir": "src/static/antlr4/grammars",
+    "activePackages": [
+      "generator-wupjs"
+    ],
     "hasGulpfilesDir": false
   }
 }
