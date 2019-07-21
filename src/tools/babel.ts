@@ -63,20 +63,24 @@ class Plugins {
     ];
   }
 
-  public constructor({ babel }: Options = {}) {
-    this.plugins = babel
-      ? [
-          "@babel/plugin-proposal-class-properties",
-          [
-            "@babel/plugin-proposal-decorators",
-            {
-              decoratorsBeforeExport: true
-            }
-          ],
-          "@babel/plugin-proposal-object-rest-spread",
-          "babel-plugin-add-module-exports"
-        ]
-      : [];
+  public constructor({ babel, typescript }: Options = {}) {
+    if (babel) {
+      this.plugins = typescript
+        ? [
+            "@babel/plugin-proposal-class-properties",
+            [
+              "@babel/plugin-proposal-decorators",
+              {
+                decoratorsBeforeExport: true
+              }
+            ],
+            "@babel/plugin-proposal-object-rest-spread",
+            "babel-plugin-add-module-exports"
+          ]
+        : ["babel-plugin-add-module-exports"];
+    } else {
+      this.plugins = [];
+    }
   }
 }
 
