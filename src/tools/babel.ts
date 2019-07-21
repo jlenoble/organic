@@ -80,10 +80,6 @@ export default class BabelConfig extends Deps {
   protected _presets: Presets;
   protected _plugins: Plugins;
 
-  public get deps(): string[] {
-    return [...this._deps];
-  }
-
   public constructor(options: Options = {}) {
     super();
 

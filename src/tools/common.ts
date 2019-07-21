@@ -1,29 +1,45 @@
+export type Option = boolean | string;
+
 export interface Options {
-  babel?: boolean;
-  eslint?: boolean;
-  gulp?: boolean;
-  mocha?: boolean;
-  prettier?: boolean;
-  typescript?: boolean;
+  babel?: Option;
+  eslint?: Option;
+  gulp?: Option;
+  mocha?: Option;
+  prettier?: Option;
+  typescript?: Option;
 }
 
+export interface Semvers {
+  [dep: string]: string;
+}
+
+export type DepsInput = string | string[] | Semvers;
+
 export default class Deps {
-  protected _deps: Set<string>;
+  protected _deps: Map<string, string>;
 
   public get deps(): string[] {
-    return [...this._deps].sort();
+    return [...this._deps.keys()].sort();
   }
 
   public constructor() {
-    this._deps = new Set();
+    this._deps = new Map();
 
     Object.defineProperty(this, "_deps", { enumerable: false });
   }
 
-  protected _addDeps(deps: string[]): void {
-    deps.forEach((dep): void => {
-      this._deps.add(dep);
-    });
+  protected _addDeps(deps: DepsInput): void {
+    if (typeof deps === "string") {
+      this._deps.set(deps, "*");
+    } else if (Array.isArray(deps)) {
+      deps.forEach((dep): void => {
+        this._deps.set(dep, "*");
+      });
+    } else {
+      Object.entries(deps).forEach(([dep, semver]): void => {
+        this._deps.set(dep, semver);
+      });
+    }
   }
 
   public has(dep: string): boolean {
