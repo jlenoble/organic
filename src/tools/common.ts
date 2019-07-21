@@ -16,6 +16,8 @@ export default class Deps {
 
   public constructor() {
     this._deps = new Set();
+
+    Object.defineProperty(this, "_deps", { enumerable: false });
   }
 
   protected _addDeps(deps: string[]): void {
