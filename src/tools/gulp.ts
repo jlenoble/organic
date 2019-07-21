@@ -18,7 +18,14 @@ export default class GulpConfig extends Deps {
       }
 
       if (mocha) {
-        this._addDeps(["gulp-mocha"]);
+        this._addDeps([
+          "gulp-mocha",
+          "chai",
+          "mochawesome",
+          "source-map-support"
+        ]);
+
+        this._addDeps({ mocha: "<6" });
       }
     }
   }
