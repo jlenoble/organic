@@ -63,7 +63,7 @@ class Plugins {
     ];
   }
 
-  public constructor({ babel, typescript }: Options = {}) {
+  public constructor({ babel, node, typescript }: Options = {}) {
     if (babel) {
       this.plugins = typescript
         ? [
@@ -77,7 +77,9 @@ class Plugins {
             "@babel/plugin-proposal-object-rest-spread",
             "babel-plugin-add-module-exports"
           ]
-        : ["babel-plugin-add-module-exports"];
+        : node
+        ? ["babel-plugin-add-module-exports"]
+        : [];
     } else {
       this.plugins = [];
     }
