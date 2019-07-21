@@ -85,7 +85,15 @@ export default class Dependencies {
       const deps: string[] = precinct.paperwork(file);
 
       await this._addDep(
-        deps.filter((dep): boolean => !natives.has(dep)),
+        deps
+          .filter((dep): boolean => !natives.has(dep))
+          .map((dep): string => {
+            if (dep.includes("/") && !/^\.\.?\//.test(dep)) {
+              const chunks = dep.split("/");
+              return /^@/.test(dep) ? chunks[0] + "/" + chunks[1] : chunks[0];
+            }
+            return dep;
+          }),
         path.dirname(file)
       );
     }
