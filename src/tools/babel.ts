@@ -16,18 +16,22 @@ class Presets {
     ];
   }
 
-  public constructor({ babel, typescript }: Options = {}) {
+  public constructor({ babel, node, typescript }: Options = {}) {
     if (babel) {
-      this._presets = [
-        [
-          "@babel/preset-env",
-          {
-            targets: {
-              node: "current"
+      if (node) {
+        this._presets = [
+          [
+            "@babel/preset-env",
+            {
+              targets: {
+                node: typeof node === "string" ? node : "current"
+              }
             }
-          }
-        ]
-      ];
+          ]
+        ];
+      } else {
+        this._presets = ["@babel/preset-env"];
+      }
 
       if (typescript) {
         this._presets.push([

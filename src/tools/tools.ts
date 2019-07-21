@@ -10,6 +10,7 @@ const defaultOptions: Options = {
   eslint: true,
   gulp: true,
   mocha: true,
+  node: "current",
   prettier: true,
   typescript: true
 };

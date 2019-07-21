@@ -5,6 +5,7 @@ export interface Options {
   eslint?: Option;
   gulp?: Option;
   mocha?: Option;
+  node?: Option;
   prettier?: Option;
   typescript?: Option;
 }
