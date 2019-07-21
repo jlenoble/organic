@@ -71,9 +71,7 @@ export default class Dependencies {
           files = await resolveGlob(glob + "/**/*");
         }
       } catch (e) {
-        if (!/ENOENT/.test(e.message)) {
-          throw e;
-        }
+        console.warn(e);
       }
     }
 
