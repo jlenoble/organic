@@ -3,11 +3,17 @@ import precinct from "precinct";
 import path from "path";
 import fse from "fs-extra";
 import { Tools, natives } from "./tools";
+import Relocator, { RelocatedDeps } from "./relocator";
 
 const tools = new Tools();
 
 interface Deps {
   [name: string]: string;
+}
+
+interface Organon {
+  implicitDevDeps?: string[];
+  relocatedDevDeps?: RelocatedDeps;
 }
 
 export default class Dependencies {
@@ -18,6 +24,7 @@ export default class Dependencies {
   }
 
   protected _packageName: string = "";
+  public readonly packageDir: string;
 
   protected _fromConfig: Deps;
   protected _fromFiles: Set<string>;
@@ -25,7 +32,20 @@ export default class Dependencies {
   protected _localDeps: Set<string>;
   protected _resolvedFiles: Set<string>;
 
-  public constructor(glob: string | string[], deps: Deps) {
+  protected _organon: Organon;
+  protected _relocator?: Relocator;
+
+  public constructor({
+    glob,
+    deps,
+    packageDir,
+    organon = {}
+  }: {
+    glob: string | string[];
+    deps: Deps;
+    packageDir: string;
+    organon: Organon;
+  }) {
     this._fromConfig = { ...deps };
     this._fromFiles = new Set();
     this._localDeps = new Set(
@@ -34,14 +54,31 @@ export default class Dependencies {
       )
     );
     this._resolvedFiles = new Set();
+    this.packageDir = packageDir;
+    this._organon = organon;
 
-    this.ready = this._addGlob(glob).then(
-      (): true => true,
-      (e): false => {
+    const { implicitDevDeps, relocatedDevDeps } = organon;
+
+    if (relocatedDevDeps) {
+      this._relocator = new Relocator(relocatedDevDeps, packageDir);
+    }
+
+    const isReady = async (): Promise<boolean> => {
+      try {
+        await this._addGlob(glob);
+
+        if (implicitDevDeps) {
+          await this._addDep(implicitDevDeps, packageDir);
+        }
+      } catch (e) {
         console.warn(e);
         return false;
       }
-    );
+
+      return true;
+    };
+
+    this.ready = isReady();
   }
 
   protected async _addDep(deps: string | string[], dir: string): Promise<void> {
@@ -49,11 +86,10 @@ export default class Dependencies {
       deps = [deps];
     }
 
-    for (const dep of deps) {
+    for (let dep of deps) {
       if (/^\.\.?\//.test(dep)) {
-        const glob = path.join(dir, dep + ".*");
-
-        await this._addGlob(glob);
+        dep = this.handleRelocatedDep(dep, dir);
+        await this._addGlob(dep + ".*");
       } else {
         this._fromFiles.add(dep);
       }
@@ -71,7 +107,7 @@ export default class Dependencies {
           files = await resolveGlob(glob + "/**/*");
         }
       } catch (e) {
-        console.warn(e);
+        console.warn(e.message);
       }
     }
 
@@ -97,6 +133,14 @@ export default class Dependencies {
         path.dirname(file)
       );
     }
+  }
+
+  public handleRelocatedDep(dep: string, dir: string): string {
+    if (this._relocator) {
+      return this._relocator.relocate(dep, dir);
+    }
+
+    return path.join(dir, dep);
   }
 
   public async getMissingDeps(): Promise<string[]> {
@@ -203,8 +247,15 @@ export class ProdDependencies extends Dependencies {
   public constructor(glob: string | string[], packageDir: string) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pckg = require(path.join(packageDir, "package.json"));
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const yo = require(path.join(packageDir, ".yo-rc.json"));
 
-    super(rebaseGlob(glob, packageDir), pckg.dependencies);
+    super({
+      glob: rebaseGlob(glob, packageDir),
+      deps: pckg.dependencies,
+      packageDir,
+      organon: yo.organon
+    });
 
     this._packageName = pckg.name;
   }
@@ -218,10 +269,17 @@ export class DevDependencies extends Dependencies {
   public constructor(glob: string | string[], packageDir: string) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pckg = require(path.join(packageDir, "package.json"));
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const yo = require(path.join(packageDir, ".yo-rc.json"));
 
-    super(rebaseGlob(glob, packageDir), {
-      ...pckg.dependencies,
-      ...pckg.devDependencies
+    super({
+      glob: rebaseGlob(glob, packageDir),
+      deps: {
+        ...pckg.dependencies,
+        ...pckg.devDependencies
+      },
+      packageDir,
+      organon: yo.organon
     });
 
     this._packageName = pckg.name;
