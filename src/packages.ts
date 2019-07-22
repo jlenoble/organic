@@ -16,7 +16,9 @@ export default class Packages {
   protected _globs: Globs;
   protected _prodDeps: ProdDependencies[];
   protected _devDeps: DevDependencies[];
-  protected _localDeps: DevDependencies[];
+
+  protected _localProdDeps: ProdDependencies[];
+  protected _localDevDeps: DevDependencies[];
 
   public constructor(packageDir: string) {
     this._packageDir = path.resolve(packageDir);
@@ -25,7 +27,9 @@ export default class Packages {
     this._globs = new Globs();
     this._prodDeps = [];
     this._devDeps = [];
-    this._localDeps = [];
+
+    this._localProdDeps = [];
+    this._localDevDeps = [];
 
     this.ready = this._addPackages().then((): true => true, (): false => false);
   }
@@ -55,16 +59,36 @@ export default class Packages {
     }
   }
 
-  public async getLocalDependencies(): Promise<DevDependencies[]> {
-    if (this._localDeps.length === 0) {
-      for (const dep of await this.getDevDependencies()) {
+  public async getLocalDependencies(): Promise<Dependencies[]> {
+    const [prodDeps, devDeps] = await Promise.all([
+      this.getLocalProdDependencies(),
+      this.getLocalDevDependencies()
+    ]);
+    return [...prodDeps, ...devDeps];
+  }
+
+  public async getLocalProdDependencies(): Promise<ProdDependencies[]> {
+    if (this._localProdDeps.length === 0) {
+      for (const dep of await this.getProdDependencies()) {
         if ((await dep.getLocalDeps()).length > 0) {
-          this._localDeps.push(dep);
+          this._localProdDeps.push(dep);
         }
       }
     }
 
-    return [...this._localDeps];
+    return [...this._localProdDeps];
+  }
+
+  public async getLocalDevDependencies(): Promise<DevDependencies[]> {
+    if (this._localDevDeps.length === 0) {
+      for (const dep of await this.getDevDependencies()) {
+        if ((await dep.getLocalDeps()).length > 0) {
+          this._localDevDeps.push(dep);
+        }
+      }
+    }
+
+    return [...this._localDevDeps];
   }
 
   public async getProdDependencies(): Promise<ProdDependencies[]> {

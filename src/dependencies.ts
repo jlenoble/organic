@@ -38,18 +38,20 @@ export default class Dependencies {
   public constructor({
     glob,
     deps,
+    localDeps,
     packageDir,
     organon = {}
   }: {
     glob: string | string[];
     deps: Deps;
+    localDeps?: Deps;
     packageDir: string;
     organon: Organon;
   }) {
     this._fromConfig = { ...deps };
     this._fromFiles = new Set();
     this._localDeps = new Set(
-      Object.keys(deps).filter((key): boolean =>
+      Object.keys(localDeps || deps).filter((key): boolean =>
         /^(?:file|link):\.\.?\//.test(deps[key])
       )
     );
@@ -278,6 +280,7 @@ export class DevDependencies extends Dependencies {
         ...pckg.dependencies,
         ...pckg.devDependencies
       },
+      localDeps: pckg.devDependencies,
       packageDir,
       organon: yo.organon
     });
