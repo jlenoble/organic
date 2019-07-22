@@ -139,7 +139,7 @@ export default class Packages {
           tag = "extra";
           break;
 
-        case "haveLocalDeps":
+        case "localDeps":
           deps = this.getLocalDependencies();
           tag = "local";
           break;

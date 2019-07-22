@@ -36,7 +36,7 @@ describe("Testing dependency consistency of organized packages", (): void => {
   it("All packages have no local deps", async function(): Promise<void> {
     this.timeout(20000); // eslint-disable-line no-invalid-this
 
-    const message = await packages.getErrorMessage("haveLocalDeps");
+    const message = await packages.getErrorMessage("localDeps");
 
     if (message) {
       throw new Error(message);
