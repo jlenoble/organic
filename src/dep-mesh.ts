@@ -24,46 +24,62 @@ export default class Link<T> {
   protected readonly _children: Set<Link<T>> = new Set();
   protected readonly _parents: Set<Link<T>> = new Set();
 
-  protected *_depthFirstChildren(): IterableIterator<Link<T>> {
-    yield* this._children.values();
-  }
+  protected *_depthFirstDescendants(
+    wm: WeakSet<Link<T>> = new WeakSet()
+  ): IterableIterator<Link<T>> {
+    for (const child of this._children.values()) {
+      if (!wm.has(child)) {
+        wm.add(child);
+        yield child;
+      }
 
-  protected *_depthFirstParents(): IterableIterator<Link<T>> {
-    yield* this._parents.values();
-  }
-
-  protected *_depthFirstDescendants(): IterableIterator<Link<T>> {
-    for (const child of this._depthFirstChildren()) {
-      yield child;
-      yield* child._depthFirstDescendants();
+      yield* child._depthFirstDescendants(wm);
     }
   }
 
-  protected *_depthFirstAncestors(): IterableIterator<Link<T>> {
-    for (const parent of this._depthFirstParents()) {
-      yield parent;
-      yield* parent._depthFirstAncestors();
+  protected *_depthFirstAncestors(
+    wm: WeakSet<Link<T>> = new WeakSet()
+  ): IterableIterator<Link<T>> {
+    for (const parent of this._parents.values()) {
+      if (!wm.has(parent)) {
+        wm.add(parent);
+        yield parent;
+      }
+
+      yield* parent._depthFirstAncestors(wm);
     }
   }
 
   public *children(): IterableIterator<Link<T>> {
-    const links = new Set(this._depthFirstChildren());
-    yield* [...links].sort(compare);
+    yield* [...this._children].sort(compare);
   }
 
   public *parents(): IterableIterator<Link<T>> {
-    const links = new Set(this._depthFirstParents());
-    yield* [...links].sort(compare);
+    yield* [...this._parents].sort(compare);
   }
 
   public *descendants(): IterableIterator<Link<T>> {
-    const links = new Set(this._depthFirstDescendants());
-    yield* [...links].sort(compare);
+    yield* [...this._depthFirstDescendants()].sort(compare);
   }
 
   public *ancestors(): IterableIterator<Link<T>> {
-    const links = new Set(this._depthFirstAncestors());
-    yield* [...links].sort(compare);
+    yield* [...this._depthFirstAncestors()].sort(compare);
+  }
+
+  public *lastDescendants(): IterableIterator<Link<T>> {
+    for (const descendant of this.descendants()) {
+      if (descendant.isLastDescendant()) {
+        yield descendant;
+      }
+    }
+  }
+
+  public *firstAncestors(): IterableIterator<Link<T>> {
+    for (const ancestor of this.ancestors()) {
+      if (ancestor.isFirstAncestor()) {
+        yield ancestor;
+      }
+    }
   }
 
   public *childNames(): IterableIterator<string> {
@@ -80,6 +96,18 @@ export default class Link<T> {
 
   public *descendantNames(): IterableIterator<string> {
     for (const descendant of this.descendants()) {
+      yield descendant.name;
+    }
+  }
+
+  public *firstAncestorNames(): IterableIterator<string> {
+    for (const ancestor of this.firstAncestors()) {
+      yield ancestor.name;
+    }
+  }
+
+  public *lastDescendantNames(): IterableIterator<string> {
+    for (const descendant of this.lastDescendants()) {
       yield descendant.name;
     }
   }
@@ -152,20 +180,12 @@ export default class Link<T> {
     return link;
   }
 
-  public getFirstAncestors(linksLeft: Set<Link<T>>): Set<Link<T>> {
-    const ancestors: Set<Link<T>> = new Set();
+  public isLastDescendant(): boolean {
+    return !this._children.size;
+  }
 
-    if (linksLeft.has(this)) {
-      for (const parent of this._parents.values()) {
-        for (const ancestor of parent.getFirstAncestors(linksLeft)) {
-          ancestors.add(ancestor);
-        }
-      }
-      ancestors.add(this);
-      linksLeft.delete(this);
-    }
-
-    return ancestors;
+  public isFirstAncestor(): boolean {
+    return !this._parents.size;
   }
 
   public hasChild(name: string): boolean {
