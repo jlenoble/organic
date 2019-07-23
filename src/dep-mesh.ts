@@ -1,58 +1,81 @@
-interface U {
-  readonly name: string;
-}
-
 export interface Options<T> {
-  createElement(name: string): T;
+  name: string;
+  links?: Map<string, Link<T>>;
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export default class Link<T extends U> {
+export default class Link<T> {
   public readonly name: string;
-  public readonly element: T;
   public readonly links: Map<string, Link<T>>;
   public readonly options: Options<T>;
 
   protected readonly _children: Set<Link<T>> = new Set();
   protected readonly _parents: Set<Link<T>> = new Set();
 
-  public static *generators<V extends U>(
-    links: IterableIterator<Link<V>>
-  ): IterableIterator<Link<V>> {
-    const leftLinks: Set<Link<V>> = new Set(links);
+  public *children(): IterableIterator<Link<T>> {
+    return this._children.values();
+  }
 
-    for (const leftLink of leftLinks) {
-      while (leftLinks.has(leftLink)) {
-        yield* leftLink.getFirstAncestors(leftLinks);
-      }
+  public *parents(): IterableIterator<Link<T>> {
+    return this._parents.values();
+  }
+
+  public *descendants(
+    links?: IterableIterator<Link<T>>
+  ): IterableIterator<Link<T>> {
+    // const leftLinks: Set<Link<V>> = new Set(links);
+    // for (const leftLink of leftLinks) {
+    //       while (leftLinks.has(leftLink)) {
+    //         yield* leftLink.getFirstAncestors(leftLinks);
+    //       }
+
+    for (const child of this.children()) {
+      yield child;
+      yield* child.descendants();
     }
   }
 
-  public constructor(
-    name: string | T,
-    links: Map<string, Link<T>>,
-    options: Options<T>
-  ) {
-    if (typeof name === "string") {
-      this.name = name;
-    } else {
-      this.name = name.name;
+  public *ancestors(): IterableIterator<Link<T>> {
+    for (const parent of this.parents()) {
+      yield parent;
+      yield* parent.ancestors();
     }
+  }
 
-    this.links = links;
+  public *childNames(): IterableIterator<string> {
+    for (const child of this.children()) {
+      yield child.name;
+    }
+  }
+
+  public *parentNames(): IterableIterator<string> {
+    for (const parent of this.parents()) {
+      yield parent.name;
+    }
+  }
+
+  public *descendantNames(): IterableIterator<string> {
+    for (const descendant of this.descendants()) {
+      yield descendant.name;
+    }
+  }
+
+  public *ancestorNames(): IterableIterator<string> {
+    for (const ancestor of this.ancestors()) {
+      yield ancestor.name;
+    }
+  }
+
+  public constructor(options: Options<T>) {
+    this.name = options.name;
+    this.links = options.links || new Map();
     this.options = options;
 
-    if (typeof name === "string") {
-      this.element = options.createElement(name);
-    } else {
-      this.element = name;
+    if (this.links.has(name)) {
+      return this.links.get(name) as Link<T>;
     }
 
-    if (this.links.has(this.name)) {
-      return this.links.get(this.name) as Link<T>;
-    }
-
-    this.links.set(this.name, this);
+    this.links.set(name, this);
   }
 
   public addChild(name: string): this {
@@ -61,7 +84,7 @@ export default class Link<T extends U> {
       let link: Link<T> | undefined = this.links.get(name);
 
       if (!link) {
-        link = new Link(name, this.links, this.options);
+        link = new Link({ ...this.options, name, links: this.links });
       } else {
         // Link already defined; Prevent circularity
         if (this.hasAncestor(name)) {
@@ -84,7 +107,7 @@ export default class Link<T extends U> {
       let link: Link<T> | undefined = this.links.get(name);
 
       if (!link) {
-        link = new Link(name, this.links, this.options);
+        link = new Link({ ...this.options, name, links: this.links });
       } else {
         // Link already defined; Prevent circularity
         if (this.hasDescendant(name)) {
@@ -145,5 +168,61 @@ export default class Link<T extends U> {
         parent.hasAncestor(name)
       )
     );
+  }
+
+  public getChild(name: string): Link<T> | undefined {
+    let result: Link<T> | undefined;
+
+    Object.values(this._children).some((child): boolean => {
+      if (child.name === name) {
+        result = child;
+        return true;
+      }
+
+      return false;
+    });
+
+    return result;
+  }
+
+  public getParent(name: string): Link<T> | undefined {
+    let result: Link<T> | undefined;
+
+    Object.values(this._parents).some((parent): boolean => {
+      if (parent.name === name) {
+        result = parent;
+        return true;
+      }
+
+      return false;
+    });
+
+    return result;
+  }
+
+  public getDescendant(name: string): Link<T> | undefined {
+    let result = this.getChild(name);
+
+    if (!result) {
+      Object.values(this._children).some((child): boolean => {
+        result = child.getDescendant(name);
+        return !!result;
+      });
+    }
+
+    return result;
+  }
+
+  public getAncestor(name: string): Link<T> | undefined {
+    let result = this.getParent(name);
+
+    if (!result) {
+      Object.values(this._parents).some((parent): boolean => {
+        result = parent.getAncestor(name);
+        return !!result;
+      });
+    }
+
+    return result;
   }
 }
