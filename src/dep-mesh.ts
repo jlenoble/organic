@@ -4,6 +4,18 @@ export interface Options<T> {
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+function compare<T>(l1: Link<T>, l2: Link<T>): 1 | 0 | -1 {
+  if (l1 === l2) {
+    return 0;
+  } else if (l1.getAncestor(l2.name) === l2) {
+    return 1;
+  } else if (l1.getDescendant(l2.name) === l2) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
+
 export default class Link<T> {
   public readonly name: string;
   public readonly links: Map<string, Link<T>>;
@@ -12,26 +24,46 @@ export default class Link<T> {
   protected readonly _children: Set<Link<T>> = new Set();
   protected readonly _parents: Set<Link<T>> = new Set();
 
-  public *children(): IterableIterator<Link<T>> {
+  protected *_depthFirstChildren(): IterableIterator<Link<T>> {
     yield* this._children.values();
   }
 
-  public *parents(): IterableIterator<Link<T>> {
+  protected *_depthFirstParents(): IterableIterator<Link<T>> {
     yield* this._parents.values();
   }
 
-  public *descendants(): IterableIterator<Link<T>> {
-    for (const child of this.children()) {
+  protected *_depthFirstDescendants(): IterableIterator<Link<T>> {
+    for (const child of this._depthFirstChildren()) {
       yield child;
-      yield* child.descendants();
+      yield* child._depthFirstDescendants();
     }
   }
 
-  public *ancestors(): IterableIterator<Link<T>> {
-    for (const parent of this.parents()) {
+  protected *_depthFirstAncestors(): IterableIterator<Link<T>> {
+    for (const parent of this._depthFirstParents()) {
       yield parent;
-      yield* parent.ancestors();
+      yield* parent._depthFirstAncestors();
     }
+  }
+
+  public *children(): IterableIterator<Link<T>> {
+    const links = new Set(this._depthFirstChildren());
+    yield* [...links].sort(compare);
+  }
+
+  public *parents(): IterableIterator<Link<T>> {
+    const links = new Set(this._depthFirstParents());
+    yield* [...links].sort(compare);
+  }
+
+  public *descendants(): IterableIterator<Link<T>> {
+    const links = new Set(this._depthFirstDescendants());
+    yield* [...links].sort(compare);
+  }
+
+  public *ancestors(): IterableIterator<Link<T>> {
+    const links = new Set(this._depthFirstAncestors());
+    yield* [...links].sort(compare);
   }
 
   public *childNames(): IterableIterator<string> {

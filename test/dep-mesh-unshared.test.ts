@@ -45,16 +45,16 @@ describe("Testing class DepMesh", (): void => {
     expect([...p7.descendantNames()]).to.eql(["p5", "p2", "root"]);
 
     expect([...mesh.ancestorNames()]).to.eql([
-      "p1",
       "p4",
-      "p2",
-      "p5",
+      "p1",
       "p7",
+      "p5",
       "p6",
+      "p2",
       "p3"
     ]);
     expect([...p1.ancestorNames()]).to.eql(["p4"]);
-    expect([...p2.ancestorNames()]).to.eql(["p5", "p7", "p6"]);
+    expect([...p2.ancestorNames()]).to.eql(["p7", "p5", "p6"]);
     expect([...p3.ancestorNames()]).to.eql([]);
     expect([...p4.ancestorNames()]).to.eql([]);
     expect([...p5.ancestorNames()]).to.eql(["p7"]);
@@ -99,10 +99,10 @@ describe("Testing class DepMesh", (): void => {
     expect([...p1.ancestorNames()]).to.eql(["root"]);
     expect([...p2.ancestorNames()]).to.eql(["root"]);
     expect([...p3.ancestorNames()]).to.eql(["root"]);
-    expect([...p4.ancestorNames()]).to.eql(["p1", "root"]);
-    expect([...p5.ancestorNames()]).to.eql(["p2", "root"]);
-    expect([...p6.ancestorNames()]).to.eql(["p2", "root"]);
-    expect([...p7.ancestorNames()]).to.eql(["p5", "p2", "root"]);
+    expect([...p4.ancestorNames()]).to.eql(["root", "p1"]);
+    expect([...p5.ancestorNames()]).to.eql(["root", "p2"]);
+    expect([...p6.ancestorNames()]).to.eql(["root", "p2"]);
+    expect([...p7.ancestorNames()]).to.eql(["root", "p2", "p5"]);
 
     expect([...mesh.descendantNames()]).to.eql([
       "p1",
