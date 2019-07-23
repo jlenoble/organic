@@ -254,7 +254,7 @@ export class ProdDependencies extends Dependencies {
 
     super({
       glob: rebaseGlob(glob, packageDir),
-      deps: pckg.dependencies,
+      deps: pckg.dependencies || {},
       packageDir,
       organon: yo.organon
     });
@@ -274,13 +274,16 @@ export class DevDependencies extends Dependencies {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const yo = require(path.join(packageDir, ".yo-rc.json"));
 
+    const dependencies = pckg.dependencies || {};
+    const devDependencies = pckg.devDependencies || {};
+
     super({
       glob: rebaseGlob(glob, packageDir),
       deps: {
-        ...pckg.dependencies,
-        ...pckg.devDependencies
+        ...dependencies,
+        ...devDependencies
       },
-      localDeps: pckg.devDependencies,
+      localDeps: devDependencies,
       packageDir,
       organon: yo.organon
     });
