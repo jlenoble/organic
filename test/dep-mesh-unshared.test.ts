@@ -60,6 +60,24 @@ describe("Testing class DepMesh", (): void => {
     expect([...p5.ancestorNames()]).to.eql(["p7"]);
     expect([...p6.ancestorNames()]).to.eql([]);
     expect([...p7.ancestorNames()]).to.eql([]);
+
+    expect([...mesh.lastDescendantNames()]).to.eql([]);
+    expect([...p1.lastDescendantNames()]).to.eql(["root"]);
+    expect([...p2.lastDescendantNames()]).to.eql(["root"]);
+    expect([...p3.lastDescendantNames()]).to.eql(["root"]);
+    expect([...p4.lastDescendantNames()]).to.eql(["root"]);
+    expect([...p5.lastDescendantNames()]).to.eql(["root"]);
+    expect([...p6.lastDescendantNames()]).to.eql(["root"]);
+    expect([...p7.lastDescendantNames()]).to.eql(["root"]);
+
+    expect([...mesh.firstAncestorNames()]).to.eql(["p4", "p7", "p6", "p3"]);
+    expect([...p1.firstAncestorNames()]).to.eql(["p4"]);
+    expect([...p2.firstAncestorNames()]).to.eql(["p7", "p6"]);
+    expect([...p3.firstAncestorNames()]).to.eql([]);
+    expect([...p4.firstAncestorNames()]).to.eql([]);
+    expect([...p5.firstAncestorNames()]).to.eql(["p7"]);
+    expect([...p6.firstAncestorNames()]).to.eql([]);
+    expect([...p7.firstAncestorNames()]).to.eql([]);
   });
 
   it("Unshared children", (): void => {
@@ -120,5 +138,23 @@ describe("Testing class DepMesh", (): void => {
     expect([...p5.descendantNames()]).to.eql(["p7"]);
     expect([...p6.descendantNames()]).to.eql([]);
     expect([...p7.descendantNames()]).to.eql([]);
+
+    expect([...mesh.firstAncestorNames()]).to.eql([]);
+    expect([...p1.firstAncestorNames()]).to.eql(["root"]);
+    expect([...p2.firstAncestorNames()]).to.eql(["root"]);
+    expect([...p3.firstAncestorNames()]).to.eql(["root"]);
+    expect([...p4.firstAncestorNames()]).to.eql(["root"]);
+    expect([...p5.firstAncestorNames()]).to.eql(["root"]);
+    expect([...p6.firstAncestorNames()]).to.eql(["root"]);
+    expect([...p7.firstAncestorNames()]).to.eql(["root"]);
+
+    expect([...mesh.lastDescendantNames()]).to.eql(["p4", "p7", "p6", "p3"]);
+    expect([...p1.lastDescendantNames()]).to.eql(["p4"]);
+    expect([...p2.lastDescendantNames()]).to.eql(["p7", "p6"]);
+    expect([...p3.lastDescendantNames()]).to.eql([]);
+    expect([...p4.lastDescendantNames()]).to.eql([]);
+    expect([...p5.lastDescendantNames()]).to.eql(["p7"]);
+    expect([...p6.lastDescendantNames()]).to.eql([]);
+    expect([...p7.lastDescendantNames()]).to.eql([]);
   });
 });
