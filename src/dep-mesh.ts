@@ -13,22 +13,14 @@ export default class Link<T> {
   protected readonly _parents: Set<Link<T>> = new Set();
 
   public *children(): IterableIterator<Link<T>> {
-    return this._children.values();
+    yield* this._children.values();
   }
 
   public *parents(): IterableIterator<Link<T>> {
-    return this._parents.values();
+    yield* this._parents.values();
   }
 
-  public *descendants(
-    links?: IterableIterator<Link<T>>
-  ): IterableIterator<Link<T>> {
-    // const leftLinks: Set<Link<V>> = new Set(links);
-    // for (const leftLink of leftLinks) {
-    //       while (leftLinks.has(leftLink)) {
-    //         yield* leftLink.getFirstAncestors(leftLinks);
-    //       }
-
+  public *descendants(): IterableIterator<Link<T>> {
     for (const child of this.children()) {
       yield child;
       yield* child.descendants();
@@ -71,17 +63,19 @@ export default class Link<T> {
     this.links = options.links || new Map();
     this.options = options;
 
-    if (this.links.has(name)) {
-      return this.links.get(name) as Link<T>;
+    if (this.links.has(this.name)) {
+      return this.links.get(this.name) as Link<T>;
     }
 
-    this.links.set(name, this);
+    this.links.set(this.name, this);
   }
 
-  public addChild(name: string): this {
+  public addChild(name: string): Link<T> {
+    let link = this.getDescendant(name);
+
     // No need to add if a descendant already has name as child
-    if (!this.hasDescendant(name)) {
-      let link: Link<T> | undefined = this.links.get(name);
+    if (!link) {
+      link = this.links.get(name);
 
       if (!link) {
         link = new Link({ ...this.options, name, links: this.links });
@@ -98,13 +92,15 @@ export default class Link<T> {
       link._parents.add(this);
     }
 
-    return this;
+    return link;
   }
 
-  public addParent(name: string): this {
+  public addParent(name: string): Link<T> {
+    let link = this.getAncestor(name);
+
     // No need to add if an ancestor already has name as parent
-    if (!this.hasAncestor(name)) {
-      let link: Link<T> | undefined = this.links.get(name);
+    if (!link) {
+      link = this.links.get(name);
 
       if (!link) {
         link = new Link({ ...this.options, name, links: this.links });
@@ -121,7 +117,7 @@ export default class Link<T> {
       link._children.add(this);
     }
 
-    return this;
+    return link;
   }
 
   public getFirstAncestors(linksLeft: Set<Link<T>>): Set<Link<T>> {
