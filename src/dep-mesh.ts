@@ -137,13 +137,13 @@ export default class Link<T> {
   }
 
   public hasChild(name: string): boolean {
-    return Object.values(this._children).some((child): boolean => {
+    return Array.from(this._children).some((child): boolean => {
       return child.name === name;
     });
   }
 
   public hasParent(name: string): boolean {
-    return Object.values(this._parents).some((parent): boolean => {
+    return Array.from(this._parents).some((parent): boolean => {
       return parent.name === name;
     });
   }
@@ -151,7 +151,7 @@ export default class Link<T> {
   public hasDescendant(name: string): boolean {
     return (
       this.hasChild(name) ||
-      Object.values(this._children).some((child): boolean =>
+      Array.from(this._children).some((child): boolean =>
         child.hasDescendant(name)
       )
     );
@@ -160,7 +160,7 @@ export default class Link<T> {
   public hasAncestor(name: string): boolean {
     return (
       this.hasParent(name) ||
-      Object.values(this._parents).some((parent): boolean =>
+      Array.from(this._parents).some((parent): boolean =>
         parent.hasAncestor(name)
       )
     );
@@ -169,7 +169,7 @@ export default class Link<T> {
   public getChild(name: string): Link<T> | undefined {
     let result: Link<T> | undefined;
 
-    Object.values(this._children).some((child): boolean => {
+    Array.from(this._children).some((child): boolean => {
       if (child.name === name) {
         result = child;
         return true;
@@ -184,7 +184,7 @@ export default class Link<T> {
   public getParent(name: string): Link<T> | undefined {
     let result: Link<T> | undefined;
 
-    Object.values(this._parents).some((parent): boolean => {
+    Array.from(this._parents).some((parent): boolean => {
       if (parent.name === name) {
         result = parent;
         return true;
@@ -200,7 +200,7 @@ export default class Link<T> {
     let result = this.getChild(name);
 
     if (!result) {
-      Object.values(this._children).some((child): boolean => {
+      Array.from(this._children).some((child): boolean => {
         result = child.getDescendant(name);
         return !!result;
       });
@@ -213,7 +213,7 @@ export default class Link<T> {
     let result = this.getParent(name);
 
     if (!result) {
-      Object.values(this._parents).some((parent): boolean => {
+      Array.from(this._parents).some((parent): boolean => {
         result = parent.getAncestor(name);
         return !!result;
       });
