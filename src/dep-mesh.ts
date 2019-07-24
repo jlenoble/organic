@@ -67,6 +67,11 @@ export default class Link<T> {
   }
 
   public *lastDescendants(): IterableIterator<Link<T>> {
+    if (this.isLastDescendant()) {
+      yield this;
+      return;
+    }
+
     for (const descendant of this.descendants()) {
       if (descendant.isLastDescendant()) {
         yield descendant;
@@ -75,6 +80,11 @@ export default class Link<T> {
   }
 
   public *firstAncestors(): IterableIterator<Link<T>> {
+    if (this.isFirstAncestor()) {
+      yield this;
+      return;
+    }
+
     for (const ancestor of this.ancestors()) {
       if (ancestor.isFirstAncestor()) {
         yield ancestor;
