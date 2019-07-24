@@ -24,7 +24,7 @@ export default class Link<T> {
   protected readonly _children: Set<Link<T>> = new Set();
   protected readonly _parents: Set<Link<T>> = new Set();
 
-  protected *_depthFirstDescendants(
+  public *depthFirstDescendants(
     wm: WeakSet<Link<T>> = new WeakSet()
   ): IterableIterator<Link<T>> {
     for (const child of this._children.values()) {
@@ -33,11 +33,11 @@ export default class Link<T> {
         yield child;
       }
 
-      yield* child._depthFirstDescendants(wm);
+      yield* child.depthFirstDescendants(wm);
     }
   }
 
-  protected *_depthFirstAncestors(
+  public *depthFirstAncestors(
     wm: WeakSet<Link<T>> = new WeakSet()
   ): IterableIterator<Link<T>> {
     for (const parent of this._parents.values()) {
@@ -46,7 +46,7 @@ export default class Link<T> {
         yield parent;
       }
 
-      yield* parent._depthFirstAncestors(wm);
+      yield* parent.depthFirstAncestors(wm);
     }
   }
 
@@ -59,11 +59,11 @@ export default class Link<T> {
   }
 
   public *descendants(): IterableIterator<Link<T>> {
-    yield* [...this._depthFirstDescendants()].sort(compare);
+    yield* [...this.depthFirstDescendants()].sort(compare);
   }
 
   public *ancestors(): IterableIterator<Link<T>> {
-    yield* [...this._depthFirstAncestors()].sort(compare);
+    yield* [...this.depthFirstAncestors()].sort(compare);
   }
 
   public *lastDescendants(): IterableIterator<Link<T>> {
