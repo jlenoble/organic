@@ -1,6 +1,6 @@
 export interface Options<T> {
   name: string;
-  links?: Map<string, Link<T>>;
+  links?: DepMesh<T>;
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
@@ -16,37 +16,70 @@ function compare<T>(l1: Link<T>, l2: Link<T>): 1 | 0 | -1 {
   }
 }
 
+class DepMesh<T> extends Map<string, Link<T>> {
+  public *entries(): IterableIterator<[string, Link<T>]> {
+    for (const link of this.values()) {
+      yield [link.name, link];
+    }
+  }
+
+  public *keys(): IterableIterator<string> {
+    for (const link of this.values()) {
+      yield link.name;
+    }
+  }
+
+  public *values(): IterableIterator<Link<T>> {
+    const exclude: WeakSet<Link<T>> = new WeakSet();
+
+    for (const link of super.values()) {
+      let stop = false;
+
+      while (!stop) {
+        stop = true;
+
+        for (const ancestor of link.firstAncestors(exclude)) {
+          stop = false;
+
+          exclude.add(ancestor);
+          yield ancestor;
+        }
+      }
+    }
+  }
+}
+
 export default class Link<T> {
   public readonly name: string;
-  public readonly links: Map<string, Link<T>>;
+  public readonly links: DepMesh<T>;
   public readonly options: Options<T>;
 
   protected readonly _children: Set<Link<T>> = new Set();
   protected readonly _parents: Set<Link<T>> = new Set();
 
   public *depthFirstDescendants(
-    wm: WeakSet<Link<T>> = new WeakSet()
+    exclude: WeakSet<Link<T>> = new WeakSet()
   ): IterableIterator<Link<T>> {
     for (const child of this._children.values()) {
-      if (!wm.has(child)) {
-        wm.add(child);
+      if (!exclude.has(child)) {
+        exclude.add(child);
         yield child;
       }
 
-      yield* child.depthFirstDescendants(wm);
+      yield* child.depthFirstDescendants(exclude);
     }
   }
 
   public *depthFirstAncestors(
-    wm: WeakSet<Link<T>> = new WeakSet()
+    exclude: WeakSet<Link<T>> = new WeakSet()
   ): IterableIterator<Link<T>> {
     for (const parent of this._parents.values()) {
-      if (!wm.has(parent)) {
-        wm.add(parent);
+      if (!exclude.has(parent)) {
+        exclude.add(parent);
         yield parent;
       }
 
-      yield* parent.depthFirstAncestors(wm);
+      yield* parent.depthFirstAncestors(exclude);
     }
   }
 
@@ -66,28 +99,46 @@ export default class Link<T> {
     yield* [...this.depthFirstAncestors()].sort(compare);
   }
 
-  public *lastDescendants(): IterableIterator<Link<T>> {
-    if (this.isLastDescendant()) {
-      yield this;
+  public *lastDescendants(
+    exclude: WeakSet<Link<T>> = new WeakSet()
+  ): IterableIterator<Link<T>> {
+    if (this.isLastDescendant() || this.allChildrenAreExcluded(exclude)) {
+      if (!exclude.has(this)) {
+        yield this;
+      }
       return;
     }
 
     for (const descendant of this.descendants()) {
-      if (descendant.isLastDescendant()) {
-        yield descendant;
+      if (
+        descendant.isLastDescendant() ||
+        descendant.allChildrenAreExcluded(exclude)
+      ) {
+        if (!exclude.has(descendant)) {
+          yield descendant;
+        }
       }
     }
   }
 
-  public *firstAncestors(): IterableIterator<Link<T>> {
-    if (this.isFirstAncestor()) {
-      yield this;
+  public *firstAncestors(
+    exclude: WeakSet<Link<T>> = new WeakSet()
+  ): IterableIterator<Link<T>> {
+    if (this.isFirstAncestor() || this.allParentsAreExcluded(exclude)) {
+      if (!exclude.has(this)) {
+        yield this;
+      }
       return;
     }
 
     for (const ancestor of this.ancestors()) {
-      if (ancestor.isFirstAncestor()) {
-        yield ancestor;
+      if (
+        ancestor.isFirstAncestor() ||
+        ancestor.allParentsAreExcluded(exclude)
+      ) {
+        if (!exclude.has(ancestor)) {
+          yield ancestor;
+        }
       }
     }
   }
@@ -130,7 +181,7 @@ export default class Link<T> {
 
   public constructor(options: Options<T>) {
     this.name = options.name;
-    this.links = options.links || new Map();
+    this.links = options.links || new DepMesh();
     this.options = options;
 
     if (this.links.has(this.name)) {
@@ -196,6 +247,18 @@ export default class Link<T> {
 
   public isFirstAncestor(): boolean {
     return !this._parents.size;
+  }
+
+  public allChildrenAreExcluded(exclude: WeakSet<Link<T>>): boolean {
+    return Array.from(this._children).every((link): boolean =>
+      exclude.has(link)
+    );
+  }
+
+  public allParentsAreExcluded(exclude: WeakSet<Link<T>>): boolean {
+    return Array.from(this._parents).every((link): boolean =>
+      exclude.has(link)
+    );
   }
 
   public hasChild(name: string): boolean {
