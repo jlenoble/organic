@@ -123,9 +123,14 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
     thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   ): DepMesh<T> {
     const mesh: DepMesh<T> = new DepMesh(this.options);
+    const tested = new WeakMap();
 
     for (const node0 of this.values()) {
-      if (cb.call(thisArg, node0, node0.name, this)) {
+      if (!tested.has(node0)) {
+        tested.set(node0, cb.call(thisArg, node0, node0.name, this));
+      }
+
+      if (tested.get(node0)) {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         const node = new DepMeshNode({
           ...this.options,
@@ -134,7 +139,11 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
         });
 
         for (const parent of node0.parents()) {
-          if (cb.call(thisArg, parent, parent.name, this)) {
+          if (!tested.has(parent)) {
+            tested.set(parent, cb.call(thisArg, parent, parent.name, this));
+          }
+
+          if (tested.get(parent)) {
             node.addParent(parent.options);
           }
         }
