@@ -86,6 +86,24 @@ describe("Testing class DepMesh", (): void => {
       ["c6", c6],
       ["c7", c7]
     ]);
+
+    expect([...root.mesh]).to.eql([
+      ["p4", p4],
+      ["p7", p7],
+      ["p1", p1],
+      ["p5", p5],
+      ["p6", p6],
+      ["p2", p2],
+      ["p3", p3],
+      ["root", root],
+      ["c1", c1],
+      ["c2", c2],
+      ["c3", c3],
+      ["c4", c4],
+      ["c5", c5],
+      ["c6", c6],
+      ["c7", c7]
+    ]);
   });
 
   it("forEach/map", (): void => {

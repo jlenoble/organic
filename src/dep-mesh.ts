@@ -22,6 +22,10 @@ function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
 export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
   public readonly options: DepMeshOptions;
 
+  public [Symbol.iterator](): IterableIterator<[string, DepMeshLink<T>]> {
+    return this.entries();
+  }
+
   public *entries(): IterableIterator<[string, DepMeshLink<T>]> {
     for (const link of this.values()) {
       yield [link.name, link];
