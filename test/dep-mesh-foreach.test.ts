@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DepMeshLink } from "../src/dep-mesh";
+import DepMesh, { DepMeshLink } from "../src/dep-mesh";
 
 describe("Testing class DepMesh", (): void => {
-  it("forEach", (): void => {
+  it("keys/values/entries generators", (): void => {
     const root = new DepMeshLink({
       name: "root"
     });
@@ -31,7 +31,7 @@ describe("Testing class DepMesh", (): void => {
     const c7 = p5.addChild("c7");
 
     root.addChild("c4"); // Already a descendant: ignore
-    p1.addChild("c7"); // Mesh converges downstream
+    c1.addChild("c7"); // Mesh converges downstream
 
     expect([...root.links.values()]).to.eql([
       p4,
@@ -86,5 +86,53 @@ describe("Testing class DepMesh", (): void => {
       ["c6", c6],
       ["c7", c7]
     ]);
+  });
+
+  it("forEach", (): void => {
+    const mesh = new DepMesh();
+
+    mesh.addLink("root", "p1");
+    mesh.addLink("root", "p2");
+    mesh.addLink("root", "p3");
+    mesh.addLink("p1", "p4");
+    mesh.addLink("p2", "p5");
+    mesh.addLink("p2", "p6");
+    mesh.addLink("p5", "p7");
+    mesh.addLink("root", "p4"); // Already an ancestor
+    mesh.addLink("p1", "p7"); // Mesh converges upstream
+    mesh.addLink("c1", "root");
+    mesh.addLink("c2", "root");
+    mesh.addLink("c3", "root");
+    mesh.addLink("c4", "c1");
+    mesh.addLink("c5", "c2");
+    mesh.addLink("c6", "c2");
+    mesh.addLink("c7", "c5");
+    mesh.addLink("c4", "root"); // Already a descendant: ignore
+    mesh.addLink("c7", "c1"); // Mesh converges downstream
+
+    const refNames = [
+      "p4",
+      "p7",
+      "p1",
+      "p5",
+      "p6",
+      "p2",
+      "p3",
+      "root",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ];
+    const names: string[] = [];
+
+    mesh.forEach((link): void => {
+      names.push(link.name);
+    });
+
+    expect(names).to.eql(refNames);
   });
 });
