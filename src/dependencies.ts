@@ -204,7 +204,7 @@ export default class Dependencies {
         return this.getExtraErrorMessage(stem);
 
       case "local":
-        return this.getLocalErrorMessage();
+        return this.getLocalErrorMessage(stem);
     }
 
     return "";
@@ -234,13 +234,13 @@ export default class Dependencies {
       : "";
   }
 
-  public async getLocalErrorMessage(): Promise<string> {
+  public async getLocalErrorMessage(stem: string): Promise<string> {
     const deps = await this.getLocalDeps();
 
     return deps.length > 0
-      ? `${JSON.stringify(this._packageName)} has local deps: ${JSON.stringify(
-          deps
-        )}`
+      ? `${JSON.stringify(
+          this._packageName
+        )} has local ${stem} deps: ${JSON.stringify(deps)}`
       : "";
   }
 }
