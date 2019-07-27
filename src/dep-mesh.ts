@@ -113,6 +113,70 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
 
     return array;
   }
+
+  public filter(
+    cb: (
+      value: DepMeshNode<T>,
+      key: string,
+      map: Map<string, DepMeshNode<T>>
+    ) => boolean,
+    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ): DepMesh<T> {
+    const mesh: DepMesh<T> = new DepMesh(this.options);
+
+    for (const node0 of this.values()) {
+      if (cb.call(thisArg, node0, node0.name, this)) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        const node = new DepMeshNode({
+          ...this.options,
+          ...node0.options,
+          mesh
+        });
+
+        for (const parent of node0.parents()) {
+          if (cb.call(thisArg, parent, parent.name, this)) {
+            node.addParent(parent.options);
+          }
+        }
+      }
+    }
+
+    return mesh;
+  }
+
+  public some(
+    cb: (
+      value: DepMeshNode<T>,
+      key: string,
+      map: Map<string, DepMeshNode<T>>
+    ) => boolean,
+    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ): boolean {
+    for (const node of this.values()) {
+      if (cb.call(thisArg, node, node.name, this)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public every(
+    cb: (
+      value: DepMeshNode<T>,
+      key: string,
+      map: Map<string, DepMeshNode<T>>
+    ) => boolean,
+    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ): boolean {
+    for (const node of this.values()) {
+      if (!cb.call(thisArg, node, node.name, this)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
 
 export class DepMeshNode<T> {
