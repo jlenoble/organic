@@ -3,8 +3,10 @@ import DepMesh, { DepMeshLink } from "../src/dep-mesh";
 
 describe("Testing class DepMesh", (): void => {
   it("keys/values/entries generators", (): void => {
+    const mesh = new DepMesh({ create(): void {} });
     const root = new DepMeshLink({
-      name: "root"
+      name: "root",
+      mesh
     });
 
     const p1 = root.addParent({ name: "p1" });
@@ -107,7 +109,7 @@ describe("Testing class DepMesh", (): void => {
   });
 
   it("forEach/map", (): void => {
-    const mesh = new DepMesh();
+    const mesh = new DepMesh({ create(): void {} });
 
     mesh.addLink({ name: "root" }, { name: "p1" });
     mesh.addLink({ name: "root" }, { name: "p2" });

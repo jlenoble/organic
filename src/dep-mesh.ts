@@ -1,10 +1,16 @@
-export interface DepMeshOptions {
+export interface DepMeshOptions<T> {
+  create: (options: DepMeshLinkOptions<T>) => T;
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface DepMeshLinkOptions<T> extends DepMeshOptions {
+export interface DepMeshLinkOptions<T> {
   name: string;
-  mesh?: DepMesh<T>;
+  value?: T;
+  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export interface DepMeshLinkCtorOptions<T> extends DepMeshLinkOptions<T> {
+  mesh: DepMesh<T>;
 }
 
 function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
@@ -20,7 +26,7 @@ function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
 }
 
 export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
-  public readonly options: DepMeshOptions;
+  public readonly options: DepMeshOptions<T>;
 
   public [Symbol.iterator](): IterableIterator<[string, DepMeshLink<T>]> {
     return this.entries();
@@ -57,7 +63,7 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
     }
   }
 
-  public constructor(options: DepMeshOptions = {}) {
+  public constructor(options: DepMeshOptions<T>) {
     super();
     this.options = options;
   }
@@ -111,6 +117,8 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
 
 export class DepMeshLink<T> {
   public readonly name: string;
+  // @ts-ignore value IS assigned, because of "singleton-ness"
+  public readonly value: T;
   public readonly mesh: DepMesh<T>;
   public readonly options: DepMeshLinkOptions<T>;
 
@@ -239,13 +247,19 @@ export class DepMeshLink<T> {
     }
   }
 
-  public constructor(options: DepMeshLinkOptions<T>) {
+  public constructor(options: DepMeshLinkCtorOptions<T>) {
     this.name = options.name;
-    this.mesh = options.mesh || new DepMesh();
+    this.mesh = options.mesh;
     this.options = options;
 
     if (this.mesh.has(this.name)) {
       return this.mesh.get(this.name) as DepMeshLink<T>;
+    }
+
+    if (options.value !== undefined) {
+      this.value = options.value;
+    } else {
+      this.value = this.mesh.options.create(options);
     }
 
     this.mesh.set(this.name, this);
