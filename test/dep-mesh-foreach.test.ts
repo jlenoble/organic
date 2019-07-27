@@ -33,7 +33,7 @@ describe("Testing class DepMesh", (): void => {
     root.addChild("c4"); // Already a descendant: ignore
     c1.addChild("c7"); // Mesh converges downstream
 
-    expect([...root.links.values()]).to.eql([
+    expect([...root.mesh.values()]).to.eql([
       p4,
       p7,
       p1,
@@ -51,7 +51,7 @@ describe("Testing class DepMesh", (): void => {
       c7
     ]);
 
-    expect([...root.links.keys()]).to.eql([
+    expect([...root.mesh.keys()]).to.eql([
       "p4",
       "p7",
       "p1",
@@ -69,7 +69,7 @@ describe("Testing class DepMesh", (): void => {
       "c7"
     ]);
 
-    expect([...root.links.entries()]).to.eql([
+    expect([...root.mesh.entries()]).to.eql([
       ["p4", p4],
       ["p7", p7],
       ["p1", p1],

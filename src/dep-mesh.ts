@@ -4,7 +4,7 @@ export interface DepMeshOptions {
 
 export interface DepMeshLinkOptions<T> extends DepMeshOptions {
   name: string;
-  links?: DepMesh<T>;
+  mesh?: DepMesh<T>;
 }
 
 function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
@@ -63,7 +63,7 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
 
     if (!l1) {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      l1 = new DepMeshLink({ ...this.options, name: name1, links: this });
+      l1 = new DepMeshLink({ ...this.options, name: name1, mesh: this });
     }
 
     l1.addParent(name2);
@@ -104,7 +104,7 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
 
 export class DepMeshLink<T> {
   public readonly name: string;
-  public readonly links: DepMesh<T>;
+  public readonly mesh: DepMesh<T>;
   public readonly options: DepMeshLinkOptions<T>;
 
   protected readonly _children: Set<DepMeshLink<T>> = new Set();
@@ -234,14 +234,14 @@ export class DepMeshLink<T> {
 
   public constructor(options: DepMeshLinkOptions<T>) {
     this.name = options.name;
-    this.links = options.links || new DepMesh();
+    this.mesh = options.mesh || new DepMesh();
     this.options = options;
 
-    if (this.links.has(this.name)) {
-      return this.links.get(this.name) as DepMeshLink<T>;
+    if (this.mesh.has(this.name)) {
+      return this.mesh.get(this.name) as DepMeshLink<T>;
     }
 
-    this.links.set(this.name, this);
+    this.mesh.set(this.name, this);
   }
 
   public addChild(name: string): DepMeshLink<T> {
@@ -249,10 +249,10 @@ export class DepMeshLink<T> {
 
     // No need to add if a descendant already has name as child
     if (!link) {
-      link = this.links.get(name);
+      link = this.mesh.get(name);
 
       if (!link) {
-        link = new DepMeshLink({ ...this.options, name, links: this.links });
+        link = new DepMeshLink({ ...this.options, name, mesh: this.mesh });
       } else {
         // DepMeshLink already defined; Prevent circularity
         if (this.hasAncestor(name)) {
@@ -274,10 +274,10 @@ export class DepMeshLink<T> {
 
     // No need to add if an ancestor already has name as parent
     if (!link) {
-      link = this.links.get(name);
+      link = this.mesh.get(name);
 
       if (!link) {
-        link = new DepMeshLink({ ...this.options, name, links: this.links });
+        link = new DepMeshLink({ ...this.options, name, mesh: this.mesh });
       } else {
         // DepMeshLink already defined; Prevent circularity
         if (this.hasDescendant(name)) {
