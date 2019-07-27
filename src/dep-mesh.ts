@@ -62,15 +62,18 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
     this.options = options;
   }
 
-  public addLink(name1: string, name2: string): this {
-    let l1 = this.get(name1);
+  public addLink(
+    options1: DepMeshLinkOptions<T>,
+    options2: DepMeshLinkOptions<T>
+  ): this {
+    let l1 = this.get(options1.name);
 
     if (!l1) {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      l1 = new DepMeshLink({ ...this.options, name: name1, mesh: this });
+      l1 = new DepMeshLink({ ...this.options, ...options1, mesh: this });
     }
 
-    l1.addParent(name2);
+    l1.addParent(options2);
 
     return this;
   }
@@ -248,7 +251,8 @@ export class DepMeshLink<T> {
     this.mesh.set(this.name, this);
   }
 
-  public addChild(name: string): DepMeshLink<T> {
+  public addChild(options: DepMeshLinkOptions<T>): DepMeshLink<T> {
+    const name = options.name;
     let link = this.getDescendant(name);
 
     // No need to add if a descendant already has name as child
@@ -256,7 +260,11 @@ export class DepMeshLink<T> {
       link = this.mesh.get(name);
 
       if (!link) {
-        link = new DepMeshLink({ ...this.options, name, mesh: this.mesh });
+        link = new DepMeshLink({
+          ...this.options,
+          ...options,
+          mesh: this.mesh
+        });
       } else {
         // DepMeshLink already defined; Prevent circularity
         if (this.hasAncestor(name)) {
@@ -273,7 +281,8 @@ export class DepMeshLink<T> {
     return link;
   }
 
-  public addParent(name: string): DepMeshLink<T> {
+  public addParent(options: DepMeshLinkOptions<T>): DepMeshLink<T> {
+    const name = options.name;
     let link = this.getAncestor(name);
 
     // No need to add if an ancestor already has name as parent
@@ -281,7 +290,11 @@ export class DepMeshLink<T> {
       link = this.mesh.get(name);
 
       if (!link) {
-        link = new DepMeshLink({ ...this.options, name, mesh: this.mesh });
+        link = new DepMeshLink({
+          ...this.options,
+          ...options,
+          mesh: this.mesh
+        });
       } else {
         // DepMeshLink already defined; Prevent circularity
         if (this.hasDescendant(name)) {

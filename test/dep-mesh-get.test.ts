@@ -7,7 +7,7 @@ describe("Testing class DepMeshLink", (): void => {
       name: "root"
     });
 
-    const p1 = mesh.addParent("p1");
+    const p1 = mesh.addParent({ name: "p1" });
     expect(mesh.getParent("p1")).to.equal(p1);
     expect(p1.getParent("root")).to.be.undefined;
   });
@@ -17,7 +17,7 @@ describe("Testing class DepMeshLink", (): void => {
       name: "root"
     });
 
-    const p1 = mesh.addChild("p1");
+    const p1 = mesh.addChild({ name: "p1" });
     expect(mesh.getChild("p1")).to.equal(p1);
     expect(p1.getChild("root")).to.be.undefined;
   });
@@ -27,8 +27,8 @@ describe("Testing class DepMeshLink", (): void => {
       name: "root"
     });
 
-    const p1 = mesh.addParent("p1");
-    const p2 = p1.addParent("p2");
+    const p1 = mesh.addParent({ name: "p1" });
+    const p2 = p1.addParent({ name: "p2" });
     expect(mesh.getAncestor("p1")).to.equal(p1);
     expect(mesh.getAncestor("p2")).to.equal(p2);
     expect(p1.getAncestor("p2")).to.equal(p2);
@@ -42,8 +42,8 @@ describe("Testing class DepMeshLink", (): void => {
       name: "root"
     });
 
-    const p1 = mesh.addChild("p1");
-    const p2 = p1.addChild("p2");
+    const p1 = mesh.addChild({ name: "p1" });
+    const p2 = p1.addChild({ name: "p2" });
     expect(mesh.getDescendant("p1")).to.equal(p1);
     expect(mesh.getDescendant("p2")).to.equal(p2);
     expect(p1.getDescendant("p2")).to.equal(p2);

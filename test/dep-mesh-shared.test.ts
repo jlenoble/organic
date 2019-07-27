@@ -7,18 +7,18 @@ describe("Testing class DepMeshLink", (): void => {
       name: "root"
     });
 
-    const p1 = mesh.addParent("p1");
-    const p2 = mesh.addParent("p2");
-    const p3 = mesh.addParent("p3");
+    const p1 = mesh.addParent({ name: "p1" });
+    const p2 = mesh.addParent({ name: "p2" });
+    const p3 = mesh.addParent({ name: "p3" });
 
-    const p4 = p1.addParent("p4");
-    const p5 = p2.addParent("p5");
-    const p6 = p2.addParent("p6");
+    const p4 = p1.addParent({ name: "p4" });
+    const p5 = p2.addParent({ name: "p5" });
+    const p6 = p2.addParent({ name: "p6" });
 
-    const p7 = p5.addParent("p7");
+    const p7 = p5.addParent({ name: "p7" });
 
-    const p8 = mesh.addParent("p4"); // Already an ancestor
-    const p9 = p1.addParent("p7"); // Mesh converges upstream
+    const p8 = mesh.addParent({ name: "p4" }); // Already an ancestor
+    const p9 = p1.addParent({ name: "p7" }); // Mesh converges upstream
 
     expect(p8).to.equal(p4);
     expect(p9).to.equal(p7);
@@ -91,18 +91,18 @@ describe("Testing class DepMeshLink", (): void => {
       name: "root"
     });
 
-    const p1 = mesh.addChild("p1");
-    const p2 = mesh.addChild("p2");
-    const p3 = mesh.addChild("p3");
+    const p1 = mesh.addChild({ name: "p1" });
+    const p2 = mesh.addChild({ name: "p2" });
+    const p3 = mesh.addChild({ name: "p3" });
 
-    const p4 = p1.addChild("p4");
-    const p5 = p2.addChild("p5");
-    const p6 = p2.addChild("p6");
+    const p4 = p1.addChild({ name: "p4" });
+    const p5 = p2.addChild({ name: "p5" });
+    const p6 = p2.addChild({ name: "p6" });
 
-    const p7 = p5.addChild("p7");
+    const p7 = p5.addChild({ name: "p7" });
 
-    const p8 = mesh.addChild("p4"); // Already a descendant: ignore
-    const p9 = p1.addChild("p7"); // Mesh converges downstream
+    const p8 = mesh.addChild({ name: "p4" }); // Already a descendant: ignore
+    const p9 = p1.addChild({ name: "p7" }); // Mesh converges downstream
 
     expect(p8).to.equal(p4);
     expect(p9).to.equal(p7);

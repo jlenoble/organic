@@ -7,31 +7,31 @@ describe("Testing class DepMesh", (): void => {
       name: "root"
     });
 
-    const p1 = root.addParent("p1");
-    const p2 = root.addParent("p2");
-    const p3 = root.addParent("p3");
+    const p1 = root.addParent({ name: "p1" });
+    const p2 = root.addParent({ name: "p2" });
+    const p3 = root.addParent({ name: "p3" });
 
-    const p4 = p1.addParent("p4");
-    const p5 = p2.addParent("p5");
-    const p6 = p2.addParent("p6");
+    const p4 = p1.addParent({ name: "p4" });
+    const p5 = p2.addParent({ name: "p5" });
+    const p6 = p2.addParent({ name: "p6" });
 
-    const p7 = p5.addParent("p7");
+    const p7 = p5.addParent({ name: "p7" });
 
-    root.addParent("p4"); // Already an ancestor
-    p1.addParent("p7"); // Mesh converges upstream
+    root.addParent({ name: "p4" }); // Already an ancestor
+    p1.addParent({ name: "p7" }); // Mesh converges upstream
 
-    const c1 = root.addChild("c1");
-    const c2 = root.addChild("c2");
-    const c3 = root.addChild("c3");
+    const c1 = root.addChild({ name: "c1" });
+    const c2 = root.addChild({ name: "c2" });
+    const c3 = root.addChild({ name: "c3" });
 
-    const c4 = p1.addChild("c4");
-    const c5 = p2.addChild("c5");
-    const c6 = p2.addChild("c6");
+    const c4 = p1.addChild({ name: "c4" });
+    const c5 = p2.addChild({ name: "c5" });
+    const c6 = p2.addChild({ name: "c6" });
 
-    const c7 = p5.addChild("c7");
+    const c7 = p5.addChild({ name: "c7" });
 
-    root.addChild("c4"); // Already a descendant: ignore
-    c1.addChild("c7"); // Mesh converges downstream
+    root.addChild({ name: "c4" }); // Already a descendant: ignore
+    c1.addChild({ name: "c7" }); // Mesh converges downstream
 
     expect([...root.mesh.values()]).to.eql([
       p4,
@@ -109,24 +109,24 @@ describe("Testing class DepMesh", (): void => {
   it("forEach/map", (): void => {
     const mesh = new DepMesh();
 
-    mesh.addLink("root", "p1");
-    mesh.addLink("root", "p2");
-    mesh.addLink("root", "p3");
-    mesh.addLink("p1", "p4");
-    mesh.addLink("p2", "p5");
-    mesh.addLink("p2", "p6");
-    mesh.addLink("p5", "p7");
-    mesh.addLink("root", "p4"); // Already an ancestor
-    mesh.addLink("p1", "p7"); // Mesh converges upstream
-    mesh.addLink("c1", "root");
-    mesh.addLink("c2", "root");
-    mesh.addLink("c3", "root");
-    mesh.addLink("c4", "c1");
-    mesh.addLink("c5", "c2");
-    mesh.addLink("c6", "c2");
-    mesh.addLink("c7", "c5");
-    mesh.addLink("c4", "root"); // Already a descendant: ignore
-    mesh.addLink("c7", "c1"); // Mesh converges downstream
+    mesh.addLink({ name: "root" }, { name: "p1" });
+    mesh.addLink({ name: "root" }, { name: "p2" });
+    mesh.addLink({ name: "root" }, { name: "p3" });
+    mesh.addLink({ name: "p1" }, { name: "p4" });
+    mesh.addLink({ name: "p2" }, { name: "p5" });
+    mesh.addLink({ name: "p2" }, { name: "p6" });
+    mesh.addLink({ name: "p5" }, { name: "p7" });
+    mesh.addLink({ name: "root" }, { name: "p4" }); // Already an ancestor
+    mesh.addLink({ name: "p1" }, { name: "p7" }); // Mesh converges upstream
+    mesh.addLink({ name: "c1" }, { name: "root" });
+    mesh.addLink({ name: "c2" }, { name: "root" });
+    mesh.addLink({ name: "c3" }, { name: "root" });
+    mesh.addLink({ name: "c4" }, { name: "c1" });
+    mesh.addLink({ name: "c5" }, { name: "c2" });
+    mesh.addLink({ name: "c6" }, { name: "c2" });
+    mesh.addLink({ name: "c7" }, { name: "c5" });
+    mesh.addLink({ name: "c4" }, { name: "root" }); // Already a descendant: ignore
+    mesh.addLink({ name: "c7" }, { name: "c1" }); // Mesh converges downstream
 
     const refNames = [
       "p4",
