@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import DepMesh, { DepMeshLink } from "../src/dep-mesh";
+import DepMesh, { DepMeshNode } from "../src/dep-mesh";
 
 describe("Testing class DepMesh", (): void => {
   it("keys/values/entries generators", (): void => {
     const mesh = new DepMesh({ create(): void {} });
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });

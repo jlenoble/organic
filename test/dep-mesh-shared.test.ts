@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import DepMesh, { DepMeshLink } from "../src/dep-mesh";
+import DepMesh, { DepMeshNode } from "../src/dep-mesh";
 
-describe("Testing class DepMeshLink", (): void => {
+describe("Testing class DepMeshNode", (): void => {
   it("Shared parents", (): void => {
     const mesh = new DepMesh({ create(): void {} });
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });
@@ -90,7 +90,7 @@ describe("Testing class DepMeshLink", (): void => {
 
   it("Shared children", (): void => {
     const mesh = new DepMesh({ create(): void {} });
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });

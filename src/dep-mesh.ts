@@ -1,19 +1,19 @@
 export interface DepMeshOptions<T> {
-  create: (options: DepMeshLinkOptions<T>) => T;
+  create: (options: DepMeshNodeOptions<T>) => T;
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface DepMeshLinkOptions<T> {
+export interface DepMeshNodeOptions<T> {
   name: string;
   value?: T;
   [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface DepMeshLinkCtorOptions<T> extends DepMeshLinkOptions<T> {
+export interface DepMeshNodeCtorOptions<T> extends DepMeshNodeOptions<T> {
   mesh: DepMesh<T>;
 }
 
-function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
+function compare<T>(l1: DepMeshNode<T>, l2: DepMeshNode<T>): 1 | 0 | -1 {
   if (l1 === l2) {
     return 0;
   } else if (l1.getAncestor(l2.name) === l2) {
@@ -25,14 +25,14 @@ function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
   }
 }
 
-export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
+export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
   public readonly options: DepMeshOptions<T>;
 
-  public [Symbol.iterator](): IterableIterator<[string, DepMeshLink<T>]> {
+  public [Symbol.iterator](): IterableIterator<[string, DepMeshNode<T>]> {
     return this.entries();
   }
 
-  public *entries(): IterableIterator<[string, DepMeshLink<T>]> {
+  public *entries(): IterableIterator<[string, DepMeshNode<T>]> {
     for (const link of this.values()) {
       yield [link.name, link];
     }
@@ -44,8 +44,8 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
     }
   }
 
-  public *values(): IterableIterator<DepMeshLink<T>> {
-    const exclude: WeakSet<DepMeshLink<T>> = new WeakSet();
+  public *values(): IterableIterator<DepMeshNode<T>> {
+    const exclude: WeakSet<DepMeshNode<T>> = new WeakSet();
 
     for (const link of super.values()) {
       let stop = false;
@@ -69,14 +69,14 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
   }
 
   public addLink(
-    options1: DepMeshLinkOptions<T>,
-    options2: DepMeshLinkOptions<T>
+    options1: DepMeshNodeOptions<T>,
+    options2: DepMeshNodeOptions<T>
   ): this {
     let l1 = this.get(options1.name);
 
     if (!l1) {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      l1 = new DepMeshLink({ ...this.options, ...options1, mesh: this });
+      l1 = new DepMeshNode({ ...this.options, ...options1, mesh: this });
     }
 
     l1.addParent(options2);
@@ -86,9 +86,9 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
 
   public forEach(
     cb: (
-      value: DepMeshLink<T>,
+      value: DepMeshNode<T>,
       key: string,
-      map: Map<string, DepMeshLink<T>>
+      map: Map<string, DepMeshNode<T>>
     ) => void,
     thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   ): void {
@@ -99,9 +99,9 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
 
   public map<U>(
     cb: (
-      value: DepMeshLink<T>,
+      value: DepMeshNode<T>,
       key: string,
-      map: Map<string, DepMeshLink<T>>
+      map: Map<string, DepMeshNode<T>>
     ) => U,
     thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   ): U[] {
@@ -115,19 +115,19 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
   }
 }
 
-export class DepMeshLink<T> {
+export class DepMeshNode<T> {
   public readonly name: string;
   // @ts-ignore value IS assigned, because of "singleton-ness"
   public readonly value: T;
   public readonly mesh: DepMesh<T>;
-  public readonly options: DepMeshLinkOptions<T>;
+  public readonly options: DepMeshNodeOptions<T>;
 
-  protected readonly _children: Set<DepMeshLink<T>> = new Set();
-  protected readonly _parents: Set<DepMeshLink<T>> = new Set();
+  protected readonly _children: Set<DepMeshNode<T>> = new Set();
+  protected readonly _parents: Set<DepMeshNode<T>> = new Set();
 
   public *depthFirstDescendants(
-    exclude: WeakSet<DepMeshLink<T>> = new WeakSet()
-  ): IterableIterator<DepMeshLink<T>> {
+    exclude: WeakSet<DepMeshNode<T>> = new WeakSet()
+  ): IterableIterator<DepMeshNode<T>> {
     for (const child of this._children.values()) {
       if (!exclude.has(child)) {
         exclude.add(child);
@@ -139,8 +139,8 @@ export class DepMeshLink<T> {
   }
 
   public *depthFirstAncestors(
-    exclude: WeakSet<DepMeshLink<T>> = new WeakSet()
-  ): IterableIterator<DepMeshLink<T>> {
+    exclude: WeakSet<DepMeshNode<T>> = new WeakSet()
+  ): IterableIterator<DepMeshNode<T>> {
     for (const parent of this._parents.values()) {
       if (!exclude.has(parent)) {
         exclude.add(parent);
@@ -151,25 +151,25 @@ export class DepMeshLink<T> {
     }
   }
 
-  public *children(): IterableIterator<DepMeshLink<T>> {
+  public *children(): IterableIterator<DepMeshNode<T>> {
     yield* [...this._children].sort(compare);
   }
 
-  public *parents(): IterableIterator<DepMeshLink<T>> {
+  public *parents(): IterableIterator<DepMeshNode<T>> {
     yield* [...this._parents].sort(compare);
   }
 
-  public *descendants(): IterableIterator<DepMeshLink<T>> {
+  public *descendants(): IterableIterator<DepMeshNode<T>> {
     yield* [...this.depthFirstDescendants()].sort(compare);
   }
 
-  public *ancestors(): IterableIterator<DepMeshLink<T>> {
+  public *ancestors(): IterableIterator<DepMeshNode<T>> {
     yield* [...this.depthFirstAncestors()].sort(compare);
   }
 
   public *lastDescendants(
-    exclude: WeakSet<DepMeshLink<T>> = new WeakSet()
-  ): IterableIterator<DepMeshLink<T>> {
+    exclude: WeakSet<DepMeshNode<T>> = new WeakSet()
+  ): IterableIterator<DepMeshNode<T>> {
     if (this.isLastDescendant() || this.allChildrenAreExcluded(exclude)) {
       if (!exclude.has(this)) {
         yield this;
@@ -190,8 +190,8 @@ export class DepMeshLink<T> {
   }
 
   public *firstAncestors(
-    exclude: WeakSet<DepMeshLink<T>> = new WeakSet()
-  ): IterableIterator<DepMeshLink<T>> {
+    exclude: WeakSet<DepMeshNode<T>> = new WeakSet()
+  ): IterableIterator<DepMeshNode<T>> {
     if (this.isFirstAncestor() || this.allParentsAreExcluded(exclude)) {
       if (!exclude.has(this)) {
         yield this;
@@ -247,13 +247,13 @@ export class DepMeshLink<T> {
     }
   }
 
-  public constructor(options: DepMeshLinkCtorOptions<T>) {
+  public constructor(options: DepMeshNodeCtorOptions<T>) {
     this.name = options.name;
     this.mesh = options.mesh;
     this.options = options;
 
     if (this.mesh.has(this.name)) {
-      return this.mesh.get(this.name) as DepMeshLink<T>;
+      return this.mesh.get(this.name) as DepMeshNode<T>;
     }
 
     if (options.value !== undefined) {
@@ -265,7 +265,7 @@ export class DepMeshLink<T> {
     this.mesh.set(this.name, this);
   }
 
-  public addChild(options: DepMeshLinkOptions<T>): DepMeshLink<T> {
+  public addChild(options: DepMeshNodeOptions<T>): DepMeshNode<T> {
     const name = options.name;
     let link = this.getDescendant(name);
 
@@ -274,13 +274,13 @@ export class DepMeshLink<T> {
       link = this.mesh.get(name);
 
       if (!link) {
-        link = new DepMeshLink({
+        link = new DepMeshNode({
           ...this.options,
           ...options,
           mesh: this.mesh
         });
       } else {
-        // DepMeshLink already defined; Prevent circularity
+        // DepMeshNode already defined; Prevent circularity
         if (this.hasAncestor(name)) {
           throw new Error(
             `Cannot add ${name} as child to ${this.name} as it is already an ancestor`
@@ -295,7 +295,7 @@ export class DepMeshLink<T> {
     return link;
   }
 
-  public addParent(options: DepMeshLinkOptions<T>): DepMeshLink<T> {
+  public addParent(options: DepMeshNodeOptions<T>): DepMeshNode<T> {
     const name = options.name;
     let link = this.getAncestor(name);
 
@@ -304,13 +304,13 @@ export class DepMeshLink<T> {
       link = this.mesh.get(name);
 
       if (!link) {
-        link = new DepMeshLink({
+        link = new DepMeshNode({
           ...this.options,
           ...options,
           mesh: this.mesh
         });
       } else {
-        // DepMeshLink already defined; Prevent circularity
+        // DepMeshNode already defined; Prevent circularity
         if (this.hasDescendant(name)) {
           throw new Error(
             `Cannot add ${name} as parent to ${this.name} as it is already a descendant`
@@ -333,13 +333,13 @@ export class DepMeshLink<T> {
     return !this._parents.size;
   }
 
-  public allChildrenAreExcluded(exclude: WeakSet<DepMeshLink<T>>): boolean {
+  public allChildrenAreExcluded(exclude: WeakSet<DepMeshNode<T>>): boolean {
     return Array.from(this._children).every((link): boolean =>
       exclude.has(link)
     );
   }
 
-  public allParentsAreExcluded(exclude: WeakSet<DepMeshLink<T>>): boolean {
+  public allParentsAreExcluded(exclude: WeakSet<DepMeshNode<T>>): boolean {
     return Array.from(this._parents).every((link): boolean =>
       exclude.has(link)
     );
@@ -375,8 +375,8 @@ export class DepMeshLink<T> {
     );
   }
 
-  public getChild(name: string): DepMeshLink<T> | undefined {
-    let result: DepMeshLink<T> | undefined;
+  public getChild(name: string): DepMeshNode<T> | undefined {
+    let result: DepMeshNode<T> | undefined;
 
     Array.from(this._children).some((child): boolean => {
       if (child.name === name) {
@@ -390,8 +390,8 @@ export class DepMeshLink<T> {
     return result;
   }
 
-  public getParent(name: string): DepMeshLink<T> | undefined {
-    let result: DepMeshLink<T> | undefined;
+  public getParent(name: string): DepMeshNode<T> | undefined {
+    let result: DepMeshNode<T> | undefined;
 
     Array.from(this._parents).some((parent): boolean => {
       if (parent.name === name) {
@@ -405,7 +405,7 @@ export class DepMeshLink<T> {
     return result;
   }
 
-  public getDescendant(name: string): DepMeshLink<T> | undefined {
+  public getDescendant(name: string): DepMeshNode<T> | undefined {
     let result = this.getChild(name);
 
     if (!result) {
@@ -418,7 +418,7 @@ export class DepMeshLink<T> {
     return result;
   }
 
-  public getAncestor(name: string): DepMeshLink<T> | undefined {
+  public getAncestor(name: string): DepMeshNode<T> | undefined {
     let result = this.getParent(name);
 
     if (!result) {

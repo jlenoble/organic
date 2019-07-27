@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import DepMesh, { DepMeshLink } from "../src/dep-mesh";
+import DepMesh, { DepMeshNode } from "../src/dep-mesh";
 
-describe("Testing class DepMeshLink", (): void => {
+describe("Testing class DepMeshNode", (): void => {
   const mesh = new DepMesh({ create(): void {} });
   it("Testing hasParent(name)", (): void => {
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });
@@ -16,7 +16,7 @@ describe("Testing class DepMeshLink", (): void => {
 
   it("Testing hasChild(name)", (): void => {
     const mesh = new DepMesh({ create(): void {} });
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });
@@ -28,7 +28,7 @@ describe("Testing class DepMeshLink", (): void => {
 
   it("Testing hasAncestor(name)", (): void => {
     const mesh = new DepMesh({ create(): void {} });
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });
@@ -45,7 +45,7 @@ describe("Testing class DepMeshLink", (): void => {
 
   it("Testing hasDescendant(name)", (): void => {
     const mesh = new DepMesh({ create(): void {} });
-    const root = new DepMeshLink({
+    const root = new DepMeshNode({
       name: "root",
       mesh
     });
