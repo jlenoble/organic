@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import DepMesh from "../src/dep-mesh";
+import { DepMeshLink } from "../src/dep-mesh";
 
-describe("Testing class DepMesh", (): void => {
+describe("Testing class DepMeshLink", (): void => {
   it("Unshared parents", (): void => {
-    const mesh = new DepMesh({
+    const mesh = new DepMeshLink({
       name: "root"
     });
 
@@ -81,7 +81,7 @@ describe("Testing class DepMesh", (): void => {
   });
 
   it("Unshared children", (): void => {
-    const mesh = new DepMesh({
+    const mesh = new DepMeshLink({
       name: "root"
     });
 
