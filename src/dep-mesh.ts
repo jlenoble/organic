@@ -22,11 +22,6 @@ function compare<T>(l1: DepMeshLink<T>, l2: DepMeshLink<T>): 1 | 0 | -1 {
 export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
   public readonly options: DepMeshOptions;
 
-  public constructor(options: DepMeshOptions = {}) {
-    super();
-    this.options = options;
-  }
-
   public *entries(): IterableIterator<[string, DepMeshLink<T>]> {
     for (const link of this.values()) {
       yield [link.name, link];
@@ -58,17 +53,9 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
     }
   }
 
-  public forEach(
-    cb: (
-      value: DepMeshLink<T>,
-      key: string,
-      map: Map<string, DepMeshLink<T>>
-    ) => void,
-    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  ): void {
-    for (const link of this.values()) {
-      cb.call(thisArg, link, link.name, this);
-    }
+  public constructor(options: DepMeshOptions = {}) {
+    super();
+    this.options = options;
   }
 
   public addLink(name1: string, name2: string): this {
@@ -82,6 +69,36 @@ export default class DepMesh<T> extends Map<string, DepMeshLink<T>> {
     l1.addParent(name2);
 
     return this;
+  }
+
+  public forEach(
+    cb: (
+      value: DepMeshLink<T>,
+      key: string,
+      map: Map<string, DepMeshLink<T>>
+    ) => void,
+    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ): void {
+    for (const link of this.values()) {
+      cb.call(thisArg, link, link.name, this);
+    }
+  }
+
+  public map<U>(
+    cb: (
+      value: DepMeshLink<T>,
+      key: string,
+      map: Map<string, DepMeshLink<T>>
+    ) => U,
+    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ): U[] {
+    const array: U[] = [];
+
+    for (const link of this.values()) {
+      array.push(cb.call(thisArg, link, link.name, this));
+    }
+
+    return array;
   }
 }
 

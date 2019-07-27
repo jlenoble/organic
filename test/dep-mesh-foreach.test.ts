@@ -88,7 +88,7 @@ describe("Testing class DepMesh", (): void => {
     ]);
   });
 
-  it("forEach", (): void => {
+  it("forEach/map", (): void => {
     const mesh = new DepMesh();
 
     mesh.addLink("root", "p1");
@@ -134,5 +134,6 @@ describe("Testing class DepMesh", (): void => {
     });
 
     expect(names).to.eql(refNames);
+    expect(mesh.map((link): string => link.name)).to.eql(refNames);
   });
 });
