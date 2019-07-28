@@ -10,6 +10,12 @@ import Globs from "./globs";
 export default class Packages {
   public readonly ready: Promise<boolean>;
 
+  public static async create(packageDir: string): Promise<Packages> {
+    const pckg = new Packages(packageDir);
+    await pckg.ready;
+    return pckg;
+  }
+
   protected _packageDir: string;
   protected _packages: Set<string>;
 
@@ -20,7 +26,7 @@ export default class Packages {
   protected _localProdDeps: ProdDependencies[];
   protected _localDevDeps: DevDependencies[];
 
-  public constructor(packageDir: string) {
+  protected constructor(packageDir: string) {
     this._packageDir = path.resolve(packageDir);
     this._packages = new Set();
 

@@ -1,7 +1,13 @@
 import Packages from "../src/packages";
 
+let packages: Packages;
+
 describe("Testing dependency consistency of organized packages", (): void => {
-  const packages = new Packages("packages");
+  before(
+    async (): Promise<void> => {
+      packages = await Packages.create("packages");
+    }
+  );
 
   it("All packages are consistent with regard to prod deps", async function(): Promise<
     void
