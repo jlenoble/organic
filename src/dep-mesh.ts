@@ -369,6 +369,12 @@ export class DepMeshNode<T> {
           mesh: this.mesh
         });
       } else {
+        if (this === link) {
+          throw new Error(
+            `Cannot add ${name} as parent to ${this.name} as they are the same`
+          );
+        }
+
         // DepMeshNode already defined; Prevent circularity
         if (this.hasAncestor(name)) {
           throw new Error(
@@ -399,8 +405,14 @@ export class DepMeshNode<T> {
           mesh: this.mesh
         });
       } else {
+        if (this === link) {
+          throw new Error(
+            `Cannot add ${name} as parent to ${this.name} as they are the same`
+          );
+        }
+
         // DepMeshNode already defined; Prevent circularity
-        if (this.hasDescendant(name)) {
+        if (this === link || this.hasDescendant(name)) {
           throw new Error(
             `Cannot add ${name} as parent to ${this.name} as it is already a descendant`
           );
