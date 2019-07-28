@@ -5,6 +5,14 @@ import fse from "fs-extra";
 import { Tools, natives } from "./tools";
 import Relocator, { RelocatedDeps } from "./relocator";
 
+export interface DependenciesOptions {
+  glob: string | string[];
+  deps: Deps;
+  localDeps?: Deps;
+  packageDir: string;
+  organon: Organon;
+}
+
 const tools = new Tools();
 
 interface Deps {
@@ -41,13 +49,7 @@ export default class Dependencies {
     localDeps,
     packageDir,
     organon = {}
-  }: {
-    glob: string | string[];
-    deps: Deps;
-    localDeps?: Deps;
-    packageDir: string;
-    organon: Organon;
-  }) {
+  }: DependenciesOptions) {
     this._fromConfig = { ...deps };
     this._fromFiles = new Set();
     this._localDeps = new Set(
