@@ -13,6 +13,43 @@ export default class Packages {
   public static async create(packageDir: string): Promise<Packages> {
     const pckg = new Packages(packageDir);
     await pckg.ready;
+
+    pckg._prodDeps = await Promise.all(
+      Array.from(
+        pckg._packages,
+        (pkg): Promise<ProdDependencies> => {
+          return ProdDependencies.create(
+            pckg._globs.prodGlob,
+            path.join(process.cwd(), "packages", pkg)
+          );
+        }
+      )
+    );
+
+    pckg._devDeps = await Promise.all(
+      Array.from(
+        pckg._packages,
+        (pkg): Promise<DevDependencies> => {
+          return DevDependencies.create(
+            pckg._globs.devGlob,
+            path.join(process.cwd(), "packages", pkg)
+          );
+        }
+      )
+    );
+
+    for (const dep of pckg._prodDeps) {
+      if (dep.getLocalDeps().length > 0) {
+        pckg._localProdDeps.push(dep);
+      }
+    }
+
+    for (const dep of pckg._devDeps) {
+      if (dep.getLocalDeps().length > 0) {
+        pckg._localDevDeps.push(dep);
+      }
+    }
+
     return pckg;
   }
 
@@ -65,79 +102,27 @@ export default class Packages {
     }
   }
 
-  public async getLocalDependencies(): Promise<Dependencies[]> {
-    const [prodDeps, devDeps] = await Promise.all([
-      this.getLocalProdDependencies(),
-      this.getLocalDevDependencies()
-    ]);
-    return [...prodDeps, ...devDeps];
+  public getLocalDependencies(): Dependencies[] {
+    return [...this._localProdDeps, ...this._localDevDeps];
   }
 
-  public async getLocalProdDependencies(): Promise<ProdDependencies[]> {
-    if (this._localProdDeps.length === 0) {
-      for (const dep of await this.getProdDependencies()) {
-        if ((await dep.getLocalDeps()).length > 0) {
-          this._localProdDeps.push(dep);
-        }
-      }
-    }
-
+  public getLocalProdDependencies(): ProdDependencies[] {
     return [...this._localProdDeps];
   }
 
-  public async getLocalDevDependencies(): Promise<DevDependencies[]> {
-    if (this._localDevDeps.length === 0) {
-      for (const dep of await this.getDevDependencies()) {
-        if ((await dep.getLocalDeps()).length > 0) {
-          this._localDevDeps.push(dep);
-        }
-      }
-    }
-
+  public getLocalDevDependencies(): DevDependencies[] {
     return [...this._localDevDeps];
   }
 
-  public async getProdDependencies(): Promise<ProdDependencies[]> {
-    if (!(await this.ready)) {
-      return [];
-    }
-
-    if (this._prodDeps.length === 0) {
-      this._prodDeps = Array.from(
-        this._packages,
-        (pckg): ProdDependencies => {
-          return new ProdDependencies(
-            this._globs.prodGlob,
-            path.join(process.cwd(), "packages", pckg)
-          );
-        }
-      );
-    }
-
+  public getProdDependencies(): ProdDependencies[] {
     return [...this._prodDeps];
   }
 
-  public async getDevDependencies(): Promise<DevDependencies[]> {
-    if (!(await this.ready)) {
-      return [];
-    }
-
-    if (this._devDeps.length === 0) {
-      this._devDeps = Array.from(
-        this._packages,
-        (pckg): DevDependencies => {
-          return new DevDependencies(
-            this._globs.devGlob,
-            path.join(process.cwd(), "packages", pckg)
-          );
-        }
-      );
-    }
-
+  public getDevDependencies(): DevDependencies[] {
     return [...this._devDeps];
   }
 
-  public async getErrorMessage(keys: string | string[]): Promise<string> {
+  public getErrorMessage(keys: string | string[]): string {
     const messages: string[] = ["The following errors were encountered:"];
 
     if (!Array.isArray(keys)) {
@@ -145,27 +130,27 @@ export default class Packages {
     }
 
     for (const key of keys) {
-      let deps: Promise<Dependencies[]> = Promise.resolve([]);
+      let deps: Dependencies[] = [];
       let tag = "";
 
       switch (key) {
         case "prodMissingDeps":
-          deps = this.getProdDependencies();
+          deps = this._prodDeps;
           tag = "missing";
           break;
 
         case "devMissingDeps":
-          deps = this.getDevDependencies();
+          deps = this._devDeps;
           tag = "missing";
           break;
 
         case "prodExtraDeps":
-          deps = this.getProdDependencies();
+          deps = this._prodDeps;
           tag = "extra";
           break;
 
         case "devExtraDeps":
-          deps = this.getDevDependencies();
+          deps = this._devDeps;
           tag = "extra";
           break;
 
@@ -181,8 +166,8 @@ export default class Packages {
           });
       }
 
-      for (const dep of await deps) {
-        const message: string = await dep.getErrorMessage(tag);
+      for (const dep of deps) {
+        const message: string = dep.getErrorMessage(tag);
         if (message) {
           messages.push(message);
         }

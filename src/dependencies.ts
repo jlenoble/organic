@@ -43,7 +43,7 @@ export default class Dependencies {
   protected _organon: Organon;
   protected _relocator?: Relocator;
 
-  public constructor({
+  protected constructor({
     glob,
     deps,
     localDeps,
@@ -147,11 +147,7 @@ export default class Dependencies {
     return path.join(dir, dep);
   }
 
-  public async getMissingDeps(): Promise<string[]> {
-    if (!(await this.ready)) {
-      return [];
-    }
-
+  public getMissingDeps(): string[] {
     const deps: string[] = [];
 
     for (const dep of this._fromFiles) {
@@ -163,11 +159,7 @@ export default class Dependencies {
     return deps;
   }
 
-  public async getExtraDeps(): Promise<string[]> {
-    if (!(await this.ready)) {
-      return [];
-    }
-
+  public getExtraDeps(): string[] {
     const deps: string[] = [];
 
     for (const dep of Object.keys(this._fromConfig)) {
@@ -186,18 +178,17 @@ export default class Dependencies {
     return deps;
   }
 
-  public async getLocalDeps(): Promise<string[]> {
-    await this.ready;
+  public getLocalDeps(): string[] {
     return Array.from(this._localDeps);
   }
 
-  protected async _getErrorMessage({
+  protected _getErrorMessage({
     stem,
     key
   }: {
     stem: string;
     key?: string;
-  }): Promise<string> {
+  }): string {
     switch (key) {
       case "missing":
         return this.getMissingErrorMessage(stem);
@@ -212,12 +203,12 @@ export default class Dependencies {
     return "";
   }
 
-  public async getErrorMessage(key: string): Promise<string> {
+  public getErrorMessage(key: string): string {
     return key;
   }
 
-  public async getMissingErrorMessage(stem: string): Promise<string> {
-    const deps = await this.getMissingDeps();
+  public getMissingErrorMessage(stem: string): string {
+    const deps = this.getMissingDeps();
 
     return deps.length > 0
       ? `${JSON.stringify(
@@ -226,8 +217,8 @@ export default class Dependencies {
       : "";
   }
 
-  public async getExtraErrorMessage(stem: string): Promise<string> {
-    const deps = await this.getExtraDeps();
+  public getExtraErrorMessage(stem: string): string {
+    const deps = this.getExtraDeps();
 
     return deps.length > 0
       ? `${JSON.stringify(
@@ -236,8 +227,8 @@ export default class Dependencies {
       : "";
   }
 
-  public async getLocalErrorMessage(stem: string): Promise<string> {
-    const deps = await this.getLocalDeps();
+  public getLocalErrorMessage(stem: string): string {
+    const deps = this.getLocalDeps();
 
     return deps.length > 0
       ? `${JSON.stringify(
@@ -248,7 +239,16 @@ export default class Dependencies {
 }
 
 export class ProdDependencies extends Dependencies {
-  public constructor(glob: string | string[], packageDir: string) {
+  public static async create(
+    glob: string | string[],
+    packageDir: string
+  ): Promise<ProdDependencies> {
+    const deps = new ProdDependencies(glob, packageDir);
+    await deps.ready;
+    return deps;
+  }
+
+  protected constructor(glob: string | string[], packageDir: string) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pckg = require(path.join(packageDir, "package.json"));
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -264,13 +264,22 @@ export class ProdDependencies extends Dependencies {
     this._packageName = pckg.name;
   }
 
-  public async getErrorMessage(key: string): Promise<string> {
+  public getErrorMessage(key: string): string {
     return this._getErrorMessage({ stem: "prod", key });
   }
 }
 
 export class DevDependencies extends Dependencies {
-  public constructor(glob: string | string[], packageDir: string) {
+  public static async create(
+    glob: string | string[],
+    packageDir: string
+  ): Promise<ProdDependencies> {
+    const deps = new DevDependencies(glob, packageDir);
+    await deps.ready;
+    return deps;
+  }
+
+  protected constructor(glob: string | string[], packageDir: string) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pckg = require(path.join(packageDir, "package.json"));
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -293,7 +302,7 @@ export class DevDependencies extends Dependencies {
     this._packageName = pckg.name;
   }
 
-  public async getErrorMessage(key: string): Promise<string> {
+  public getErrorMessage(key: string): string {
     return this._getErrorMessage({ stem: "dev", key });
   }
 }
