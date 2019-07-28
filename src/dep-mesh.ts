@@ -25,6 +25,22 @@ function compare<T>(l1: DepMeshNode<T>, l2: DepMeshNode<T>): 1 | 0 | -1 {
   }
 }
 
+function isCircular(
+  thisName: string,
+  name: string,
+  circular: Set<string>
+): boolean {
+  const key = thisName + "," + name;
+
+  if (circular.has(key)) {
+    return true;
+  }
+
+  circular.add(key);
+
+  return false;
+}
+
 export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
   public readonly options: DepMeshOptions<T>;
 
@@ -430,20 +446,28 @@ export class DepMeshNode<T> {
     });
   }
 
-  public hasDescendant(name: string): boolean {
+  public hasDescendant(name: string, circular = new Set()): boolean {
+    if (isCircular(this.name, name, circular)) {
+      return false;
+    }
+
     return (
       this.hasChild(name) ||
       Array.from(this._children).some((child): boolean =>
-        child.hasDescendant(name)
+        child.hasDescendant(name, circular)
       )
     );
   }
 
-  public hasAncestor(name: string): boolean {
+  public hasAncestor(name: string, circular = new Set()): boolean {
+    if (isCircular(this.name, name, circular)) {
+      return false;
+    }
+
     return (
       this.hasParent(name) ||
       Array.from(this._parents).some((parent): boolean =>
-        parent.hasAncestor(name)
+        parent.hasAncestor(name, circular)
       )
     );
   }
@@ -478,12 +502,19 @@ export class DepMeshNode<T> {
     return result;
   }
 
-  public getDescendant(name: string): DepMeshNode<T> | undefined {
+  public getDescendant(
+    name: string,
+    circular = new Set()
+  ): DepMeshNode<T> | undefined {
+    if (isCircular(this.name, name, circular)) {
+      return;
+    }
+
     let result = this.getChild(name);
 
     if (!result) {
       Array.from(this._children).some((child): boolean => {
-        result = child.getDescendant(name);
+        result = child.getDescendant(name, circular);
         return !!result;
       });
     }
@@ -491,12 +522,19 @@ export class DepMeshNode<T> {
     return result;
   }
 
-  public getAncestor(name: string): DepMeshNode<T> | undefined {
+  public getAncestor(
+    name: string,
+    circular = new Set()
+  ): DepMeshNode<T> | undefined {
+    if (isCircular(this.name, name, circular)) {
+      return;
+    }
+
     let result = this.getParent(name);
 
     if (!result) {
       Array.from(this._parents).some((parent): boolean => {
-        result = parent.getAncestor(name);
+        result = parent.getAncestor(name, circular);
         return !!result;
       });
     }
