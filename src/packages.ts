@@ -102,6 +102,10 @@ export default class Packages {
     }
   }
 
+  public has(name: string): boolean {
+    return this._packages.has(name);
+  }
+
   public getLocalDependencies(): Dependencies[] {
     return [...this._localProdDeps, ...this._localDevDeps];
   }
