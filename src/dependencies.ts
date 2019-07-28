@@ -43,6 +43,14 @@ export default class Dependencies {
   protected _organon: Organon;
   protected _relocator?: Relocator;
 
+  public get valid(): boolean {
+    return (
+      !this.getExtraDeps().length &&
+      !this.getMissingDeps().length &&
+      !this.getLocalDeps().length
+    );
+  }
+
   protected constructor({
     glob,
     deps,
@@ -145,6 +153,10 @@ export default class Dependencies {
     }
 
     return path.join(dir, dep);
+  }
+
+  public getConfigDeps(): Deps {
+    return { ...this._fromConfig };
   }
 
   public getMissingDeps(): string[] {
