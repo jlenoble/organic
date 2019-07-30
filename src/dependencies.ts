@@ -116,7 +116,7 @@ export default class Dependencies {
 
       try {
         if ((await fse.stat(glob)).isDirectory()) {
-          files = await resolveGlob(glob + "/**/*");
+          files = await resolveGlob(glob + "/**/*.*");
         }
       } catch (e) {
         console.warn(e.message);
