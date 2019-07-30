@@ -65,7 +65,7 @@
     "autoreload-gulp": "^0.4.1",
     "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
-    "child-process-data": "file:../child-process-data",
+    "child-process-data": "^0.8.0-0",
     "del": "^5.0.0",
     "ejs": "^2.6.2",
     "eslint-config-google": "^0.13.0",
