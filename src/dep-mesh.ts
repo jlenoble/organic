@@ -458,7 +458,10 @@ export class DepMeshNode<T> {
     });
   }
 
-  public hasDescendant(name: string, circular = new Set()): boolean {
+  public hasDescendant(
+    name: string,
+    circular: Set<string> = new Set()
+  ): boolean {
     if (isCircular(this.name, name, circular)) {
       return false;
     }
@@ -471,7 +474,7 @@ export class DepMeshNode<T> {
     );
   }
 
-  public hasAncestor(name: string, circular = new Set()): boolean {
+  public hasAncestor(name: string, circular: Set<string> = new Set()): boolean {
     if (isCircular(this.name, name, circular)) {
       return false;
     }
@@ -516,7 +519,7 @@ export class DepMeshNode<T> {
 
   public getDescendant(
     name: string,
-    circular = new Set()
+    circular: Set<string> = new Set()
   ): DepMeshNode<T> | undefined {
     if (isCircular(this.name, name, circular)) {
       return;
@@ -536,7 +539,7 @@ export class DepMeshNode<T> {
 
   public getAncestor(
     name: string,
-    circular = new Set()
+    circular: Set<string> = new Set()
   ): DepMeshNode<T> | undefined {
     if (isCircular(this.name, name, circular)) {
       return;
