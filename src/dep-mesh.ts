@@ -49,27 +49,27 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
   }
 
   public *entries(): IterableIterator<[string, DepMeshNode<T>]> {
-    for (const link of this.values()) {
-      yield [link.name, link];
+    for (const node of this.values()) {
+      yield [node.name, node];
     }
   }
 
   public *keys(): IterableIterator<string> {
-    for (const link of this.values()) {
-      yield link.name;
+    for (const node of this.values()) {
+      yield node.name;
     }
   }
 
   public *values(): IterableIterator<DepMeshNode<T>> {
     const exclude: WeakSet<DepMeshNode<T>> = new WeakSet();
 
-    for (const link of super.values()) {
+    for (const node of super.values()) {
       let stop = false;
 
       while (!stop) {
         stop = true;
 
-        for (const ancestor of link.firstAncestors(exclude)) {
+        for (const ancestor of node.firstAncestors(exclude)) {
           stop = false;
 
           exclude.add(ancestor);
@@ -108,8 +108,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
     ) => void,
     thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   ): void {
-    for (const link of this.values()) {
-      cb.call(thisArg, link, link.name, this);
+    for (const node of this.values()) {
+      cb.call(thisArg, node, node.name, this);
     }
   }
 
@@ -123,8 +123,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
   ): U[] {
     const array: U[] = [];
 
-    for (const link of this.values()) {
-      array.push(cb.call(thisArg, link, link.name, this));
+    for (const node of this.values()) {
+      array.push(cb.call(thisArg, node, node.name, this));
     }
 
     return array;
