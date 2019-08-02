@@ -345,31 +345,31 @@ export class DepMeshNode<T> {
       return this.mesh.get(this.name) as DepMeshNode<T>;
     }
 
+    this.mesh.set(this.name, this);
+
     if (options.value !== undefined) {
       this.value = options.value;
     } else {
       this.value = this.mesh.options.create(options);
     }
-
-    this.mesh.set(this.name, this);
   }
 
   public addChild(options: DepMeshNodeOptions<T>): DepMeshNode<T> {
     const name = options.name;
-    let link = this.getDescendant(name);
+    let node = this.getDescendant(name);
 
     // No need to add if a descendant already has name as child
-    if (!link) {
-      link = this.mesh.get(name);
+    if (!node) {
+      node = this.mesh.get(name);
 
-      if (!link) {
-        link = new DepMeshNode({
+      if (!node) {
+        node = new DepMeshNode({
           ...this.options,
           ...options,
           mesh: this.mesh
         });
       } else {
-        if (this === link) {
+        if (this === node) {
           throw new Error(
             `Cannot add ${name} as parent to ${this.name} as they are the same`
           );
@@ -383,47 +383,47 @@ export class DepMeshNode<T> {
         }
       }
 
-      this._children.add(link);
-      link._parents.add(this);
+      this._children.add(node);
+      node._parents.add(this);
     }
 
-    return link;
+    return node;
   }
 
   public addParent(options: DepMeshNodeOptions<T>): DepMeshNode<T> {
     const name = options.name;
-    let link = this.getAncestor(name);
+    let node = this.getAncestor(name);
 
     // No need to add if an ancestor already has name as parent
-    if (!link) {
-      link = this.mesh.get(name);
+    if (!node) {
+      node = this.mesh.get(name);
 
-      if (!link) {
-        link = new DepMeshNode({
+      if (!node) {
+        node = new DepMeshNode({
           ...this.options,
           ...options,
           mesh: this.mesh
         });
       } else {
-        if (this === link) {
+        if (this === node) {
           throw new Error(
             `Cannot add ${name} as parent to ${this.name} as they are the same`
           );
         }
 
         // DepMeshNode already defined; Prevent circularity
-        if (this === link || this.hasDescendant(name)) {
+        if (this === node || this.hasDescendant(name)) {
           throw new Error(
             `Cannot add ${name} as parent to ${this.name} as it is already a descendant`
           );
         }
       }
 
-      this._parents.add(link);
-      link._children.add(this);
+      this._parents.add(node);
+      node._children.add(this);
     }
 
-    return link;
+    return node;
   }
 
   public isLastDescendant(): boolean {
@@ -435,14 +435,14 @@ export class DepMeshNode<T> {
   }
 
   public allChildrenAreExcluded(exclude: WeakSet<DepMeshNode<T>>): boolean {
-    return Array.from(this._children).every((link): boolean =>
-      exclude.has(link)
+    return Array.from(this._children).every((node): boolean =>
+      exclude.has(node)
     );
   }
 
   public allParentsAreExcluded(exclude: WeakSet<DepMeshNode<T>>): boolean {
-    return Array.from(this._parents).every((link): boolean =>
-      exclude.has(link)
+    return Array.from(this._parents).every((node): boolean =>
+      exclude.has(node)
     );
   }
 
