@@ -94,4 +94,14 @@ export default class PackageStatus {
       return isLocal(version);
     });
   }
+
+  public getErrorMessage(): string {
+    const deps = this.upgradableDependants;
+
+    if (deps.length) {
+      return `"${this.name}" is upgradable in ${JSON.stringify(deps)}`;
+    }
+
+    return "";
+  }
 }

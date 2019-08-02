@@ -138,4 +138,26 @@ export default class PackageMesh extends DepMesh<PackageStatus> {
 
     return status.upgradableDependants;
   }
+
+  public getErrorMessage(): string {
+    const deps: Set<string> = new Set();
+    const messages: string[] = ["The following errors were encountered:"];
+
+    for (const dep of this.values()) {
+      const status = dep.value;
+      const name = status.name;
+
+      if (!deps.has(name)) {
+        deps.add(name);
+
+        const message = status.getErrorMessage();
+
+        if (message) {
+          messages.push(status.getErrorMessage());
+        }
+      }
+    }
+
+    return messages.length === 1 ? "" : messages.join("\n       - ");
+  }
 }

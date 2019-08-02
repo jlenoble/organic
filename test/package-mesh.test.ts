@@ -3,7 +3,7 @@ import Packages from "../src/packages";
 
 let packages: Packages;
 
-describe("Testing PackageMesh", function(): void {
+describe("Testing that all dependencies are up to date", function(): void {
   this.timeout(20000); // eslint-disable-line no-invalid-this
 
   before(
@@ -12,21 +12,26 @@ describe("Testing PackageMesh", function(): void {
     }
   );
 
-  it("Prod DepMesh", async (): Promise<void> => {
+  it("All prod dependencies are fully upgraded", async (): Promise<void> => {
     const mesh = new PackageMesh();
-
     mesh.addDependencies({ packages });
-    console.log(mesh.getAllUpgradableDependants());
-    console.log(mesh.getAllDeps());
-    console.log(mesh.getAllDependants());
+
+    const message = mesh.getErrorMessage();
+
+    if (message) {
+      throw new Error(message);
+    }
   });
 
-  it("Dev DepMesh", async (): Promise<void> => {
+  it("All dev dependencies are fully upgraded", async (): Promise<void> => {
     const mesh = new PackageMesh();
 
     mesh.addDependencies({ packages, dev: true });
-    console.log(mesh.getAllUpgradableDependants());
-    console.log(mesh.getAllDeps());
-    console.log(mesh.getAllDependants());
+
+    const message = mesh.getErrorMessage();
+
+    if (message) {
+      throw new Error(message);
+    }
   });
 });
