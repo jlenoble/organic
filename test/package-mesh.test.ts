@@ -16,17 +16,17 @@ describe("Testing PackageMesh", function(): void {
     const mesh = new PackageMesh();
 
     mesh.addDependencies({ packages });
-    console.log(mesh.versions);
-    console.log(mesh.dependedUpon);
-    console.log(mesh.mustUpgrade);
+    console.log(mesh.getAllUpgradableDependants());
+    console.log(mesh.getAllDeps());
+    console.log(mesh.getAllDependants());
   });
 
   it("Dev DepMesh", async (): Promise<void> => {
     const mesh = new PackageMesh();
 
     mesh.addDependencies({ packages, dev: true });
-    console.log(mesh.versions);
-    console.log(mesh.dependedUpon);
-    console.log(mesh.mustUpgrade);
+    console.log(mesh.getAllUpgradableDependants());
+    console.log(mesh.getAllDeps());
+    console.log(mesh.getAllDependants());
   });
 });
