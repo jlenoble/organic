@@ -29,7 +29,7 @@ export default class GulpConfig extends Deps {
       }
 
       if (eslint) {
-        this._addDeps("gulp-eslint");
+        this._addDeps(["gulp-eslint", "mkdirp"]);
       }
 
       if (mocha) {
@@ -44,7 +44,7 @@ export default class GulpConfig extends Deps {
       }
 
       if (typescript) {
-        this._addDeps("gulp-typescript");
+        this._addDeps(["gulp-typescript", "fs-extra"]);
       }
     }
   }
