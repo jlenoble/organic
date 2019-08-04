@@ -311,7 +311,17 @@ export default class Dependencies {
   public getReportErrorMessage(key: string): string {
     let messages = this._reports
       .getErrorMessages(key)
-      .filter((msg): boolean => !!msg);
+      .filter((msg): boolean => {
+        if (!msg) {
+          return false;
+        }
+
+        if (this.packageName !== "organon") {
+          return true;
+        }
+
+        return !msg.includes("Error: The following errors were encountered:");
+      });
 
     if (!messages.length) {
       return "";
