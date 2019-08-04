@@ -294,7 +294,10 @@ export default class Dependencies {
         break;
 
       case "latestWup":
-        if (semver.lt(this._wup.modifiedWith, options.latestWup)) {
+        if (
+          options.latestWup &&
+          semver.lt(this._wup.modifiedWith, options.latestWup)
+        ) {
           return `${JSON.stringify(
             this._packageName
           )} is not managed by latest Wup@${options.latestWup}`;
