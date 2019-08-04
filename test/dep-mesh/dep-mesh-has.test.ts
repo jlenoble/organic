@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import DepMesh, { DepMeshNode } from "../src/dep-mesh";
+import DepMesh, { DepMeshNode } from "../../src/dep-mesh";
 
 describe("Testing class DepMeshNode", (): void => {
   const mesh = new DepMesh({ create(): void {} });

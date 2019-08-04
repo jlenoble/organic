@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import DepMesh from "../src/dep-mesh";
+import DepMesh from "../../src/dep-mesh";
 
 describe("Testing class DepMesh", (): void => {
   it("filter", (): void => {
