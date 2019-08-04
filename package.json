@@ -25,11 +25,12 @@
     "url": "git+https://github.com/jlenoble/organon.git"
   },
   "engines": {
-    "node": ">=10.9.0"
+    "node": ">=10.16.1"
   },
   "dependencies": {
     "@types/eslint": "^4.16.6",
     "@types/fs-extra": "^8.0.0",
+    "@types/semver": "^6.0.1",
     "eslint": "^6.1.0",
     "explanation": "^0.1.2",
     "fs-extra": "^8.1.0",
@@ -57,14 +58,15 @@
     "@types/gulp-rename": "^0.0.33",
     "@types/gulp-replace": "^0.0.31",
     "@types/gulp-sourcemaps": "^0.0.32",
-    "@types/node": "^12.6.8",
-    "@types/prettier": "^1.18.0",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^12.6.9",
+    "@types/prettier": "^1.18.1",
     "@types/source-map-support": "^0.5.0",
     "@types/stream-to-promise": "^2.2.0",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
     "@typescript-eslint/typescript-estree": "^1.13.0",
-    "autoreload-gulp": "^0.4.1",
+    "autoreload-gulp": "^0.5.0-0",
     "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
     "child-process-data": "^0.8.0-0",
@@ -85,11 +87,12 @@
     "gulp-typescript": "^5.0.1",
     "gulp-wrap": "^0.15.0",
     "markdown-include": "^0.4.3",
+    "mkdirp": "^0.5.1",
     "mocha": "<6",
     "mochawesome": "^4.0.1",
     "plumb-gulp": "^0.2.2",
     "prettier": "^1.18.2",
-    "source-map-support": "^0.5.12",
+    "source-map-support": "^0.5.13",
     "stream-to-promise": "^2.2.0",
     "typescript": "^3.5.3"
   }
