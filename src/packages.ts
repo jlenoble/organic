@@ -7,6 +7,10 @@ import Dependencies, {
 } from "./dependencies";
 import Globs from "./globs";
 
+interface ErrorOptions {
+  latestWup?: string;
+}
+
 export default class Packages {
   public readonly ready: Promise<boolean>;
 
@@ -126,7 +130,10 @@ export default class Packages {
     return [...this._devDeps];
   }
 
-  public getErrorMessage(keys: string | string[]): string {
+  public getErrorMessage(
+    keys: string | string[],
+    options: ErrorOptions = {}
+  ): string {
     const messages: string[] = ["The following errors were encountered:"];
 
     if (!Array.isArray(keys)) {
@@ -163,6 +170,12 @@ export default class Packages {
           tag = "local";
           break;
 
+        case "hasWup":
+        case "latestWup":
+          deps = this._prodDeps;
+          tag = key;
+          break;
+
         default:
           error({
             message: "Unhandled key in getErrorMessage",
@@ -171,7 +184,7 @@ export default class Packages {
       }
 
       for (const dep of deps) {
-        const message: string = dep.getErrorMessage(tag);
+        const message: string = dep.getErrorMessage({ ...options, key: tag });
         if (message) {
           messages.push(message);
         }

@@ -1,5 +1,6 @@
 import { resolveGlob, rebaseGlob } from "polypath";
 import precinct from "precinct";
+import semver from "semver";
 import path from "path";
 import fse from "fs-extra";
 import { Tools, natives } from "./tools";
@@ -10,6 +11,7 @@ export interface DependenciesOptions {
   deps: Deps;
   localDeps?: Deps;
   packageDir: string;
+  wup: Wup;
   organon: Organon;
 }
 
@@ -19,9 +21,26 @@ interface Deps {
   [name: string]: string;
 }
 
+interface Wup {
+  createdWith: string;
+  modifiedWith: string;
+  createdOn: string;
+  modifiedOn: string;
+}
+
 interface Organon {
   implicitDevDeps?: string[];
   relocatedDevDeps?: RelocatedDeps;
+}
+
+export interface ErrorOptions {
+  stem?: string;
+  key: string;
+  latestWup?: string;
+}
+
+interface NormalizedErrorOptions extends ErrorOptions {
+  stem: string;
 }
 
 export default class Dependencies {
@@ -40,6 +59,7 @@ export default class Dependencies {
   protected _localDeps: Set<string>;
   protected _resolvedFiles: Set<string>;
 
+  protected _wup: Wup;
   protected _organon: Organon;
   protected _relocator?: Relocator;
 
@@ -56,6 +76,7 @@ export default class Dependencies {
     deps,
     localDeps,
     packageDir,
+    wup,
     organon = {}
   }: DependenciesOptions) {
     this._fromConfig = { ...deps };
@@ -67,6 +88,7 @@ export default class Dependencies {
     );
     this._resolvedFiles = new Set();
     this.packageDir = packageDir;
+    this._wup = wup;
     this._organon = organon;
 
     const { implicitDevDeps, relocatedDevDeps } = organon;
@@ -196,11 +218,9 @@ export default class Dependencies {
 
   protected _getErrorMessage({
     stem,
-    key
-  }: {
-    stem: string;
-    key?: string;
-  }): string {
+    key,
+    latestWup
+  }: NormalizedErrorOptions): string {
     switch (key) {
       case "missing":
         return this.getMissingErrorMessage(stem);
@@ -210,12 +230,16 @@ export default class Dependencies {
 
       case "local":
         return this.getLocalErrorMessage(stem);
+
+      case "hasWup":
+      case "latestWup":
+        return this.getWupErrorMessage(key, { latestWup });
     }
 
     return "";
   }
 
-  public getErrorMessage(key: string): string {
+  public getErrorMessage({ key }: ErrorOptions): string {
     return key;
   }
 
@@ -248,6 +272,29 @@ export default class Dependencies {
         )} has local ${stem} deps: ${JSON.stringify(deps)}`
       : "";
   }
+
+  public getWupErrorMessage(
+    key: string,
+    options: { latestWup?: string } = {}
+  ): string {
+    switch (key) {
+      case "hasWup":
+        if (!this._wup.createdOn) {
+          return `${JSON.stringify(this._packageName)} is not managed by Wup`;
+        }
+        break;
+
+      case "latestWup":
+        if (semver.lt(this._wup.modifiedWith, options.latestWup)) {
+          return `${JSON.stringify(
+            this._packageName
+          )} is not managed by latest Wup@${options.latestWup}`;
+        }
+        break;
+    }
+
+    return "";
+  }
 }
 
 export class ProdDependencies extends Dependencies {
@@ -270,14 +317,15 @@ export class ProdDependencies extends Dependencies {
       glob: rebaseGlob(glob, packageDir),
       deps: pckg.dependencies || {},
       packageDir,
+      wup: yo["generator-wupjs"],
       organon: yo.organon
     });
 
     this._packageName = pckg.name;
   }
 
-  public getErrorMessage(key: string): string {
-    return this._getErrorMessage({ stem: "prod", key });
+  public getErrorMessage(options: ErrorOptions): string {
+    return this._getErrorMessage({ ...options, stem: "prod" });
   }
 }
 
@@ -308,13 +356,14 @@ export class DevDependencies extends Dependencies {
       },
       localDeps: devDependencies,
       packageDir,
+      wup: yo["generator-wupjs"],
       organon: yo.organon
     });
 
     this._packageName = pckg.name;
   }
 
-  public getErrorMessage(key: string): string {
-    return this._getErrorMessage({ stem: "dev", key });
+  public getErrorMessage(options: ErrorOptions): string {
+    return this._getErrorMessage({ ...options, stem: "dev" });
   }
 }
