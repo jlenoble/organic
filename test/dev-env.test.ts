@@ -34,4 +34,12 @@ describe("Testing dev environment for packages", function(): void {
       throw new Error(message);
     }
   });
+
+  it("All reports were generated for packages", async (): Promise<void> => {
+    const message = packages.getErrorMessage(["reports"]);
+
+    if (message) {
+      throw new Error(message);
+    }
+  });
 });

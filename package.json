@@ -35,7 +35,8 @@
     "fs-extra": "^8.1.0",
     "polypath": "^0.7.0",
     "precinct": "^6.1.2",
-    "semver": "^6.3.0"
+    "semver": "^6.3.0",
+    "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",

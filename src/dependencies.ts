@@ -5,6 +5,7 @@ import path from "path";
 import fse from "fs-extra";
 import { Tools, natives } from "./tools";
 import Relocator, { RelocatedDeps } from "./relocator";
+import Reports from "./reports";
 
 export interface DependenciesOptions {
   glob: string | string[];
@@ -63,6 +64,8 @@ export default class Dependencies {
   protected _organon: Organon;
   protected _relocator?: Relocator;
 
+  protected _reports: Reports;
+
   public get valid(): boolean {
     return (
       !this.getExtraDeps().length &&
@@ -90,6 +93,8 @@ export default class Dependencies {
     this.packageDir = packageDir;
     this._wup = wup;
     this._organon = organon;
+
+    this._reports = new Reports(packageDir);
 
     const { implicitDevDeps, relocatedDevDeps } = organon;
 
@@ -234,6 +239,9 @@ export default class Dependencies {
       case "hasWup":
       case "latestWup":
         return this.getWupErrorMessage(key, { latestWup });
+
+      case "reports":
+        return this.getReportErrorMessage(key);
     }
 
     return "";
@@ -294,6 +302,20 @@ export default class Dependencies {
     }
 
     return "";
+  }
+
+  public getReportErrorMessage(key: string): string {
+    let messages = this._reports
+      .getErrorMessages(key)
+      .filter((msg): boolean => !!msg);
+
+    if (!messages.length) {
+      return "";
+    }
+
+    messages = [JSON.stringify(this._packageName) + ":"].concat(messages);
+
+    return messages.join("\n         - ");
   }
 }
 
