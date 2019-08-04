@@ -22,11 +22,12 @@ interface Deps {
   [name: string]: string;
 }
 
-interface Wup {
+export interface Wup {
   createdWith: string;
   modifiedWith: string;
   createdOn: string;
   modifiedOn: string;
+  typescript: boolean;
 }
 
 interface Organon {
@@ -94,7 +95,7 @@ export default class Dependencies {
     this._wup = wup;
     this._organon = organon;
 
-    this._reports = new Reports(packageDir);
+    this._reports = new Reports(packageDir, wup);
 
     const { implicitDevDeps, relocatedDevDeps } = organon;
 

@@ -1,5 +1,6 @@
 import path from "path";
 import stripAnsi from "strip-ansi";
+import { Wup } from "./dependencies";
 
 interface RawReport {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -159,7 +160,13 @@ export class DistReport extends Report {
     });
   }
 
-  protected _getErrorMessages(key: string): string[] {
+  public getErrorMessages(key: string): string[] {
+    const keys = Object.keys(this._report);
+
+    if (!keys.length) {
+      return [];
+    }
+
     return getErrors(this._report.results);
   }
 }
@@ -213,22 +220,26 @@ export default class Reports {
   public readonly buildReport: BuildReport;
   public readonly distReport: DistReport;
   public readonly lintReport: LintReport;
-  public readonly typesReport: TypesReport;
+  public readonly typesReport?: TypesReport;
 
   public get reports(): Report[] {
-    return [
-      this.buildReport,
-      this.distReport,
-      this.lintReport,
-      this.typesReport
-    ];
+    const reports = [this.buildReport, this.distReport, this.lintReport];
+
+    if (this.typesReport !== undefined) {
+      reports.push(this.typesReport);
+    }
+
+    return reports;
   }
 
-  public constructor(packageDir: string) {
+  public constructor(packageDir: string, options: Wup) {
     this.buildReport = new BuildReport(packageDir);
     this.distReport = new DistReport(packageDir);
     this.lintReport = new LintReport(packageDir);
-    this.typesReport = new TypesReport(packageDir);
+
+    if (options.typescript) {
+      this.typesReport = new TypesReport(packageDir);
+    }
   }
 
   public getErrorMessages(key: string): string[] {
