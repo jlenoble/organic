@@ -242,7 +242,7 @@ export default class Dependencies {
         return this.getWupErrorMessage(key, { latestWup });
 
       case "reports":
-        return this.getReportErrorMessage(key);
+        return this.getReportErrorMessage();
     }
 
     return "";
@@ -308,20 +308,18 @@ export default class Dependencies {
     return "";
   }
 
-  public getReportErrorMessage(key: string): string {
-    let messages = this._reports
-      .getErrorMessages(key)
-      .filter((msg): boolean => {
-        if (!msg) {
-          return false;
-        }
+  public getReportErrorMessage(): string {
+    let messages = this._reports.getErrorMessages().filter((msg): boolean => {
+      if (!msg) {
+        return false;
+      }
 
-        if (this.packageName !== "organon") {
-          return true;
-        }
+      if (this.packageName !== "organon") {
+        return true;
+      }
 
-        return !msg.includes("Error: The following errors were encountered:");
-      });
+      return !msg.includes("Error: The following errors were encountered:");
+    });
 
     if (!messages.length) {
       return "";

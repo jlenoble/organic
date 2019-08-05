@@ -122,17 +122,17 @@ class Report {
     }
   }
 
-  public getErrorMessages(key: string): string[] {
+  public getErrorMessages(): string[] {
     const keys = Object.keys(this._report);
 
     if (!keys.length) {
       return [`Report ${this.reportName} could not be found`];
     }
 
-    return this._getErrorMessages(key);
+    return this._getErrorMessages();
   }
 
-  protected _getErrorMessages(key: string): string[] {
+  protected _getErrorMessages(): string[] {
     return [];
   }
 }
@@ -146,7 +146,7 @@ export class BuildReport extends Report {
     });
   }
 
-  protected _getErrorMessages(key: string): string[] {
+  protected _getErrorMessages(): string[] {
     return getErrors(this._report.results);
   }
 }
@@ -160,7 +160,7 @@ export class DistReport extends Report {
     });
   }
 
-  public getErrorMessages(key: string): string[] {
+  public getErrorMessages(): string[] {
     const keys = Object.keys(this._report);
 
     if (!keys.length) {
@@ -180,7 +180,7 @@ export class LintReport extends Report {
     });
   }
 
-  protected _getErrorMessages(key: string): string[] {
+  protected _getErrorMessages(): string[] {
     return this._report.results.reduce(
       (
         messages: string[],
@@ -211,7 +211,7 @@ export class TypesReport extends Report {
     });
   }
 
-  protected _getErrorMessages(key: string): string[] {
+  protected _getErrorMessages(): string[] {
     return this._report.messages.filter((msg: string): boolean => {
       // Could not find a declaration file error
       return !msg.includes("error TS7016");
@@ -245,16 +245,12 @@ export default class Reports {
     }
   }
 
-  public getErrorMessages(key: string): string[] {
+  public getErrorMessages(): string[] {
     let messages: string[] = [];
 
-    switch (key) {
-      case "reports":
-        this.reports.forEach((report): void => {
-          messages = messages.concat(report.getErrorMessages(key));
-        });
-        break;
-    }
+    this.reports.forEach((report): void => {
+      messages = messages.concat(report.getErrorMessages());
+    });
 
     return messages.map((msg): string => stripAnsi(msg));
   }
