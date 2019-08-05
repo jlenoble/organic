@@ -1,7 +1,6 @@
-import Packages from "../src/packages";
+import getPackages from "./packages";
 import path from "path";
 
-let packages: Packages;
 let latestWup: string;
 
 describe("Testing dev environment for packages", function(): void {
@@ -9,7 +8,6 @@ describe("Testing dev environment for packages", function(): void {
 
   before(
     async (): Promise<void> => {
-      packages = await Packages.create("packages");
       latestWup = require(path.join(
         process.cwd(),
         "packages",
@@ -20,6 +18,8 @@ describe("Testing dev environment for packages", function(): void {
   );
 
   it("All packages are managed by Wup", async (): Promise<void> => {
+    const packages = await getPackages();
+
     const message = packages.getErrorMessage(["hasWup"]);
 
     if (message) {
@@ -28,6 +28,8 @@ describe("Testing dev environment for packages", function(): void {
   });
 
   it("All packages are managed by latest Wup", async (): Promise<void> => {
+    const packages = await getPackages();
+
     const message = packages.getErrorMessage(["latestWup"], { latestWup });
 
     if (message) {
@@ -36,6 +38,8 @@ describe("Testing dev environment for packages", function(): void {
   });
 
   it("All reports were generated for packages", async (): Promise<void> => {
+    const packages = await getPackages();
+
     const message = packages.getErrorMessage(["reports"]);
 
     if (message) {
