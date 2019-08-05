@@ -32,13 +32,17 @@ export default class PackageStatus {
 
     if (this.isNeverLocal() && this._dependants.size) {
       const maxVersion = [...this._dependants.values()]
-        .map((v): string => semver.minVersion(v).version)
+        .map((v): string => {
+          const s = semver.minVersion(v) || { version: "0.0.0" };
+          return s.version;
+        })
         .reduce((v1, v2): string => {
           return semver.gt(v1, v2) ? v1 : v2;
         });
 
       for (const [name, version] of this._dependants) {
-        if (semver.lt(semver.minVersion(version).version, maxVersion)) {
+        const s = semver.minVersion(version) || { version: "0.0.0" };
+        if (semver.lt(s.version, maxVersion)) {
           deps.push(name);
         }
       }
