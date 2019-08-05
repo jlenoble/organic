@@ -212,7 +212,10 @@ export class TypesReport extends Report {
   }
 
   protected _getErrorMessages(key: string): string[] {
-    return this._report.messages;
+    return this._report.messages.filter((msg: string): boolean => {
+      // Could not find a declaration file error
+      return !msg.includes("error TS7016");
+    });
   }
 }
 
