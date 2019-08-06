@@ -37,6 +37,7 @@
     "polypath": "^0.7.0",
     "precinct": "^6.1.2",
     "semver": "^6.3.0",
+    "simple-git": "^1.124.0",
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
