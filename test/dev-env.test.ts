@@ -58,4 +58,16 @@ describe("Testing dev environment for packages", function(): void {
       throw new Error(message);
     }
   });
+
+  it("All packages have consistent versions locally, in Verdaccio registry and on Npm registry", async (): Promise<
+    void
+  > => {
+    const packages = await getPackages();
+
+    const message = packages.getErrorMessage(["npm"]);
+
+    if (message) {
+      throw new Error(message);
+    }
+  });
 });

@@ -7,6 +7,7 @@ import { Tools, natives } from "./tools";
 import Relocator, { RelocatedDeps } from "./relocator";
 import Reports from "./reports";
 import GitHandler from "./git-handler";
+import NpmHandler from "./npm-handler";
 
 export interface DependenciesOptions {
   glob: string | string[];
@@ -68,6 +69,7 @@ export default class Dependencies {
 
   protected _reports: Reports;
   protected _gitHandler: GitHandler;
+  protected _npmHandler: NpmHandler;
 
   public get valid(): boolean {
     return (
@@ -99,6 +101,7 @@ export default class Dependencies {
 
     this._reports = new Reports(packageDir, wup);
     this._gitHandler = new GitHandler(packageDir);
+    this._npmHandler = new NpmHandler(packageDir);
 
     const { implicitDevDeps, relocatedDevDeps } = organon;
 
@@ -114,7 +117,10 @@ export default class Dependencies {
           await this._addDep(implicitDevDeps, packageDir);
         }
 
-        await this._gitHandler.report();
+        await Promise.all([
+          this._gitHandler.report(),
+          this._npmHandler.report()
+        ]);
       } catch (e) {
         console.warn(e);
         return false;
@@ -251,6 +257,9 @@ export default class Dependencies {
 
       case "git":
         return this.getGitErrorMessage();
+
+      case "npm":
+        return this.getNpmErrorMessage();
     }
 
     return "";
@@ -340,6 +349,18 @@ export default class Dependencies {
 
   public getGitErrorMessage(): string {
     let messages = this._gitHandler.getErrorMessages();
+
+    if (!messages.length) {
+      return "";
+    }
+
+    messages = [JSON.stringify(this._packageName) + ":"].concat(messages);
+
+    return messages.join("\n         - ");
+  }
+
+  public getNpmErrorMessage(): string {
+    let messages = this._npmHandler.getErrorMessages();
 
     if (!messages.length) {
       return "";
