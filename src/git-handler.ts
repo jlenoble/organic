@@ -81,14 +81,14 @@ export default class GitHandler {
 
       if (!report.hasDev) {
         messages.push(`Git branch "dev" is not defined`);
-      }
+      } else {
+        if (!report.onDev) {
+          messages.push(`Git branch "dev" is not the working branch`);
+        }
 
-      if (!report.onDev) {
-        messages.push(`Git branch "dev" is not the working branch`);
-      }
-
-      if (report.dev.changed) {
-        messages.push(`Git branch "dev" differs from "master"`);
+        if (report.dev.changed) {
+          messages.push(`Git branch "dev" differs from "master"`);
+        }
       }
 
       if (report.origin.changed) {
