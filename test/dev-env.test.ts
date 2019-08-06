@@ -46,4 +46,16 @@ describe("Testing dev environment for packages", function(): void {
       throw new Error(message);
     }
   });
+
+  it("All packages have an active dev branch and are in sync with GitHub", async (): Promise<
+    void
+  > => {
+    const packages = await getPackages();
+
+    const message = packages.getErrorMessage(["git"]);
+
+    if (message) {
+      throw new Error(message);
+    }
+  });
 });
