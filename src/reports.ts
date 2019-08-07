@@ -219,11 +219,41 @@ export class TypesReport extends Report {
   }
 }
 
+export class GitReport extends Report {
+  public constructor(packageDir: string) {
+    super({
+      packageDir,
+      reportDir: "git-report",
+      reportName: "report.json"
+    });
+  }
+
+  protected _getErrorMessages(): string[] {
+    return this._report.messages;
+  }
+}
+
+export class NpmReport extends Report {
+  public constructor(packageDir: string) {
+    super({
+      packageDir,
+      reportDir: "npm-report",
+      reportName: "report.json"
+    });
+  }
+
+  protected _getErrorMessages(): string[] {
+    return this._report.messages;
+  }
+}
+
 export default class Reports {
   public readonly buildReport: BuildReport;
   public readonly distReport: DistReport;
   public readonly lintReport: LintReport;
   public readonly typesReport?: TypesReport;
+  public readonly gitReport: GitReport;
+  public readonly npmReport: NpmReport;
 
   public get reports(): Report[] {
     const reports = [this.buildReport, this.distReport, this.lintReport];
@@ -232,6 +262,8 @@ export default class Reports {
       reports.push(this.typesReport);
     }
 
+    reports.push(this.gitReport, this.npmReport);
+
     return reports;
   }
 
@@ -239,6 +271,8 @@ export default class Reports {
     this.buildReport = new BuildReport(packageDir);
     this.distReport = new DistReport(packageDir);
     this.lintReport = new LintReport(packageDir);
+    this.gitReport = new GitReport(packageDir);
+    this.npmReport = new NpmReport(packageDir);
 
     if (options.typescript) {
       this.typesReport = new TypesReport(packageDir);
