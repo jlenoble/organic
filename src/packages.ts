@@ -173,8 +173,6 @@ export default class Packages {
         case "hasWup":
         case "latestWup":
         case "reports":
-        case "git":
-        case "npm":
           deps = this._prodDeps;
           tag = key;
           break;
