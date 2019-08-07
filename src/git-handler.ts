@@ -1,5 +1,6 @@
 import simplegit, { SimpleGit, DiffResult } from "simple-git/promise";
 import path from "path";
+import fse from "fs-extra";
 
 export interface GitReport {
   [packageName: string]: {
@@ -69,6 +70,17 @@ export default class GitHandler {
     }
 
     return this._report;
+  }
+
+  public async outputReport(path: string): Promise<void> {
+    const report = await this.report();
+    const messages = this.getErrorMessages();
+
+    await fse.outputJson(
+      path,
+      { messages, ...report[this.packageName] },
+      { spaces: 2 }
+    );
   }
 
   public getErrorMessages(): string[] {
