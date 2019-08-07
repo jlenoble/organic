@@ -21,7 +21,9 @@ export default class GulpConfig extends Deps {
         "ejs", // required by consolidate used by gulp-wrap
         "markdown-include",
         "polypath",
-        "stream-to-promise"
+        "stream-to-promise",
+        "chalk",
+        "organon"
       ]);
 
       if (babel) {
