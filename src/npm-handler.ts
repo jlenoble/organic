@@ -7,6 +7,7 @@ export interface NpmReport {
     devVersion: string;
     verdaccioVersion: string;
     npmVersion: string;
+    changed: boolean;
   };
 }
 
@@ -86,7 +87,13 @@ export default class NpmHandler {
       ]);
 
       this._report = {
-        [this.packageName]: { devVersion, verdaccioVersion, npmVersion }
+        [this.packageName]: {
+          devVersion,
+          verdaccioVersion,
+          npmVersion,
+          changed:
+            devVersion !== verdaccioVersion || verdaccioVersion !== npmVersion
+        }
       };
     }
 
