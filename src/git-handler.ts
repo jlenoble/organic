@@ -52,10 +52,8 @@ export default class GitHandler {
 
   public async report(): Promise<GitReport> {
     if (!this._report) {
-      const [dev, origin] = await Promise.all([
-        this.diffDev(),
-        this.diffOrigin()
-      ]);
+      const dev = await this.diffDev();
+      const origin = await this.diffOrigin();
 
       this._report = {
         [this.packageName]: {
