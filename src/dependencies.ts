@@ -318,7 +318,7 @@ export default class Dependencies {
         return true;
       }
 
-      return !msg.includes("Error: The following errors were encountered:");
+      return !msg.includes("Error: The following errors");
     });
 
     if (!messages.length) {
