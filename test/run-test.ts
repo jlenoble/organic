@@ -1,5 +1,5 @@
 import getPackages from "./packages";
-import getFixer from "./fixer";
+import getRemediator from "./remediator";
 
 export default function runTest(
   hints: string | string[],
@@ -7,10 +7,10 @@ export default function runTest(
 ): () => Promise<void> {
   return async (): Promise<void> => {
     const packages = await getPackages();
-    const fixer = getFixer();
+    const remediator = getRemediator();
 
     const message = packages.getErrorMessage(hints, options);
-    const message2 = fixer.addFixes(message);
+    const message2 = remediator.addFixes(message);
 
     if (message2) {
       console.log(message2);

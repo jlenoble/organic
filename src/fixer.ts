@@ -59,6 +59,43 @@ export default class Fixer {
     this._fixes = new Fixes();
   }
 
+  public async fix(pckg: string, action: string): Promise<void> {
+    pckg = path.join(this._packageDir, pckg);
+
+    const [cmd, ...args] = action.split(/\s+/);
+
+    await chDir(
+      pckg,
+      async (): Promise<void> => {
+        await childProcessData(spawn(cmd, args, { stdio: "pipe" }));
+      }
+    )();
+  }
+
+  public getFixes(): [string, string[]][] {
+    return this._fixes.getFixes();
+  }
+
+  public async fixAll(): Promise<void> {
+    for (const [pckg, actions] of this.getFixes()) {
+      for (const action of actions) {
+        await this.fix(pckg, action);
+        break;
+      }
+      break;
+    }
+  }
+}
+
+export class Remediator {
+  protected _fixes: Fixes;
+  protected _packageDir: string;
+
+  public constructor(packageDir: string) {
+    this._packageDir = packageDir;
+    this._fixes = new Fixes();
+  }
+
   public addFix(message: string): boolean {
     let match = message.match(
       /"(.+)" is not managed by latest Wup@\d+\.\d+\.\d+(?:-\d+)?/
@@ -187,30 +224,7 @@ export default class Fixer {
     }
   }
 
-  public async fix(pckg: string, action: string): Promise<void> {
-    pckg = path.join(this._packageDir, pckg);
-
-    const [cmd, ...args] = action.split(/\s+/);
-
-    await chDir(
-      pckg,
-      async (): Promise<void> => {
-        await childProcessData(spawn(cmd, args, { stdio: "pipe" }));
-      }
-    )();
-  }
-
   public getFixes(): [string, string[]][] {
     return this._fixes.getFixes();
-  }
-
-  public async fixAll(): Promise<void> {
-    for (const [pckg, actions] of this.getFixes()) {
-      for (const action of actions) {
-        await this.fix(pckg, action);
-        break;
-      }
-      break;
-    }
   }
 }
