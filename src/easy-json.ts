@@ -22,7 +22,7 @@ type EasyType<T> = T extends Primitive
 type EasyValue = EasyPrimitive | EasyArray | EasyMap;
 
 interface Easy {
-  value: JsonValue;
+  getValue(): JsonValue;
 
   isAssignable(json: JsonValue): boolean;
 
@@ -56,12 +56,14 @@ function easyFactory(json: JsonValue): EasyType<JsonValue> {
 export class EasyPrimitive implements Easy {
   protected _value: Primitive;
 
-  public get value(): Primitive {
-    return this._value;
-  }
-
   public constructor(json: Primitive) {
     this._value = json;
+
+    Object.defineProperty(this, "_value", { enumerable: false });
+  }
+
+  public getValue(): Primitive {
+    return this._value;
   }
 
   public isAssignable(json: JsonValue): boolean {
@@ -100,16 +102,18 @@ export class EasyPrimitive implements Easy {
 export class EasyArray implements Easy {
   protected _value: EasyValue[];
 
-  public get value(): JsonArray {
-    return this._value.map((easy): JsonValue => easy.value);
-  }
-
   public constructor(json: JsonArray) {
     this._value = new Array(json.length);
 
     for (const [i, v] of json.entries()) {
       this._value[i] = easyFactory(v);
     }
+
+    Object.defineProperty(this, "_value", { enumerable: false });
+  }
+
+  public getValue(): JsonArray {
+    return this._value.map((easy): JsonValue => easy.getValue());
   }
 
   public isAssignable(json: JsonValue): boolean {
@@ -181,19 +185,21 @@ export class EasyArray implements Easy {
 export class EasyMap implements Easy {
   protected _value: { [key: string]: EasyValue };
 
-  public get value(): JsonMap {
-    return Object.keys(this._value).reduce((json: JsonMap, key): JsonMap => {
-      json[key] = this._value[key].value;
-      return json;
-    }, {});
-  }
-
   public constructor(json: JsonMap) {
     this._value = {};
 
     for (const key of Object.keys(json)) {
       this._value[key] = easyFactory(json[key]);
     }
+
+    Object.defineProperty(this, "_value", { enumerable: false });
+  }
+
+  public getValue(): JsonMap {
+    return Object.keys(this._value).reduce((json: JsonMap, key): JsonMap => {
+      json[key] = this._value[key].getValue();
+      return json;
+    }, {});
   }
 
   public isAssignable(json: JsonValue): boolean {
@@ -277,12 +283,13 @@ export class EasyMap implements Easy {
 export default class EasyJson implements Easy {
   protected _value: EasyType<JsonValue>;
 
-  public get value(): JsonValue {
-    return this._value.value;
-  }
-
   public constructor(json: JsonValue) {
     this._value = easyFactory(json);
+    Object.defineProperty(this, "_value", { enumerable: false });
+  }
+
+  public getValue(): JsonValue {
+    return this._value.getValue();
   }
 
   public isAssignable(json: JsonValue): boolean {
