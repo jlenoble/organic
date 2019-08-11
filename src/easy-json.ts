@@ -25,6 +25,7 @@ interface Easy {
   value: JsonValue;
   isAssignable(json: JsonValue): boolean;
   deepAssign(json: JsonValue): this;
+  deepClone(): EasyValue | EasyJson;
 }
 
 function easyFactory(json: JsonValue): EasyType<JsonValue> {
@@ -72,6 +73,10 @@ export class EasyPrimitive implements Easy {
     this._value = json;
     return this;
   }
+
+  public deepClone(): EasyPrimitive {
+    return new EasyPrimitive(this._value);
+  }
 }
 
 export class EasyArray implements Easy {
@@ -106,6 +111,17 @@ export class EasyArray implements Easy {
     });
 
     return this;
+  }
+
+  public deepClone(): EasyArray {
+    const len = this._value.length;
+    const easy = new EasyArray([]);
+
+    for (let i = 0; i < len; i++) {
+      easy._value[i] = this._value[i].deepClone();
+    }
+
+    return easy;
   }
 }
 
@@ -145,6 +161,16 @@ export class EasyMap implements Easy {
     });
 
     return this;
+  }
+
+  public deepClone(): EasyMap {
+    const easy = new EasyMap({});
+
+    Object.keys(this._value).forEach((key): void => {
+      easy._value[key] = this._value[key].deepClone();
+    });
+
+    return easy;
   }
 }
 
@@ -207,5 +233,11 @@ export default class EasyJson implements Easy {
     }
 
     return this;
+  }
+
+  public deepClone(): EasyJson {
+    const easy = new EasyJson({});
+    easy._value = this._value.deepClone();
+    return easy;
   }
 }

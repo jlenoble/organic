@@ -44,4 +44,13 @@ describe("Testint EasyJson", (): void => {
 
     expect(easy.value).to.eql(json3);
   });
+
+  it("Deeply cloning an EasyJson object", (): void => {
+    const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
+    const easy = new EasyJson(json);
+    const easy2 = easy.deepClone();
+
+    expect(easy2.value).to.eql(json);
+    expect(easy2).not.to.equal(easy);
+  });
 });
