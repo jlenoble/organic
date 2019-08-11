@@ -76,4 +76,19 @@ describe("Testint EasyJson", (): void => {
     expect(easy.includes(easy2.value)).to.be.false;
     expect(easy2.includes(easy.value)).to.be.true;
   });
+
+  it("isIncluded", (): void => {
+    const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
+    const easy = new EasyJson(json);
+    const easy2 = new EasyJson(json);
+
+    easy2.deepAssign({
+      f: 33,
+      c: [2, 3, 4, 5, 6],
+      d: { e: ["hello", "bye"], g: 3 }
+    });
+
+    expect(easy.isIncluded(easy2.value)).to.be.true;
+    expect(easy2.isIncluded(easy.value)).to.be.false;
+  });
 });
