@@ -280,7 +280,7 @@ export class EasyMap implements Easy {
   }
 }
 
-export default class EasyJson implements Easy {
+export class EasyJson implements Easy {
   protected _value: EasyType<JsonValue>;
 
   public constructor(json: JsonValue) {
@@ -359,4 +359,8 @@ export default class EasyJson implements Easy {
     easy._value = this._value.deepClone();
     return easy;
   }
+}
+
+export default function createEasyJson(json: JsonValue): EasyJson {
+  return new EasyJson(json);
 }
