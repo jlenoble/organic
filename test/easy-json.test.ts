@@ -53,4 +53,12 @@ describe("Testint EasyJson", (): void => {
     expect(easy2.value).to.eql(json);
     expect(easy2).not.to.equal(easy);
   });
+
+  it("equals", (): void => {
+    const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
+    const easy = new EasyJson(json);
+
+    expect(easy.value).to.eql(json);
+    expect(easy.equals(json)).to.be.true;
+  });
 });

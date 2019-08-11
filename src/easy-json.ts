@@ -23,7 +23,11 @@ type EasyValue = EasyPrimitive | EasyArray | EasyMap;
 
 interface Easy {
   value: JsonValue;
+
   isAssignable(json: JsonValue): boolean;
+
+  equals(json: JsonValue): boolean;
+
   deepAssign(json: JsonValue): this;
   deepClone(): EasyValue | EasyJson;
 }
@@ -69,6 +73,10 @@ export class EasyPrimitive implements Easy {
     return false;
   }
 
+  public equals(json: JsonValue): boolean {
+    return this._value === json;
+  }
+
   public deepAssign(json: Primitive): this {
     this._value = json;
     return this;
@@ -96,6 +104,16 @@ export class EasyArray implements Easy {
 
   public isAssignable(json: JsonValue): boolean {
     return Array.isArray(json);
+  }
+
+  public equals(json: JsonValue): boolean {
+    if (!Array.isArray(json)) {
+      return false;
+    }
+
+    return this._value.every((value, i): boolean => {
+      return value.equals(json[i]);
+    });
   }
 
   public deepAssign(json: JsonArray): this {
@@ -147,6 +165,16 @@ export class EasyMap implements Easy {
     return !Array.isArray(json) && typeof json === "object";
   }
 
+  public equals(json: JsonValue): boolean {
+    if (Array.isArray(json) || typeof json !== "object") {
+      return false;
+    }
+
+    return Object.keys(this._value).every((key): boolean => {
+      return this._value[key].equals(json[key]);
+    });
+  }
+
   public deepAssign(json: JsonMap): this {
     Object.keys(json).forEach((key): void => {
       if (
@@ -195,6 +223,10 @@ export default class EasyJson implements Easy {
     }
 
     return false;
+  }
+
+  public equals(json: JsonValue): boolean {
+    return this._value.equals(json);
   }
 
   public deepAssign(json: JsonValue): this {
