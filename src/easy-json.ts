@@ -121,9 +121,12 @@ export class EasyArray implements Easy {
       return false;
     }
 
-    return this._value.every((value, i): boolean => {
-      return value.equals(json[i]);
-    });
+    return (
+      json.length === this._value.length &&
+      this._value.every((value, i): boolean => {
+        return value.equals(json[i]);
+      })
+    );
   }
 
   public includes(json: JsonValue): boolean {
@@ -202,9 +205,14 @@ export class EasyMap implements Easy {
       return false;
     }
 
-    return Object.keys(this._value).every((key): boolean => {
-      return this._value[key].equals(json[key]);
-    });
+    const keys = Object.keys(this._value);
+
+    return (
+      keys.length === Object.keys(json).length &&
+      keys.every((key): boolean => {
+        return this._value[key].equals(json[key]);
+      })
+    );
   }
 
   public includes(json: JsonValue): boolean {

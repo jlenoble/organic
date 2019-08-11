@@ -57,9 +57,28 @@ describe("Testint EasyJson", (): void => {
   it("equals", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
     const easy = new EasyJson(json);
+    const easy2 = new EasyJson(json);
+    const easy3 = new EasyJson(json);
+
+    easy2.deepAssign({
+      c: [2, 3, 4, 5, 6],
+      d: { e: ["hello", "bye"] }
+    });
+
+    easy3.deepAssign({
+      f: 33,
+      c: [2, 3, 4],
+      d: { e: ["hello"], g: 3 }
+    });
 
     expect(easy.value).to.eql(json);
     expect(easy.equals(json)).to.be.true;
+
+    expect(easy.equals(easy2.value)).to.be.false;
+    expect(easy2.equals(easy.value)).to.be.false;
+
+    expect(easy.equals(easy3.value)).to.be.false;
+    expect(easy3.equals(easy.value)).to.be.false;
   });
 
   it("includes", (): void => {
