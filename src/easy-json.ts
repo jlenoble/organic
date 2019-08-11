@@ -34,23 +34,32 @@ interface Easy {
   deepClone(): EasyValue;
 }
 
-function easyFactory(json: JsonValue): EasyType<JsonValue> {
+export default function easyFactory(json: JsonValue): EasyType<JsonValue> {
+  let easy: EasyType<JsonValue>;
+
   if (Array.isArray(json)) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    return new EasyArray(json);
+    easy = new EasyArray(json);
+  } else {
+    switch (typeof json) {
+      case "object":
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        easy = new EasyMap(json);
+        break;
+
+      case "string":
+      case "number":
+      case "boolean":
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        easy = new EasyPrimitive(json);
+        break;
+
+      default:
+        throw new Error("Invalid input value");
+    }
   }
 
-  switch (typeof json) {
-    case "object":
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return new EasyMap(json);
-
-    case "string":
-    case "number":
-    case "boolean":
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return new EasyPrimitive(json);
-  }
+  return easy;
 }
 
 export class EasyPrimitive implements Easy {
@@ -278,8 +287,4 @@ export class EasyMap implements Easy {
 
     return easy;
   }
-}
-
-export default function createEasyJson(json: JsonValue): EasyValue {
-  return easyFactory(json);
 }
