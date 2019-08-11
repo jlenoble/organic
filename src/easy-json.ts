@@ -27,6 +27,7 @@ interface Easy {
   isAssignable(json: JsonValue): boolean;
 
   equals(json: JsonValue): boolean;
+  includes(json: JsonValue): boolean;
 
   deepAssign(json: JsonValue): this;
   deepClone(): EasyValue | EasyJson;
@@ -77,6 +78,10 @@ export class EasyPrimitive implements Easy {
     return this._value === json;
   }
 
+  public includes(json: JsonValue): boolean {
+    return this._value === json;
+  }
+
   public deepAssign(json: Primitive): this {
     this._value = json;
     return this;
@@ -113,6 +118,18 @@ export class EasyArray implements Easy {
 
     return this._value.every((value, i): boolean => {
       return value.equals(json[i]);
+    });
+  }
+
+  public includes(json: JsonValue): boolean {
+    if (!Array.isArray(json)) {
+      return false;
+    }
+
+    const len = json.length;
+
+    return this._value.every((value, i): boolean => {
+      return i >= len || value.includes(json[i]);
     });
   }
 
@@ -175,6 +192,28 @@ export class EasyMap implements Easy {
     });
   }
 
+  public includes(json: JsonValue): boolean {
+    if (Array.isArray(json) || typeof json !== "object") {
+      return false;
+    }
+
+    let count = Object.keys(json).length;
+
+    return (
+      Object.keys(this._value).every((key): boolean => {
+        if (!count) {
+          return true;
+        }
+
+        if (json[key] !== undefined) {
+          count--;
+        }
+
+        return this._value[key].includes(json[key]);
+      }) && !count
+    );
+  }
+
   public deepAssign(json: JsonMap): this {
     Object.keys(json).forEach((key): void => {
       if (
@@ -227,6 +266,10 @@ export default class EasyJson implements Easy {
 
   public equals(json: JsonValue): boolean {
     return this._value.equals(json);
+  }
+
+  public includes(json: JsonValue): boolean {
+    return this._value.includes(json);
   }
 
   public deepAssign(json: JsonValue): this {

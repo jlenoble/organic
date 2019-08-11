@@ -2,14 +2,14 @@ import EasyJson from "../src/easy-json";
 import { expect } from "chai";
 
 describe("Testint EasyJson", (): void => {
-  it("Creating an EasyJson object", (): void => {
+  it("Creating", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
     const easy = new EasyJson(json);
 
     expect(easy.value).to.eql(json);
   });
 
-  it("Deeply assigning an EasyJson object", (): void => {
+  it("Deeply assigning", (): void => {
     const json1 = {
       a: 1,
       b: true,
@@ -45,7 +45,7 @@ describe("Testint EasyJson", (): void => {
     expect(easy.value).to.eql(json3);
   });
 
-  it("Deeply cloning an EasyJson object", (): void => {
+  it("Deeply cloning", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
     const easy = new EasyJson(json);
     const easy2 = easy.deepClone();
@@ -60,5 +60,20 @@ describe("Testint EasyJson", (): void => {
 
     expect(easy.value).to.eql(json);
     expect(easy.equals(json)).to.be.true;
+  });
+
+  it("includes", (): void => {
+    const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
+    const easy = new EasyJson(json);
+    const easy2 = new EasyJson(json);
+
+    easy2.deepAssign({
+      f: 33,
+      c: [2, 3, 4, 5, 6],
+      d: { e: ["hello", "bye"], g: 3 }
+    });
+
+    expect(easy.includes(easy2.value)).to.be.false;
+    expect(easy2.includes(easy.value)).to.be.true;
   });
 });
