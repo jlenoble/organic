@@ -31,7 +31,7 @@ interface Easy {
   isIncluded(json: JsonValue): boolean;
 
   deepAssign(json: JsonValue): this;
-  deepClone(): EasyValue | EasyJson;
+  deepClone(): EasyValue;
 }
 
 function easyFactory(json: JsonValue): EasyType<JsonValue> {
@@ -280,87 +280,6 @@ export class EasyMap implements Easy {
   }
 }
 
-export class EasyJson implements Easy {
-  protected _value: EasyType<JsonValue>;
-
-  public constructor(json: JsonValue) {
-    this._value = easyFactory(json);
-    Object.defineProperty(this, "_value", { enumerable: false });
-  }
-
-  public getValue(): JsonValue {
-    return this._value.getValue();
-  }
-
-  public isAssignable(json: JsonValue): boolean {
-    switch (typeof json) {
-      case "object":
-      case "string":
-      case "number":
-      case "boolean":
-        return true;
-    }
-
-    return false;
-  }
-
-  public equals(json: JsonValue): boolean {
-    return this._value.equals(json);
-  }
-
-  public includes(json: JsonValue): boolean {
-    return this._value.includes(json);
-  }
-
-  public isIncluded(json: JsonValue): boolean {
-    return this._value.isIncluded(json);
-  }
-
-  public deepAssign(json: JsonValue): this {
-    if (Array.isArray(json)) {
-      return this._deepAssignArray(json);
-    }
-
-    switch (typeof json) {
-      case "object":
-        return this._deepAssignMap(json);
-
-      case "string":
-      case "number":
-      case "boolean":
-        this._value = new EasyPrimitive(json);
-    }
-
-    return this;
-  }
-
-  protected _deepAssignArray(json: JsonArray): this {
-    if (this._value instanceof EasyArray) {
-      this._value.deepAssign(json);
-    } else {
-      this._value = new EasyArray(json);
-    }
-
-    return this;
-  }
-
-  protected _deepAssignMap(json: JsonMap): this {
-    if (this._value instanceof EasyMap) {
-      this._value.deepAssign(json);
-    } else {
-      this._value = new EasyMap(json);
-    }
-
-    return this;
-  }
-
-  public deepClone(): EasyJson {
-    const easy = new EasyJson({});
-    easy._value = this._value.deepClone();
-    return easy;
-  }
-}
-
-export default function createEasyJson(json: JsonValue): EasyJson {
-  return new EasyJson(json);
+export default function createEasyJson(json: JsonValue): EasyValue {
+  return easyFactory(json);
 }
