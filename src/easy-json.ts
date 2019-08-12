@@ -27,14 +27,12 @@ export default function easyFactory(json: JsonValue): JsonValue {
     });
 
     const proxy = new Proxy(easy, {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       get: (obj, prop): any => {
         switch (prop) {
           case "getValue":
             return (): JsonArray =>
               obj.map(
                 (el): JsonValue => {
-                  // @ts-ignore
                   return (typeof el === "object" && el.getValue()) || el;
                 }
               );
@@ -46,7 +44,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
 
                 json.forEach((value, i): void => {
                   if (i < len && isAssignable(obj[i], value)) {
-                    // @ts-ignore
                     obj[i].deepAssign(value);
                   } else {
                     obj[i] = easyFactory(value);
@@ -56,7 +53,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
             };
 
           case "deepClone":
-            // @ts-ignore
             return (): JsonValue => easyFactory(proxy.getValue());
 
           case "equals":
@@ -69,7 +65,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
                 json.length === obj.length &&
                 obj.every((el, i): boolean => {
                   return (
-                    // @ts-ignore
                     (typeof el === "object" && el.equals(json[i])) ||
                     el === json[i]
                   );
@@ -88,7 +83,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
               return obj.every((el, i): boolean => {
                 return (
                   i >= len ||
-                  // @ts-ignore
                   (typeof el === "object" && el.includes(json[i])) ||
                   el === json[i]
                 );
@@ -103,7 +97,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
 
               return obj.every((el, i): boolean => {
                 return (
-                  // @ts-ignore
                   (typeof el === "object" && el.isIncluded(json[i])) ||
                   el === json[i]
                 );
@@ -111,13 +104,11 @@ export default function easyFactory(json: JsonValue): JsonValue {
             };
         }
 
-        // @ts-ignore
         return obj[prop];
       },
 
       set: (obj, prop, value): boolean => {
-        // @ts-ignore
-        obj[prop] = value;
+        obj[prop] = easyFactory(value);
         return true;
       }
     });
@@ -133,14 +124,12 @@ export default function easyFactory(json: JsonValue): JsonValue {
         });
 
         const proxy = new Proxy(easy, {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           get: (obj, prop): any => {
             switch (prop) {
               case "getValue":
                 return (): JsonMap =>
                   Object.keys(obj).reduce((mb: JsonMap, key): JsonMap => {
                     mb[key] =
-                      // @ts-ignore
                       (typeof obj[key] === "object" && obj[key].getValue()) ||
                       obj[key];
                     return mb;
@@ -151,7 +140,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
                   if (typeof json === "object" && !Array.isArray(json)) {
                     Object.keys(json).forEach((key): void => {
                       if (isAssignable(obj[key], json[key])) {
-                        // @ts-ignore
                         obj[key].deepAssign(json[key]);
                       } else {
                         obj[key] = easyFactory(json[key]);
@@ -161,7 +149,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
                 };
 
               case "deepClone":
-                // @ts-ignore
                 return (): JsonValue => easyFactory(proxy.getValue());
 
               case "equals":
@@ -177,7 +164,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
                     keys.every((key): boolean => {
                       return (
                         (typeof obj[key] === "object" &&
-                          // @ts-ignore
                           obj[key].equals(json[key])) ||
                         obj[key] === json[key]
                       );
@@ -205,7 +191,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
 
                       return (
                         (typeof obj[key] === "object" &&
-                          // @ts-ignore
                           obj[key].includes(json[key])) ||
                         obj[key] === json[key]
                       );
@@ -222,7 +207,6 @@ export default function easyFactory(json: JsonValue): JsonValue {
                   return Object.keys(obj).every((key): boolean => {
                     return (
                       (typeof obj[key] === "object" &&
-                        // @ts-ignore
                         obj[key].isIncluded(json[key])) ||
                       obj[key] === json[key]
                     );
@@ -230,13 +214,11 @@ export default function easyFactory(json: JsonValue): JsonValue {
                 };
             }
 
-            // @ts-ignore
             return obj[prop];
           },
 
           set: (obj, prop, value): boolean => {
-            // @ts-ignore
-            obj[prop] = value;
+            obj[prop] = easyFactory(value);
             return true;
           }
         });
