@@ -11,280 +11,245 @@ interface JsonArray extends GenericArray<JsonValue> {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface JsonMap extends GenericMap<JsonValue> {}
 
-type EasyType<T> = T extends Primitive
-  ? EasyPrimitive
-  : T extends JsonArray
-  ? EasyArray
-  : T extends JsonMap
-  ? EasyMap
-  : never;
-
-type EasyValue = EasyPrimitive | EasyArray | EasyMap;
-
-interface Easy {
-  getValue(): JsonValue;
-
-  isAssignable(json: JsonValue): boolean;
-
-  equals(json: JsonValue): boolean;
-  includes(json: JsonValue): boolean;
-  isIncluded(json: JsonValue): boolean;
-
-  deepAssign(json: JsonValue): this;
-  deepClone(): EasyValue;
+function isAssignable(o1: JsonValue, o2: JsonValue): boolean {
+  return (
+    (Array.isArray(o1) && Array.isArray(o2)) ||
+    (typeof o1 === "object" && typeof o2 === "object")
+  );
 }
 
-export default function easyFactory(json: JsonValue): EasyType<JsonValue> {
-  let easy: EasyType<JsonValue>;
-
+export default function easyFactory(json: JsonValue): JsonValue {
   if (Array.isArray(json)) {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    easy = new EasyArray(json);
+    const easy: JsonArray = new Array(json.length);
+
+    json.forEach((value, i): void => {
+      easy[i] = easyFactory(value);
+    });
+
+    const proxy = new Proxy(easy, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      get: (obj, prop): any => {
+        switch (prop) {
+          case "getValue":
+            return (): JsonArray =>
+              obj.map(
+                (el): JsonValue => {
+                  // @ts-ignore
+                  return (typeof el === "object" && el.getValue()) || el;
+                }
+              );
+
+          case "deepAssign":
+            return (json: JsonValue): void => {
+              if (Array.isArray(json)) {
+                const len = obj.length;
+
+                json.forEach((value, i): void => {
+                  if (i < len && isAssignable(obj[i], value)) {
+                    // @ts-ignore
+                    obj[i].deepAssign(value);
+                  } else {
+                    obj[i] = easyFactory(value);
+                  }
+                });
+              }
+            };
+
+          case "deepClone":
+            // @ts-ignore
+            return (): JsonValue => easyFactory(proxy.getValue());
+
+          case "equals":
+            return (json: JsonValue): boolean => {
+              if (!Array.isArray(json)) {
+                return false;
+              }
+
+              return (
+                json.length === obj.length &&
+                obj.every((el, i): boolean => {
+                  return (
+                    // @ts-ignore
+                    (typeof el === "object" && el.equals(json[i])) ||
+                    el === json[i]
+                  );
+                })
+              );
+            };
+
+          case "includes":
+            return (json: JsonValue): boolean => {
+              if (!Array.isArray(json)) {
+                return false;
+              }
+
+              const len = json.length;
+
+              return obj.every((el, i): boolean => {
+                return (
+                  i >= len ||
+                  // @ts-ignore
+                  (typeof el === "object" && el.includes(json[i])) ||
+                  el === json[i]
+                );
+              });
+            };
+
+          case "isIncluded":
+            return (json: JsonValue): boolean => {
+              if (!Array.isArray(json)) {
+                return false;
+              }
+
+              return obj.every((el, i): boolean => {
+                return (
+                  // @ts-ignore
+                  (typeof el === "object" && el.isIncluded(json[i])) ||
+                  el === json[i]
+                );
+              });
+            };
+        }
+
+        // @ts-ignore
+        return obj[prop];
+      },
+
+      set: (obj, prop, value): boolean => {
+        // @ts-ignore
+        obj[prop] = value;
+        return true;
+      }
+    });
+
+    return proxy;
   } else {
     switch (typeof json) {
       case "object":
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        easy = new EasyMap(json);
-        break;
+        const easy: JsonMap = {};
+
+        Object.keys(json).forEach((key): void => {
+          easy[key] = easyFactory(json[key]);
+        });
+
+        const proxy = new Proxy(easy, {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          get: (obj, prop): any => {
+            switch (prop) {
+              case "getValue":
+                return (): JsonMap =>
+                  Object.keys(obj).reduce((mb: JsonMap, key): JsonMap => {
+                    mb[key] =
+                      // @ts-ignore
+                      (typeof obj[key] === "object" && obj[key].getValue()) ||
+                      obj[key];
+                    return mb;
+                  }, {});
+
+              case "deepAssign":
+                return (json: JsonValue): void => {
+                  if (typeof json === "object" && !Array.isArray(json)) {
+                    Object.keys(json).forEach((key): void => {
+                      if (isAssignable(obj[key], json[key])) {
+                        // @ts-ignore
+                        obj[key].deepAssign(json[key]);
+                      } else {
+                        obj[key] = easyFactory(json[key]);
+                      }
+                    });
+                  }
+                };
+
+              case "deepClone":
+                // @ts-ignore
+                return (): JsonValue => easyFactory(proxy.getValue());
+
+              case "equals":
+                return (json: JsonValue): boolean => {
+                  if (Array.isArray(json) || typeof json !== "object") {
+                    return false;
+                  }
+
+                  const keys = Object.keys(obj);
+
+                  return (
+                    keys.length === Object.keys(json).length &&
+                    keys.every((key): boolean => {
+                      return (
+                        (typeof obj[key] === "object" &&
+                          // @ts-ignore
+                          obj[key].equals(json[key])) ||
+                        obj[key] === json[key]
+                      );
+                    })
+                  );
+                };
+
+              case "includes":
+                return (json: JsonValue): boolean => {
+                  if (Array.isArray(json) || typeof json !== "object") {
+                    return false;
+                  }
+
+                  let count = Object.keys(json).length;
+
+                  return (
+                    Object.keys(obj).every((key): boolean => {
+                      if (!count) {
+                        return true;
+                      }
+
+                      if (json[key] !== undefined) {
+                        count--;
+                      }
+
+                      return (
+                        (typeof obj[key] === "object" &&
+                          // @ts-ignore
+                          obj[key].includes(json[key])) ||
+                        obj[key] === json[key]
+                      );
+                    }) && !count
+                  );
+                };
+
+              case "isIncluded":
+                return (json: JsonValue): boolean => {
+                  if (Array.isArray(json) || typeof json !== "object") {
+                    return false;
+                  }
+
+                  return Object.keys(obj).every((key): boolean => {
+                    return (
+                      (typeof obj[key] === "object" &&
+                        // @ts-ignore
+                        obj[key].isIncluded(json[key])) ||
+                      obj[key] === json[key]
+                    );
+                  });
+                };
+            }
+
+            // @ts-ignore
+            return obj[prop];
+          },
+
+          set: (obj, prop, value): boolean => {
+            // @ts-ignore
+            obj[prop] = value;
+            return true;
+          }
+        });
+
+        return proxy;
 
       case "string":
       case "number":
       case "boolean":
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        easy = new EasyPrimitive(json);
-        break;
+        return json;
 
       default:
         throw new Error("Invalid input value");
     }
-  }
-
-  return easy;
-}
-
-export class EasyPrimitive implements Easy {
-  protected _value: Primitive;
-
-  public constructor(json: Primitive) {
-    this._value = json;
-
-    Object.defineProperty(this, "_value", { enumerable: false });
-  }
-
-  public getValue(): Primitive {
-    return this._value;
-  }
-
-  public isAssignable(json: JsonValue): boolean {
-    switch (typeof json) {
-      case "string":
-      case "number":
-      case "boolean":
-        return true;
-    }
-
-    return false;
-  }
-
-  public equals(json: JsonValue): boolean {
-    return this._value === json;
-  }
-
-  public includes(json: JsonValue): boolean {
-    return this._value === json;
-  }
-
-  public isIncluded(json: JsonValue): boolean {
-    return this._value === json;
-  }
-
-  public deepAssign(json: Primitive): this {
-    this._value = json;
-    return this;
-  }
-
-  public deepClone(): EasyPrimitive {
-    return new EasyPrimitive(this._value);
-  }
-}
-
-export class EasyArray implements Easy {
-  protected _value: EasyValue[];
-
-  public constructor(json: JsonArray) {
-    this._value = new Array(json.length);
-
-    for (const [i, v] of json.entries()) {
-      this._value[i] = easyFactory(v);
-    }
-
-    Object.defineProperty(this, "_value", { enumerable: false });
-  }
-
-  public getValue(): JsonArray {
-    return this._value.map((easy): JsonValue => easy.getValue());
-  }
-
-  public isAssignable(json: JsonValue): boolean {
-    return Array.isArray(json);
-  }
-
-  public equals(json: JsonValue): boolean {
-    if (!Array.isArray(json)) {
-      return false;
-    }
-
-    return (
-      json.length === this._value.length &&
-      this._value.every((value, i): boolean => {
-        return value.equals(json[i]);
-      })
-    );
-  }
-
-  public includes(json: JsonValue): boolean {
-    if (!Array.isArray(json)) {
-      return false;
-    }
-
-    const len = json.length;
-
-    return this._value.every((value, i): boolean => {
-      return i >= len || value.includes(json[i]);
-    });
-  }
-
-  public isIncluded(json: JsonValue): boolean {
-    if (!Array.isArray(json)) {
-      return false;
-    }
-
-    return this._value.every((value, i): boolean => {
-      return value.isIncluded(json[i]);
-    });
-  }
-
-  public deepAssign(json: JsonArray): this {
-    const len = this._value.length;
-
-    json.forEach((value, i): void => {
-      if (i < len && this._value[i].isAssignable(value)) {
-        // @ts-ignore
-        this._value[i].deepAssign(value);
-      } else {
-        this._value[i] = easyFactory(value);
-      }
-    });
-
-    return this;
-  }
-
-  public deepClone(): EasyArray {
-    const len = this._value.length;
-    const easy = new EasyArray([]);
-
-    for (let i = 0; i < len; i++) {
-      easy._value[i] = this._value[i].deepClone();
-    }
-
-    return easy;
-  }
-}
-
-export class EasyMap implements Easy {
-  protected _value: { [key: string]: EasyValue };
-
-  public constructor(json: JsonMap) {
-    this._value = {};
-
-    for (const key of Object.keys(json)) {
-      this._value[key] = easyFactory(json[key]);
-    }
-
-    Object.defineProperty(this, "_value", { enumerable: false });
-  }
-
-  public getValue(): JsonMap {
-    return Object.keys(this._value).reduce((json: JsonMap, key): JsonMap => {
-      json[key] = this._value[key].getValue();
-      return json;
-    }, {});
-  }
-
-  public isAssignable(json: JsonValue): boolean {
-    return !Array.isArray(json) && typeof json === "object";
-  }
-
-  public equals(json: JsonValue): boolean {
-    if (Array.isArray(json) || typeof json !== "object") {
-      return false;
-    }
-
-    const keys = Object.keys(this._value);
-
-    return (
-      keys.length === Object.keys(json).length &&
-      keys.every((key): boolean => {
-        return this._value[key].equals(json[key]);
-      })
-    );
-  }
-
-  public includes(json: JsonValue): boolean {
-    if (Array.isArray(json) || typeof json !== "object") {
-      return false;
-    }
-
-    let count = Object.keys(json).length;
-
-    return (
-      Object.keys(this._value).every((key): boolean => {
-        if (!count) {
-          return true;
-        }
-
-        if (json[key] !== undefined) {
-          count--;
-        }
-
-        return this._value[key].includes(json[key]);
-      }) && !count
-    );
-  }
-
-  public isIncluded(json: JsonValue): boolean {
-    if (Array.isArray(json) || typeof json !== "object") {
-      return false;
-    }
-
-    return Object.keys(this._value).every((key): boolean => {
-      return this._value[key].isIncluded(json[key]);
-    });
-  }
-
-  public deepAssign(json: JsonMap): this {
-    Object.keys(json).forEach((key): void => {
-      if (
-        this._value[key] !== undefined &&
-        this._value[key].isAssignable(json[key])
-      ) {
-        // @ts-ignore
-        this._value[key].deepAssign(json[key]);
-      } else {
-        this._value[key] = easyFactory(json[key]);
-      }
-    });
-
-    return this;
-  }
-
-  public deepClone(): EasyMap {
-    const easy = new EasyMap({});
-
-    Object.keys(this._value).forEach((key): void => {
-      easy._value[key] = this._value[key].deepClone();
-    });
-
-    return easy;
   }
 }
