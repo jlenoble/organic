@@ -1,7 +1,8 @@
 "use strict";
 
-import { Primitive, JsonObject, JsonValue, GenericMap } from "./json";
+import { Primitive, JsonObject, JsonValue } from "./json";
 import EasyArray from "./easy-array";
+import EasyMap from "./easy-map";
 
 export type EasyObject = EasyArray | EasyMap;
 export type EasyValue = Primitive | EasyObject;
@@ -15,7 +16,6 @@ export interface Easy {
   $isIncluded(json: JsonValue | EasyObject): boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface BaseEasyMap extends GenericMap<EasyValue> {}
-
-export type EasyMap = BaseEasyMap & Easy;
+export class GenericMap {
+  [key: string]: EasyValue;
+}

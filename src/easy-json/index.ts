@@ -1,7 +1,7 @@
-import { JsonMap, JsonValue } from "./json";
-import { EasyMap, EasyObject } from "./easy";
+import { JsonValue } from "./json";
+import { EasyObject } from "./easy";
 import EasyArray from "./easy-array";
-import isAssignable from "./is-assignable";
+import EasyMap from "./easy-map";
 
 export default function easyJson(json: JsonValue): EasyObject {
   if (Array.isArray(json)) {
@@ -28,109 +28,13 @@ export default function easyJson(json: JsonValue): EasyObject {
   } else {
     switch (typeof json) {
       case "object":
-        const easy: EasyMap = {};
+        const easy = new EasyMap();
 
         Object.keys(json).forEach((key): void => {
           easy[key] = easyJson(json[key]);
         });
 
         const proxy = new Proxy(easy, {
-          get: (obj, prop): any => {
-            switch (prop) {
-              case "$getValue":
-                return (): JsonMap =>
-                  Object.keys(obj).reduce((mb: JsonMap, key): JsonMap => {
-                    mb[key] =
-                      (typeof obj[key] === "object" &&
-                        (obj[key] as EasyObject).$getValue()) ||
-                      obj[key];
-                    return mb;
-                  }, {});
-
-              case "$deepAssign":
-                return (json: JsonValue | EasyObject): void => {
-                  if (typeof json === "object" && !Array.isArray(json)) {
-                    Object.keys(json).forEach((key): void => {
-                      if (isAssignable(obj[key], json[key])) {
-                        (obj[key] as EasyObject).$deepAssign(json[
-                          key
-                        ] as EasyObject);
-                      } else {
-                        obj[key] = easyJson(json[key]);
-                      }
-                    });
-                  }
-                };
-
-              case "$deepClone":
-                return (): JsonValue => easyJson(proxy.$getValue());
-
-              case "$equals":
-                return (json: JsonValue | EasyObject): boolean => {
-                  if (Array.isArray(json) || typeof json !== "object") {
-                    return false;
-                  }
-
-                  const keys = Object.keys(obj);
-
-                  return (
-                    keys.length === Object.keys(json).length &&
-                    keys.every((key): boolean => {
-                      return (
-                        (typeof obj[key] === "object" &&
-                          (obj[key] as EasyObject).$equals(json[key])) ||
-                        obj[key] === json[key]
-                      );
-                    })
-                  );
-                };
-
-              case "$includes":
-                return (json: JsonValue | EasyObject): boolean => {
-                  if (Array.isArray(json) || typeof json !== "object") {
-                    return false;
-                  }
-
-                  let count = Object.keys(json).length;
-
-                  return (
-                    Object.keys(obj).every((key): boolean => {
-                      if (!count) {
-                        return true;
-                      }
-
-                      if (json[key] !== undefined) {
-                        count--;
-                      }
-
-                      return (
-                        (typeof obj[key] === "object" &&
-                          (obj[key] as EasyObject).$includes(json[key])) ||
-                        obj[key] === json[key]
-                      );
-                    }) && !count
-                  );
-                };
-
-              case "$isIncluded":
-                return (json: JsonValue | EasyObject): boolean => {
-                  if (Array.isArray(json) || typeof json !== "object") {
-                    return false;
-                  }
-
-                  return Object.keys(obj).every((key): boolean => {
-                    return (
-                      (typeof obj[key] === "object" &&
-                        (obj[key] as EasyObject).$isIncluded(json[key])) ||
-                      obj[key] === json[key]
-                    );
-                  });
-                };
-            }
-
-            return obj[prop];
-          },
-
           set: (obj, prop, value): boolean => {
             if (typeof prop === "string") {
               obj[prop] = easyJson(value);
