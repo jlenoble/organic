@@ -7,7 +7,7 @@ import {
   EasyObjectProxy
 } from "./easy";
 import isAssignable from "./is-assignable";
-import easyJson from "./index";
+import { easyFactory } from "./easy-json";
 
 export default class EasyArray extends Array<EasyValue> implements Easy {
   public $getValue(): JsonArray {
@@ -27,14 +27,14 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
         if (i < len && isAssignable(this[i], json[i])) {
           (this[i] as EasyObjectProxy).$deepAssign(json[i]);
         } else {
-          this[i] = easyJson(json[i]);
+          this[i] = easyFactory(json[i]);
         }
       }
     }
   }
 
   public $deepClone(): EasyArray {
-    return easyJson(this.$getValue()) as EasyArray;
+    return easyFactory(this.$getValue()) as EasyArray;
   }
 
   public $equals(json: EasyArgument): boolean {
@@ -86,7 +86,7 @@ export function easyArray(json: JsonArray): EasyArrayProxy {
 
   json.forEach((value, i): void => {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    easy[i] = easyJson(value);
+    easy[i] = easyFactory(value);
   });
 
   const proxy: EasyArrayProxy = new Proxy(easy, {
@@ -95,7 +95,7 @@ export function easyArray(json: JsonArray): EasyArrayProxy {
 
       if (n.toString() === prop) {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        obj[n] = easyJson(value);
+        obj[n] = easyFactory(value);
         return true;
       }
 

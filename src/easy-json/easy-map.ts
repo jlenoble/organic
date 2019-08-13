@@ -7,7 +7,7 @@ import {
   EasyObjectProxy
 } from "./easy";
 import isAssignable from "./is-assignable";
-import easyJson from "./index";
+import { easyFactory } from "./easy-json";
 
 export default class EasyMap implements Easy {
   public $: GenericMap<EasyValue>;
@@ -36,14 +36,14 @@ export default class EasyMap implements Easy {
             key
           ] as EasyObjectProxy);
         } else {
-          this.$[key] = easyJson(json[key]);
+          this.$[key] = easyFactory(json[key]);
         }
       });
     }
   }
 
   public $deepClone(): EasyMapProxy {
-    return easyJson(this.$getValue()) as EasyMapProxy;
+    return easyFactory(this.$getValue()) as EasyMapProxy;
   }
 
   public $equals(json: EasyArgument): boolean {
@@ -111,7 +111,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
 
   Object.keys(json).forEach((key): void => {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    easy.$[key] = easyJson(json[key]);
+    easy.$[key] = easyFactory(json[key]);
   });
 
   // @ts-ignore We cannot add a index signature to EasyMap because we cannot
@@ -131,7 +131,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
     set: (obj, prop, value): boolean => {
       if (typeof prop === "string") {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        obj.$[prop] = easyJson(value);
+        obj.$[prop] = easyFactory(value);
         return true;
       }
 
