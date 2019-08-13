@@ -1,96 +1,17 @@
-import { JsonArray, JsonMap, JsonValue } from "./json";
-import { EasyArray, EasyMap, EasyObject } from "./easy";
+import { JsonMap, JsonValue } from "./json";
+import { EasyMap, EasyObject } from "./easy";
+import EasyArray from "./easy-array";
 import isAssignable from "./is-assignable";
 
 export default function easyJson(json: JsonValue): EasyObject {
   if (Array.isArray(json)) {
-    const easy: EasyArray = new Array(json.length) as EasyArray;
+    const easy: EasyArray = new EasyArray(json.length);
 
     json.forEach((value, i): void => {
       easy[i] = easyJson(value);
     });
 
     const proxy = new Proxy(easy, {
-      get: (obj, prop): any => {
-        switch (prop) {
-          case "$getValue":
-            return (): JsonArray =>
-              obj.map(
-                (el): JsonValue => {
-                  return (typeof el === "object" && el.$getValue()) || el;
-                }
-              );
-
-          case "$deepAssign":
-            return (json: JsonArray | EasyArray): void => {
-              if (Array.isArray(json)) {
-                const len = obj.length;
-
-                json.forEach((value: JsonValue | EasyObject, i): void => {
-                  if (i < len && isAssignable(obj[i], value)) {
-                    (obj[i] as EasyObject).$deepAssign(value);
-                  } else {
-                    obj[i] = easyJson(value);
-                  }
-                });
-              }
-            };
-
-          case "$deepClone":
-            return (): JsonValue => easyJson(proxy.$getValue());
-
-          case "$equals":
-            return (json: JsonValue | EasyObject): boolean => {
-              if (!Array.isArray(json)) {
-                return false;
-              }
-
-              return (
-                json.length === obj.length &&
-                obj.every((el, i): boolean => {
-                  return (
-                    (typeof el === "object" && el.$equals(json[i])) ||
-                    el === json[i]
-                  );
-                })
-              );
-            };
-
-          case "$includes":
-            return (json: JsonValue | EasyObject): boolean => {
-              if (!Array.isArray(json)) {
-                return false;
-              }
-
-              const len = json.length;
-
-              return obj.every((el, i): boolean => {
-                return (
-                  i >= len ||
-                  (typeof el === "object" && el.$includes(json[i])) ||
-                  el === json[i]
-                );
-              });
-            };
-
-          case "$isIncluded":
-            return (json: JsonValue | EasyObject): boolean => {
-              if (!Array.isArray(json)) {
-                return false;
-              }
-
-              return obj.every((el, i): boolean => {
-                return (
-                  (typeof el === "object" && el.$isIncluded(json[i])) ||
-                  el === json[i]
-                );
-              });
-            };
-        }
-
-        return obj[prop];
-      },
-
       set: (obj, prop, value): boolean => {
         const n = parseInt(prop as string, 10);
 

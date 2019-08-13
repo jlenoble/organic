@@ -1,12 +1,7 @@
 "use strict";
 
-import {
-  Primitive,
-  JsonObject,
-  JsonValue,
-  GenericArray,
-  GenericMap
-} from "./json";
+import { Primitive, JsonObject, JsonValue, GenericMap } from "./json";
+import EasyArray from "./easy-array";
 
 export type EasyObject = EasyArray | EasyMap;
 export type EasyValue = Primitive | EasyObject;
@@ -21,9 +16,6 @@ export interface Easy {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface BaseEasyArray extends GenericArray<EasyValue> {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface BaseEasyMap extends GenericMap<EasyValue> {}
 
-export type EasyArray = BaseEasyArray & Easy;
 export type EasyMap = BaseEasyMap & Easy;
