@@ -1,4 +1,4 @@
-import easyJson, { JsonMap } from "../src/easy-json";
+import easyJson, { JsonMap, EasyMap } from "../src/easy-json";
 import { expect } from "chai";
 
 describe("Testint EasyJson", (): void => {
@@ -39,7 +39,7 @@ describe("Testint EasyJson", (): void => {
       }
     };
 
-    const easy = easyJson(json1);
+    const easy = easyJson(json1) as EasyMap;
     easy.$deepAssign(json2);
 
     expect(easy.$getValue()).to.eql(json3);
@@ -56,9 +56,9 @@ describe("Testint EasyJson", (): void => {
 
   it("equals", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
-    const easy2 = easyJson(json);
-    const easy3 = easyJson(json);
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
+    const easy3 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign({
       c: [2, 3, 4, 5, 6],
@@ -83,8 +83,8 @@ describe("Testint EasyJson", (): void => {
 
   it("includes", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
-    const easy2 = easyJson(json);
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign({
       f: 33,
@@ -98,8 +98,8 @@ describe("Testint EasyJson", (): void => {
 
   it("isIncluded", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
-    const easy2 = easyJson(json);
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign({
       f: 33,
@@ -113,7 +113,7 @@ describe("Testint EasyJson", (): void => {
 
   it("Direct access: getting", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
+    const easy = easyJson(json) as EasyMap;
 
     expect(easy.a).to.equal(1);
     expect(easy.b).to.be.true;
@@ -126,7 +126,7 @@ describe("Testint EasyJson", (): void => {
 
   it("Direct access: setting", (): void => {
     const json: JsonMap = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
+    const easy = easyJson(json) as EasyMap;
 
     easy.a = 2;
     easy.b = false;
