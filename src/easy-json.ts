@@ -128,8 +128,14 @@ export default function easyJson(json: JsonValue): EasyObject {
       },
 
       set: (obj, prop, value): boolean => {
-        obj[prop] = easyJson(value);
-        return true;
+        const n = parseInt(prop as string, 10);
+
+        if (n.toString() === prop) {
+          obj[n] = easyJson(value);
+          return true;
+        }
+
+        return false;
       }
     });
 
@@ -161,7 +167,9 @@ export default function easyJson(json: JsonValue): EasyObject {
                   if (typeof json === "object" && !Array.isArray(json)) {
                     Object.keys(json).forEach((key): void => {
                       if (isAssignable(obj[key], json[key])) {
-                        (obj[key] as EasyObject).$deepAssign(json[key]);
+                        (obj[key] as EasyObject).$deepAssign(json[
+                          key
+                        ] as EasyObject);
                       } else {
                         obj[key] = easyJson(json[key]);
                       }
@@ -239,8 +247,12 @@ export default function easyJson(json: JsonValue): EasyObject {
           },
 
           set: (obj, prop, value): boolean => {
-            obj[prop] = easyJson(value);
-            return true;
+            if (typeof prop === "string") {
+              obj[prop] = easyJson(value);
+              return true;
+            }
+
+            return false;
           }
         });
 
