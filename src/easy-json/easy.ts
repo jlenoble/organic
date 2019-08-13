@@ -1,21 +1,22 @@
 "use strict";
 
-import { Primitive, JsonObject, JsonValue } from "./json";
-import EasyArray from "./easy-array";
-import EasyMap from "./easy-map";
+import { Primitive, JsonValue } from "./json";
 
-export type EasyObject = EasyArray | EasyMap;
-export type EasyValue = Primitive | EasyObject;
+export type EasyObjectProxy = EasyArrayProxy | EasyMapProxy;
+export type EasyValue = Primitive | EasyObjectProxy;
 
 export interface Easy {
   $getValue(): JsonValue;
-  $deepAssign(json: JsonObject | EasyObject): void;
-  $deepClone(): EasyObject;
-  $equals(json: JsonValue | EasyObject): boolean;
-  $includes(json: JsonValue | EasyObject): boolean;
-  $isIncluded(json: JsonValue | EasyObject): boolean;
+  $deepAssign(json: JsonValue | EasyValue): void;
+  $deepClone(): EasyObjectProxy;
+  $equals(json: JsonValue | EasyValue): boolean;
+  $includes(json: JsonValue | EasyValue): boolean;
+  $isIncluded(json: JsonValue | EasyValue): boolean;
 }
 
-export class GenericMap {
-  [key: string]: EasyValue;
-}
+export interface EasyArrayProxy extends Easy, Array<EasyValue> {}
+
+export type EasyMapProxy = Easy &
+  {
+    [index in Exclude<string, keyof Easy>]: EasyValue;
+  };
