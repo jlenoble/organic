@@ -1,5 +1,11 @@
 import { JsonArray, JsonValue } from "./json";
-import { Easy, EasyValue, EasyArrayProxy, EasyObjectProxy } from "./easy";
+import {
+  Easy,
+  EasyValue,
+  EasyArgument,
+  EasyArrayProxy,
+  EasyObjectProxy
+} from "./easy";
 import isAssignable from "./is-assignable";
 import easyJson from "./index";
 
@@ -12,7 +18,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     );
   }
 
-  public $deepAssign(json: JsonValue | EasyValue): void {
+  public $deepAssign(json: EasyArgument): void {
     if (Array.isArray(json)) {
       const len = this.length;
       const len2 = json.length;
@@ -31,7 +37,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     return easyJson(this.$getValue()) as EasyArray;
   }
 
-  public $equals(json: JsonValue | EasyValue): boolean {
+  public $equals(json: EasyArgument): boolean {
     if (!Array.isArray(json)) {
       return false;
     }
@@ -46,7 +52,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     );
   }
 
-  public $includes(json: JsonValue | EasyValue): boolean {
+  public $includes(json: EasyArgument): boolean {
     if (!Array.isArray(json)) {
       return false;
     }
@@ -62,7 +68,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     });
   }
 
-  public $isIncluded(json: JsonValue | EasyValue): boolean {
+  public $isIncluded(json: EasyArgument): boolean {
     if (!Array.isArray(json)) {
       return false;
     }

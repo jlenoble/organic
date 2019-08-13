@@ -1,5 +1,11 @@
-import { JsonMap, JsonValue, GenericMap } from "./json";
-import { Easy, EasyValue, EasyMapProxy, EasyObjectProxy } from "./easy";
+import { JsonMap, GenericMap } from "./json";
+import {
+  Easy,
+  EasyValue,
+  EasyArgument,
+  EasyMapProxy,
+  EasyObjectProxy
+} from "./easy";
 import isAssignable from "./is-assignable";
 import easyJson from "./index";
 
@@ -22,7 +28,7 @@ export default class EasyMap implements Easy {
     }, {});
   }
 
-  public $deepAssign(json: JsonValue | EasyValue): void {
+  public $deepAssign(json: EasyArgument): void {
     if (typeof json === "object" && !Array.isArray(json)) {
       Object.keys(json).forEach((key): void => {
         if (isAssignable(this.$[key], json[key])) {
@@ -40,7 +46,7 @@ export default class EasyMap implements Easy {
     return easyJson(this.$getValue()) as EasyMapProxy;
   }
 
-  public $equals(json: JsonValue | EasyValue): boolean {
+  public $equals(json: EasyArgument): boolean {
     if (Array.isArray(json) || typeof json !== "object") {
       return false;
     }
@@ -59,7 +65,7 @@ export default class EasyMap implements Easy {
     );
   }
 
-  public $includes(json: JsonValue | EasyValue): boolean {
+  public $includes(json: EasyArgument): boolean {
     if (Array.isArray(json) || typeof json !== "object") {
       return false;
     }
@@ -85,7 +91,7 @@ export default class EasyMap implements Easy {
     );
   }
 
-  public $isIncluded(json: JsonValue | EasyValue): boolean {
+  public $isIncluded(json: EasyArgument): boolean {
     if (Array.isArray(json) || typeof json !== "object") {
       return false;
     }
