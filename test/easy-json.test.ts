@@ -1,4 +1,4 @@
-import easyJson, { JsonMap, EasyMap } from "../src/easy-json";
+import easyJson, { JsonMap, EasyMapProxy } from "../src/easy-json";
 import { expect } from "chai";
 
 describe("Testint EasyJson", (): void => {
@@ -6,7 +6,7 @@ describe("Testint EasyJson", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
     const easy = easyJson(json);
 
-    expect(easy.$getValue()).to.eql(json);
+    expect(easy).to.eql(json);
   });
 
   it("Deeply assigning", (): void => {
@@ -39,10 +39,10 @@ describe("Testint EasyJson", (): void => {
       }
     };
 
-    const easy = easyJson(json1) as EasyMap;
+    const easy = easyJson(json1) as EasyMapProxy;
     easy.$deepAssign(json2);
 
-    expect(easy.$getValue()).to.eql(json3);
+    expect(easy).to.eql(json3);
   });
 
   it("Deeply cloning", (): void => {
@@ -50,15 +50,15 @@ describe("Testint EasyJson", (): void => {
     const easy = easyJson(json);
     const easy2 = easy.$deepClone();
 
-    expect(easy2.$getValue()).to.eql(json);
+    expect(easy2).to.eql(json);
     expect(easy2).not.to.equal(easy);
   });
 
   it("equals", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMap;
-    const easy2 = easyJson(json) as EasyMap;
-    const easy3 = easyJson(json) as EasyMap;
+    const easy = easyJson(json) as EasyMapProxy;
+    const easy2 = easyJson(json) as EasyMapProxy;
+    const easy3 = easyJson(json) as EasyMapProxy;
 
     easy2.$deepAssign({
       c: [2, 3, 4, 5, 6],
@@ -71,20 +71,20 @@ describe("Testint EasyJson", (): void => {
       d: { e: ["hello"], g: 3 }
     });
 
-    expect(easy.$getValue()).to.eql(json);
+    expect(easy).to.eql(json);
     expect(easy.$equals(json)).to.be.true;
 
-    expect(easy.$equals(easy2.$getValue())).to.be.false;
-    expect(easy2.$equals(easy.$getValue())).to.be.false;
+    expect(easy.$equals(easy2)).to.be.false;
+    expect(easy2.$equals(easy)).to.be.false;
 
-    expect(easy.$equals(easy3.$getValue())).to.be.false;
-    expect(easy3.$equals(easy.$getValue())).to.be.false;
+    expect(easy.$equals(easy3)).to.be.false;
+    expect(easy3.$equals(easy)).to.be.false;
   });
 
   it("includes", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMap;
-    const easy2 = easyJson(json) as EasyMap;
+    const easy = easyJson(json) as EasyMapProxy;
+    const easy2 = easyJson(json) as EasyMapProxy;
 
     easy2.$deepAssign({
       f: 33,
@@ -92,14 +92,14 @@ describe("Testint EasyJson", (): void => {
       d: { e: ["hello", "bye"], g: 3 }
     });
 
-    expect(easy.$includes(easy2.$getValue())).to.be.false;
-    expect(easy2.$includes(easy.$getValue())).to.be.true;
+    expect(easy.$includes(easy2)).to.be.false;
+    expect(easy2.$includes(easy)).to.be.true;
   });
 
   it("isIncluded", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMap;
-    const easy2 = easyJson(json) as EasyMap;
+    const easy = easyJson(json) as EasyMapProxy;
+    const easy2 = easyJson(json) as EasyMapProxy;
 
     easy2.$deepAssign({
       f: 33,
@@ -107,13 +107,13 @@ describe("Testint EasyJson", (): void => {
       d: { e: ["hello", "bye"], g: 3 }
     });
 
-    expect(easy.$isIncluded(easy2.$getValue())).to.be.true;
-    expect(easy2.$isIncluded(easy.$getValue())).to.be.false;
+    expect(easy.$isIncluded(easy2)).to.be.true;
+    expect(easy2.$isIncluded(easy)).to.be.false;
   });
 
   it("Direct access: getting", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMap;
+    const easy = easyJson(json) as EasyMapProxy;
 
     expect(easy.a).to.equal(1);
     expect(easy.b).to.be.true;
@@ -126,7 +126,7 @@ describe("Testint EasyJson", (): void => {
 
   it("Direct access: setting", (): void => {
     const json: JsonMap = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMap;
+    const easy = easyJson(json) as EasyMapProxy;
 
     easy.a = 2;
     easy.b = false;
