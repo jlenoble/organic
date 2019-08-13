@@ -1,12 +1,6 @@
 import { JsonArray, JsonMap, JsonValue } from "./json";
 import { EasyArray, EasyMap, EasyObject } from "./easy";
-
-function isAssignable(o1: JsonValue, o2: JsonValue): boolean {
-  return (
-    (Array.isArray(o1) && Array.isArray(o2)) ||
-    (typeof o1 === "object" && typeof o2 === "object")
-  );
-}
+import isAssignable from "./is-assignable";
 
 export default function easyJson(json: JsonValue): EasyObject {
   if (Array.isArray(json)) {
