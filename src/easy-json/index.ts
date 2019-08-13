@@ -1,18 +1,15 @@
-export interface GenericMap<T> {
-  [key: string]: T;
-}
+import {
+  Primitive,
+  JsonArray,
+  JsonMap,
+  JsonObject,
+  JsonValue,
+  GenericArray,
+  GenericMap
+} from "./json";
 
-export type GenericArray<T> = T[];
-export type Primitive = string | number | boolean;
-export type JsonObject = JsonArray | JsonMap;
-export type JsonValue = Primitive | JsonObject;
 export type EasyObject = EasyArray | EasyMap;
 export type EasyValue = Primitive | EasyObject;
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface JsonArray extends GenericArray<JsonValue> {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface JsonMap extends GenericMap<JsonValue> {}
 
 export interface Easy {
   $getValue(): JsonValue;
