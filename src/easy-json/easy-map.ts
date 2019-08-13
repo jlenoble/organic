@@ -1,55 +1,65 @@
-import { JsonMap, JsonValue } from "./json";
-import { Easy, EasyObject } from "./easy";
+import { JsonMap, JsonValue, GenericMap } from "./json";
+import { Easy, EasyValue, EasyMapProxy, EasyObjectProxy } from "./easy";
 import isAssignable from "./is-assignable";
 import easyJson from "./index";
 
 export default class EasyMap implements Easy {
+  public $: GenericMap<EasyValue>;
+
+  public constructor() {
+    this.$ = {};
+
+    Object.defineProperty(this, "$", { writable: false, enumerable: false });
+  }
+
   public $getValue(): JsonMap {
-    return Object.keys(this).reduce((mb: JsonMap, key): JsonMap => {
+    return Object.keys(this.$).reduce((mb: JsonMap, key): JsonMap => {
       mb[key] =
-        (typeof this[key] === "object" &&
-          (this[key] as EasyObject).$getValue()) ||
-        this[key];
+        (typeof this.$[key] === "object" &&
+          (this.$[key] as EasyObjectProxy).$getValue()) ||
+        this.$[key];
       return mb;
     }, {});
   }
 
-  public $deepAssign(json: JsonValue | EasyObject): void {
+  public $deepAssign(json: JsonValue | EasyValue): void {
     if (typeof json === "object" && !Array.isArray(json)) {
       Object.keys(json).forEach((key): void => {
-        if (isAssignable(this[key], json[key])) {
-          (this[key] as EasyObject).$deepAssign(json[key] as EasyObject);
+        if (isAssignable(this.$[key], json[key])) {
+          (this.$[key] as EasyObjectProxy).$deepAssign(json[
+            key
+          ] as EasyObjectProxy);
         } else {
-          this[key] = easyJson(json[key]);
+          this.$[key] = easyJson(json[key]);
         }
       });
     }
   }
 
-  public $deepClone(): EasyMap {
-    return easyJson(this.$getValue()) as EasyMap;
+  public $deepClone(): EasyMapProxy {
+    return easyJson(this.$getValue()) as EasyMapProxy;
   }
 
-  public $equals(json: JsonValue | EasyObject): boolean {
+  public $equals(json: JsonValue | EasyValue): boolean {
     if (Array.isArray(json) || typeof json !== "object") {
       return false;
     }
 
-    const keys = Object.keys(this);
+    const keys = Object.keys(this.$);
 
     return (
       keys.length === Object.keys(json).length &&
       keys.every((key): boolean => {
         return (
-          (typeof this[key] === "object" &&
-            (this[key] as EasyObject).$equals(json[key])) ||
-          this[key] === json[key]
+          (typeof this.$[key] === "object" &&
+            (this.$[key] as EasyObjectProxy).$equals(json[key])) ||
+          this.$[key] === json[key]
         );
       })
     );
   }
 
-  public $includes(json: JsonValue | EasyObject): boolean {
+  public $includes(json: JsonValue | EasyValue): boolean {
     if (Array.isArray(json) || typeof json !== "object") {
       return false;
     }
@@ -57,7 +67,7 @@ export default class EasyMap implements Easy {
     let count = Object.keys(json).length;
 
     return (
-      Object.keys(this).every((key): boolean => {
+      Object.keys(this.$).every((key): boolean => {
         if (!count) {
           return true;
         }
@@ -67,24 +77,24 @@ export default class EasyMap implements Easy {
         }
 
         return (
-          (typeof this[key] === "object" &&
-            (this[key] as EasyObject).$includes(json[key])) ||
-          this[key] === json[key]
+          (typeof this.$[key] === "object" &&
+            (this.$[key] as EasyObjectProxy).$includes(json[key])) ||
+          this.$[key] === json[key]
         );
       }) && !count
     );
   }
 
-  public $isIncluded(json: JsonValue | EasyObject): boolean {
+  public $isIncluded(json: JsonValue | EasyValue): boolean {
     if (Array.isArray(json) || typeof json !== "object") {
       return false;
     }
 
-    return Object.keys(this).every((key): boolean => {
+    return Object.keys(this.$).every((key): boolean => {
       return (
-        (typeof this[key] === "object" &&
-          (this[key] as EasyObject).$isIncluded(json[key])) ||
-        this[key] === json[key]
+        (typeof this.$[key] === "object" &&
+          (this.$[key] as EasyObjectProxy).$isIncluded(json[key])) ||
+        this.$[key] === json[key]
       );
     });
   }
