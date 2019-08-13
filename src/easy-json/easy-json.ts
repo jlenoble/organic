@@ -1,32 +1,7 @@
-import { JsonValue, JsonArray, JsonMap } from "./json";
-import { EasyObjectProxy, EasyArrayProxy, EasyMapProxy } from "./easy";
-import EasyArray from "./easy-array";
+import { JsonValue, JsonMap } from "./json";
+import { EasyObjectProxy, EasyMapProxy } from "./easy";
+import { easyArray } from "./easy-array";
 import EasyMap from "./easy-map";
-
-export function easyArray(json: JsonArray): EasyArrayProxy {
-  const easy: EasyArray = new EasyArray(json.length);
-
-  json.forEach((value, i): void => {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    easy[i] = easyJson(value);
-  });
-
-  const proxy: EasyArrayProxy = new Proxy(easy, {
-    set: (obj, prop, value): boolean => {
-      const n = parseInt(prop as string, 10);
-
-      if (n.toString() === prop) {
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        obj[n] = easyJson(value);
-        return true;
-      }
-
-      return false;
-    }
-  });
-
-  return proxy;
-}
 
 export function easyMap(json: JsonMap): EasyMapProxy {
   const easy = new EasyMap();

@@ -1,5 +1,5 @@
 import { JsonArray, JsonValue } from "./json";
-import { Easy, EasyValue, EasyObjectProxy } from "./easy";
+import { Easy, EasyValue, EasyArrayProxy, EasyObjectProxy } from "./easy";
 import isAssignable from "./is-assignable";
 import easyJson from "./index";
 
@@ -73,4 +73,29 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
       );
     });
   }
+}
+
+export function easyArray(json: JsonArray): EasyArrayProxy {
+  const easy: EasyArray = new EasyArray(json.length);
+
+  json.forEach((value, i): void => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    easy[i] = easyJson(value);
+  });
+
+  const proxy: EasyArrayProxy = new Proxy(easy, {
+    set: (obj, prop, value): boolean => {
+      const n = parseInt(prop as string, 10);
+
+      if (n.toString() === prop) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        obj[n] = easyJson(value);
+        return true;
+      }
+
+      return false;
+    }
+  });
+
+  return proxy;
 }
