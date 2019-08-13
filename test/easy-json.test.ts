@@ -1,12 +1,12 @@
-import createEasyJson from "../src/easy-json";
+import easyJson, { JsonMap } from "../src/easy-json";
 import { expect } from "chai";
 
 describe("Testint EasyJson", (): void => {
   it("Creating", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
+    const easy = easyJson(json);
 
-    expect(easy.getValue()).to.eql(json);
+    expect(easy.$getValue()).to.eql(json);
   });
 
   it("Deeply assigning", (): void => {
@@ -39,81 +39,81 @@ describe("Testint EasyJson", (): void => {
       }
     };
 
-    const easy = createEasyJson(json1);
-    easy.deepAssign(json2);
+    const easy = easyJson(json1);
+    easy.$deepAssign(json2);
 
-    expect(easy.getValue()).to.eql(json3);
+    expect(easy.$getValue()).to.eql(json3);
   });
 
   it("Deeply cloning", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
-    const easy2 = easy.deepClone();
+    const easy = easyJson(json);
+    const easy2 = easy.$deepClone();
 
-    expect(easy2.getValue()).to.eql(json);
+    expect(easy2.$getValue()).to.eql(json);
     expect(easy2).not.to.equal(easy);
   });
 
   it("equals", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
-    const easy2 = createEasyJson(json);
-    const easy3 = createEasyJson(json);
+    const easy = easyJson(json);
+    const easy2 = easyJson(json);
+    const easy3 = easyJson(json);
 
-    easy2.deepAssign({
+    easy2.$deepAssign({
       c: [2, 3, 4, 5, 6],
       d: { e: ["hello", "bye"] }
     });
 
-    easy3.deepAssign({
+    easy3.$deepAssign({
       f: 33,
       c: [2, 3, 4],
       d: { e: ["hello"], g: 3 }
     });
 
-    expect(easy.getValue()).to.eql(json);
-    expect(easy.equals(json)).to.be.true;
+    expect(easy.$getValue()).to.eql(json);
+    expect(easy.$equals(json)).to.be.true;
 
-    expect(easy.equals(easy2.getValue())).to.be.false;
-    expect(easy2.equals(easy.getValue())).to.be.false;
+    expect(easy.$equals(easy2.$getValue())).to.be.false;
+    expect(easy2.$equals(easy.$getValue())).to.be.false;
 
-    expect(easy.equals(easy3.getValue())).to.be.false;
-    expect(easy3.equals(easy.getValue())).to.be.false;
+    expect(easy.$equals(easy3.$getValue())).to.be.false;
+    expect(easy3.$equals(easy.$getValue())).to.be.false;
   });
 
   it("includes", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
-    const easy2 = createEasyJson(json);
+    const easy = easyJson(json);
+    const easy2 = easyJson(json);
 
-    easy2.deepAssign({
+    easy2.$deepAssign({
       f: 33,
       c: [2, 3, 4, 5, 6],
       d: { e: ["hello", "bye"], g: 3 }
     });
 
-    expect(easy.includes(easy2.getValue())).to.be.false;
-    expect(easy2.includes(easy.getValue())).to.be.true;
+    expect(easy.$includes(easy2.$getValue())).to.be.false;
+    expect(easy2.$includes(easy.$getValue())).to.be.true;
   });
 
   it("isIncluded", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
-    const easy2 = createEasyJson(json);
+    const easy = easyJson(json);
+    const easy2 = easyJson(json);
 
-    easy2.deepAssign({
+    easy2.$deepAssign({
       f: 33,
       c: [2, 3, 4, 5, 6],
       d: { e: ["hello", "bye"], g: 3 }
     });
 
-    expect(easy.isIncluded(easy2.getValue())).to.be.true;
-    expect(easy2.isIncluded(easy.getValue())).to.be.false;
+    expect(easy.$isIncluded(easy2.$getValue())).to.be.true;
+    expect(easy2.$isIncluded(easy.$getValue())).to.be.false;
   });
 
   it("Direct access: getting", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
+    const easy = easyJson(json);
 
     expect(easy.a).to.equal(1);
     expect(easy.b).to.be.true;
@@ -125,8 +125,8 @@ describe("Testint EasyJson", (): void => {
   });
 
   it("Direct access: setting", (): void => {
-    const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = createEasyJson(json);
+    const json: JsonMap = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
+    const easy = easyJson(json);
 
     easy.a = 2;
     easy.b = false;
@@ -165,7 +165,7 @@ describe("Testint EasyJson", (): void => {
     expect(json.d.e).to.eql(["foo2", "blah2"]);
     expect(json.d.e[0]).to.eql("foo2");
 
-    easy.deepAssign(json);
+    easy.$deepAssign(json);
 
     // But easy object is proxied recursively for every property
     expect(easy.a).to.equal(3);

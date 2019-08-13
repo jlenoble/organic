@@ -1,15 +1,35 @@
-interface GenericMap<T> {
+export interface GenericMap<T> {
   [key: string]: T;
 }
 
-type GenericArray<T> = T[];
-type Primitive = string | number | boolean;
-type JsonValue = Primitive | JsonArray | JsonMap;
+export type GenericArray<T> = T[];
+export type Primitive = string | number | boolean;
+export type JsonObject = JsonArray | JsonMap;
+export type JsonValue = Primitive | JsonObject;
+export type EasyObject = EasyArray | EasyMap;
+export type EasyValue = Primitive | EasyObject;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JsonArray extends GenericArray<JsonValue> {}
+export interface JsonArray extends GenericArray<JsonValue> {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JsonMap extends GenericMap<JsonValue> {}
+export interface JsonMap extends GenericMap<JsonValue> {}
+
+export interface Easy {
+  $getValue(): JsonValue;
+  $deepAssign(json: JsonObject | EasyObject): void;
+  $deepClone(): EasyObject;
+  $equals(json: JsonValue | EasyObject): boolean;
+  $includes(json: JsonValue | EasyObject): boolean;
+  $isIncluded(json: JsonValue | EasyObject): boolean;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface BaseEasyArray extends GenericArray<EasyValue> {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface BaseEasyMap extends GenericMap<EasyValue> {}
+
+export type EasyArray = BaseEasyArray & Easy;
+export type EasyMap = BaseEasyMap & Easy;
 
 function isAssignable(o1: JsonValue, o2: JsonValue): boolean {
   return (
@@ -18,45 +38,45 @@ function isAssignable(o1: JsonValue, o2: JsonValue): boolean {
   );
 }
 
-export default function easyFactory(json: JsonValue): JsonValue {
+export default function easyJson(json: JsonValue): EasyObject {
   if (Array.isArray(json)) {
-    const easy: JsonArray = new Array(json.length);
+    const easy: EasyArray = new Array(json.length) as EasyArray;
 
     json.forEach((value, i): void => {
-      easy[i] = easyFactory(value);
+      easy[i] = easyJson(value);
     });
 
     const proxy = new Proxy(easy, {
       get: (obj, prop): any => {
         switch (prop) {
-          case "getValue":
+          case "$getValue":
             return (): JsonArray =>
               obj.map(
                 (el): JsonValue => {
-                  return (typeof el === "object" && el.getValue()) || el;
+                  return (typeof el === "object" && el.$getValue()) || el;
                 }
               );
 
-          case "deepAssign":
-            return (json: JsonValue): void => {
+          case "$deepAssign":
+            return (json: JsonArray | EasyArray): void => {
               if (Array.isArray(json)) {
                 const len = obj.length;
 
-                json.forEach((value, i): void => {
+                json.forEach((value: JsonValue | EasyObject, i): void => {
                   if (i < len && isAssignable(obj[i], value)) {
-                    obj[i].deepAssign(value);
+                    (obj[i] as EasyObject).$deepAssign(value);
                   } else {
-                    obj[i] = easyFactory(value);
+                    obj[i] = easyJson(value);
                   }
                 });
               }
             };
 
-          case "deepClone":
-            return (): JsonValue => easyFactory(proxy.getValue());
+          case "$deepClone":
+            return (): JsonValue => easyJson(proxy.$getValue());
 
-          case "equals":
-            return (json: JsonValue): boolean => {
+          case "$equals":
+            return (json: JsonValue | EasyObject): boolean => {
               if (!Array.isArray(json)) {
                 return false;
               }
@@ -65,15 +85,15 @@ export default function easyFactory(json: JsonValue): JsonValue {
                 json.length === obj.length &&
                 obj.every((el, i): boolean => {
                   return (
-                    (typeof el === "object" && el.equals(json[i])) ||
+                    (typeof el === "object" && el.$equals(json[i])) ||
                     el === json[i]
                   );
                 })
               );
             };
 
-          case "includes":
-            return (json: JsonValue): boolean => {
+          case "$includes":
+            return (json: JsonValue | EasyObject): boolean => {
               if (!Array.isArray(json)) {
                 return false;
               }
@@ -83,21 +103,21 @@ export default function easyFactory(json: JsonValue): JsonValue {
               return obj.every((el, i): boolean => {
                 return (
                   i >= len ||
-                  (typeof el === "object" && el.includes(json[i])) ||
+                  (typeof el === "object" && el.$includes(json[i])) ||
                   el === json[i]
                 );
               });
             };
 
-          case "isIncluded":
-            return (json: JsonValue): boolean => {
+          case "$isIncluded":
+            return (json: JsonValue | EasyObject): boolean => {
               if (!Array.isArray(json)) {
                 return false;
               }
 
               return obj.every((el, i): boolean => {
                 return (
-                  (typeof el === "object" && el.isIncluded(json[i])) ||
+                  (typeof el === "object" && el.$isIncluded(json[i])) ||
                   el === json[i]
                 );
               });
@@ -108,7 +128,7 @@ export default function easyFactory(json: JsonValue): JsonValue {
       },
 
       set: (obj, prop, value): boolean => {
-        obj[prop] = easyFactory(value);
+        obj[prop] = easyJson(value);
         return true;
       }
     });
@@ -117,42 +137,43 @@ export default function easyFactory(json: JsonValue): JsonValue {
   } else {
     switch (typeof json) {
       case "object":
-        const easy: JsonMap = {};
+        const easy: EasyMap = {};
 
         Object.keys(json).forEach((key): void => {
-          easy[key] = easyFactory(json[key]);
+          easy[key] = easyJson(json[key]);
         });
 
         const proxy = new Proxy(easy, {
           get: (obj, prop): any => {
             switch (prop) {
-              case "getValue":
+              case "$getValue":
                 return (): JsonMap =>
                   Object.keys(obj).reduce((mb: JsonMap, key): JsonMap => {
                     mb[key] =
-                      (typeof obj[key] === "object" && obj[key].getValue()) ||
+                      (typeof obj[key] === "object" &&
+                        (obj[key] as EasyObject).$getValue()) ||
                       obj[key];
                     return mb;
                   }, {});
 
-              case "deepAssign":
-                return (json: JsonValue): void => {
+              case "$deepAssign":
+                return (json: JsonValue | EasyObject): void => {
                   if (typeof json === "object" && !Array.isArray(json)) {
                     Object.keys(json).forEach((key): void => {
                       if (isAssignable(obj[key], json[key])) {
-                        obj[key].deepAssign(json[key]);
+                        (obj[key] as EasyObject).$deepAssign(json[key]);
                       } else {
-                        obj[key] = easyFactory(json[key]);
+                        obj[key] = easyJson(json[key]);
                       }
                     });
                   }
                 };
 
-              case "deepClone":
-                return (): JsonValue => easyFactory(proxy.getValue());
+              case "$deepClone":
+                return (): JsonValue => easyJson(proxy.$getValue());
 
-              case "equals":
-                return (json: JsonValue): boolean => {
+              case "$equals":
+                return (json: JsonValue | EasyObject): boolean => {
                   if (Array.isArray(json) || typeof json !== "object") {
                     return false;
                   }
@@ -164,15 +185,15 @@ export default function easyFactory(json: JsonValue): JsonValue {
                     keys.every((key): boolean => {
                       return (
                         (typeof obj[key] === "object" &&
-                          obj[key].equals(json[key])) ||
+                          (obj[key] as EasyObject).$equals(json[key])) ||
                         obj[key] === json[key]
                       );
                     })
                   );
                 };
 
-              case "includes":
-                return (json: JsonValue): boolean => {
+              case "$includes":
+                return (json: JsonValue | EasyObject): boolean => {
                   if (Array.isArray(json) || typeof json !== "object") {
                     return false;
                   }
@@ -191,15 +212,15 @@ export default function easyFactory(json: JsonValue): JsonValue {
 
                       return (
                         (typeof obj[key] === "object" &&
-                          obj[key].includes(json[key])) ||
+                          (obj[key] as EasyObject).$includes(json[key])) ||
                         obj[key] === json[key]
                       );
                     }) && !count
                   );
                 };
 
-              case "isIncluded":
-                return (json: JsonValue): boolean => {
+              case "$isIncluded":
+                return (json: JsonValue | EasyObject): boolean => {
                   if (Array.isArray(json) || typeof json !== "object") {
                     return false;
                   }
@@ -207,7 +228,7 @@ export default function easyFactory(json: JsonValue): JsonValue {
                   return Object.keys(obj).every((key): boolean => {
                     return (
                       (typeof obj[key] === "object" &&
-                        obj[key].isIncluded(json[key])) ||
+                        (obj[key] as EasyObject).$isIncluded(json[key])) ||
                       obj[key] === json[key]
                     );
                   });
@@ -218,7 +239,7 @@ export default function easyFactory(json: JsonValue): JsonValue {
           },
 
           set: (obj, prop, value): boolean => {
-            obj[prop] = easyFactory(value);
+            obj[prop] = easyJson(value);
             return true;
           }
         });
