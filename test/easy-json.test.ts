@@ -1,5 +1,5 @@
-import { JsonMap } from "../src/easy-json/json";
-import { EasyMapProxy, EasyArrayProxy } from "../src/easy-json/easy";
+import { JsonMap, JsonArray } from "../src/easy-json/json";
+import { EasyMap, EasyArray, AnyArray } from "../src/easy-json/easy";
 import easyJson from "../src/easy-json";
 import { expect } from "chai";
 
@@ -48,14 +48,14 @@ describe("Testint EasyJson", (): void => {
       }
     };
 
-    const easy = easyJson(json1) as EasyMapProxy;
+    const easy = easyJson(json1) as EasyMap;
     easy.$deepAssign(json2);
 
     expect(easy).to.eql(json3);
   });
 
   it("Deeply assigning Array", (): void => {
-    const json1 = [
+    const json1: JsonArray = [
       1,
       true,
       [2, 3, 4],
@@ -63,7 +63,7 @@ describe("Testint EasyJson", (): void => {
       { a: { b: { c: { d: [{ e: [{ f: 4, u: 2 }, 14] }, 15] } } }, z: [5] }
     ];
 
-    const json2 = [
+    const json2: JsonArray = [
       1,
       { e: 7, f: ["foo"] },
       [3, 4],
@@ -72,7 +72,7 @@ describe("Testint EasyJson", (): void => {
       42
     ];
 
-    const json3 = [
+    const json3: JsonArray = [
       1,
       { e: 7, f: ["foo"] },
       [3, 4, 4],
@@ -85,7 +85,7 @@ describe("Testint EasyJson", (): void => {
       42
     ];
 
-    const easy = easyJson(json1) as EasyMapProxy;
+    const easy = easyJson(json1) as EasyMap;
     easy.$deepAssign(json2);
 
     expect(easy).to.eql(json3);
@@ -111,9 +111,9 @@ describe("Testint EasyJson", (): void => {
 
   it("equals Map", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMapProxy;
-    const easy2 = easyJson(json) as EasyMapProxy;
-    const easy3 = easyJson(json) as EasyMapProxy;
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
+    const easy3 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign({
       c: [2, 3, 4, 5, 6],
@@ -138,9 +138,9 @@ describe("Testint EasyJson", (): void => {
 
   it("equals Array", (): void => {
     const json = [1, true, [2, 3, 4], { e: ["hello"] }];
-    const easy = easyJson(json) as EasyMapProxy;
-    const easy2 = easyJson(json) as EasyMapProxy;
-    const easy3 = easyJson(json) as EasyMapProxy;
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
+    const easy3 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign([1, true, [2, 3, 4, 5, 6], { e: ["hello", "bye"] }]);
     easy3.$deepAssign([1, true, [2, 3, 4], { e: ["hello"], g: 3 }, 33]);
@@ -157,8 +157,8 @@ describe("Testint EasyJson", (): void => {
 
   it("includes Map", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMapProxy;
-    const easy2 = easyJson(json) as EasyMapProxy;
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign({
       f: 33,
@@ -172,8 +172,8 @@ describe("Testint EasyJson", (): void => {
 
   it("includes Array", (): void => {
     const json = [1, true, [2, 3, 4], { e: ["hello"] }];
-    const easy = easyJson(json) as EasyMapProxy;
-    const easy2 = easyJson(json) as EasyMapProxy;
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign([
       1,
@@ -189,8 +189,8 @@ describe("Testint EasyJson", (): void => {
 
   it("isIncluded Map", (): void => {
     const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json) as EasyMapProxy;
-    const easy2 = easyJson(json) as EasyMapProxy;
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign({
       f: 33,
@@ -204,8 +204,8 @@ describe("Testint EasyJson", (): void => {
 
   it("isIncluded Array", (): void => {
     const json = [1, true, [2, 3, 4], { e: ["hello"] }];
-    const easy = easyJson(json) as EasyMapProxy;
-    const easy2 = easyJson(json) as EasyMapProxy;
+    const easy = easyJson(json) as EasyMap;
+    const easy2 = easyJson(json) as EasyMap;
 
     easy2.$deepAssign([
       1,
@@ -220,8 +220,8 @@ describe("Testint EasyJson", (): void => {
   });
 
   it("Direct access Map: getting", (): void => {
-    const json = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
+    const json: JsonMap = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
+    const easy: EasyMap = easyJson(json);
 
     expect(easy.a).to.equal(1);
     expect(easy.b).to.be.true;
@@ -233,8 +233,8 @@ describe("Testint EasyJson", (): void => {
   });
 
   it("Direct access Array: getting", (): void => {
-    const json = [1, true, [2, 3, 4], { e: ["hello"] }];
-    const easy = easyJson(json);
+    const json: JsonArray = [1, true, [2, 3, 4], { e: ["hello"] }];
+    const easy = easyJson(json) as EasyArray;
 
     expect(easy[0]).to.equal(1);
     expect(easy[1]).to.be.true;
@@ -247,7 +247,7 @@ describe("Testint EasyJson", (): void => {
 
   it("Direct access Map: setting", (): void => {
     const json: JsonMap = { a: 1, b: true, c: [2, 3, 4], d: { e: ["hello"] } };
-    const easy = easyJson(json);
+    const easy = easyJson(json) as EasyMap;
 
     easy.a = 2;
     easy.b = false;
@@ -303,8 +303,8 @@ describe("Testint EasyJson", (): void => {
   });
 
   it("Direct access Array: setting", (): void => {
-    const json: JsonMap = [1, true, [2, 3, 4], { e: ["hello"] }];
-    const easy = easyJson(json);
+    const json: AnyArray = [1, true, [2, 3, 4], { e: ["hello"] }];
+    const easy = easyJson(json) as EasyArray;
 
     easy[0] = 2;
     easy[1] = false;
