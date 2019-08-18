@@ -1,3 +1,4 @@
+import fse from "fs-extra";
 import { JsonArray, JsonValue } from "./json";
 import {
   Easy,
@@ -10,6 +11,27 @@ import isAssignable from "./is-assignable";
 import { easyFactory } from "./easy-json";
 
 export default class EasyArray extends Array<EasyValue> implements Easy {
+  public $filepath: string;
+
+  public constructor(filepath?: string | number | JsonArray) {
+    if (typeof filepath === "string") {
+      super();
+
+      this.$filepath = filepath;
+
+      this.$deepAssign(require(this.$filepath));
+    } else {
+      // @ts-ignore
+      super(filepath);
+
+      this.$filepath = "";
+    }
+
+    Object.defineProperties(this, {
+      $filepath: { enumerable: false }
+    });
+  }
+
   public $getValue(): JsonArray {
     return this.map(
       (el): JsonValue => {
@@ -78,6 +100,24 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
         (typeof el === "object" && el.$isIncluded(json[i])) || el === json[i]
       );
     });
+  }
+
+  public async $read(filepath: string = ""): Promise<void> {
+    if (filepath) {
+      this.$filepath = filepath;
+    }
+
+    const json: JsonArray = await fse.readJson(this.$filepath);
+
+    this.$deepAssign(json);
+  }
+
+  public async $write(filepath: string = ""): Promise<void> {
+    if (filepath) {
+      this.$filepath = filepath;
+    }
+
+    return fse.outputJson(this.$filepath, this);
   }
 }
 

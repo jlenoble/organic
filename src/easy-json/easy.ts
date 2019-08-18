@@ -13,6 +13,8 @@ export interface Easy {
   $equals(json: EasyArgument): boolean;
   $includes(json: EasyArgument): boolean;
   $isIncluded(json: EasyArgument): boolean;
+  $read(filepath: string): Promise<void>;
+  $write(filepath: string): Promise<void>;
 }
 
 export interface EasyArrayProxy extends Easy, Array<EasyValue> {}

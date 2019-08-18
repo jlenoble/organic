@@ -1,3 +1,4 @@
+import fse from "fs-extra";
 import { JsonMap, GenericMap } from "./json";
 import {
   Easy,
@@ -11,11 +12,20 @@ import { easyFactory } from "./easy-json";
 
 export default class EasyMap implements Easy {
   public $: GenericMap<EasyValue>;
+  public $filepath: string;
 
-  public constructor() {
+  public constructor(filepath: string = "") {
     this.$ = {};
+    this.$filepath = filepath;
 
-    Object.defineProperty(this, "$", { writable: false, enumerable: false });
+    Object.defineProperties(this, {
+      $: { writable: false, enumerable: false },
+      $filepath: { enumerable: false }
+    });
+
+    if (this.$filepath) {
+      this.$deepAssign(require(this.$filepath));
+    }
   }
 
   public $getValue(): JsonMap {
@@ -103,6 +113,24 @@ export default class EasyMap implements Easy {
         this.$[key] === json[key]
       );
     });
+  }
+
+  public async $read(filepath: string = ""): Promise<void> {
+    if (filepath) {
+      this.$filepath = filepath;
+    }
+
+    const json: JsonMap = await fse.readJson(this.$filepath);
+
+    this.$deepAssign(json);
+  }
+
+  public async $write(filepath: string = ""): Promise<void> {
+    if (filepath) {
+      this.$filepath = filepath;
+    }
+
+    return fse.outputJson(this.$filepath, this);
   }
 }
 
