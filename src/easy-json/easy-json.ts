@@ -1,4 +1,5 @@
-import { JsonValue } from "./json";
+import fse from "fs-extra";
+import { JsonValue, JsonObject } from "./json";
 import { EasyValue, EasyObject } from "./easy";
 import { easyArray } from "./easy-array";
 import { easyMap } from "./easy-map";
@@ -34,4 +35,9 @@ export default function easyJson(json: JsonValue): EasyObject {
         throw new Error("Invalid input value");
     }
   }
+}
+
+export async function easyRead(filepath: string): Promise<EasyObject> {
+  const json: JsonObject = await fse.readJson(filepath);
+  return easyJson(json);
 }
