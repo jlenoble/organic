@@ -1,5 +1,5 @@
 import { JsonValue } from "./json";
-import { EasyValue, EasyObjectProxy } from "./easy";
+import { EasyValue, EasyObject } from "./easy";
 import { easyArray } from "./easy-array";
 import { easyMap } from "./easy-map";
 
@@ -22,7 +22,7 @@ export function easyFactory(json: JsonValue): EasyValue {
   }
 }
 
-export default function easyJson(json: JsonValue): EasyObjectProxy {
+export default function easyJson(json: JsonValue): EasyObject {
   if (Array.isArray(json)) {
     return easyArray(json);
   } else {
