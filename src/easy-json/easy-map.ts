@@ -130,7 +130,7 @@ export default class EasyMap implements Easy {
       this.$filepath = filepath;
     }
 
-    return fse.outputJson(this.$filepath, this);
+    return fse.outputJson(this.$filepath, this, { spaces: 2 });
   }
 }
 
@@ -159,7 +159,12 @@ export function easyMap(json: JsonMap): EasyMapProxy {
     set: (obj, prop, value): boolean => {
       if (typeof prop === "string") {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        obj.$[prop] = easyFactory(value);
+        if (prop === "$filepath") {
+          obj[prop] = value;
+        } else {
+          obj.$[prop] = easyFactory(value);
+        }
+
         return true;
       }
 

@@ -117,7 +117,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
       this.$filepath = filepath;
     }
 
-    return fse.outputJson(this.$filepath, this);
+    return fse.outputJson(this.$filepath, this, { spaces: 2 });
   }
 }
 
@@ -136,6 +136,9 @@ export function easyArray(json: JsonArray): EasyArrayProxy {
       if (n.toString() === prop) {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         obj[n] = easyFactory(value);
+        return true;
+      } else if (prop === "$filepath") {
+        obj[prop] = value;
         return true;
       }
 
