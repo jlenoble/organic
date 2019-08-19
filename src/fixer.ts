@@ -2,6 +2,7 @@ import path from "path";
 import { chDir } from "cleanup-wrapper";
 import childProcessData from "child-process-data";
 import { spawn } from "child_process";
+import easyJson, { easyRead, EasyArray } from "./easy-json";
 
 enum Actions {
   "yo wupjs",
@@ -11,6 +12,8 @@ enum Actions {
   "gulp types",
   "gulp sanity-check"
 }
+
+type ActionKey = keyof typeof Actions;
 
 function compare(a1: Actions, a2: Actions): 1 | 0 | -1 {
   if (a1 > a2) {
@@ -25,7 +28,7 @@ function compare(a1: Actions, a2: Actions): 1 | 0 | -1 {
 export class Fixes {
   protected _fixes: Map<string, Set<Actions>> = new Map();
 
-  public add(pckg: string, action: Actions): void {
+  public addAction(pckg: string, action: Actions): void {
     if (!this._fixes.has(pckg)) {
       this._fixes.set(pckg, new Set([action]));
     } else {
@@ -33,18 +36,36 @@ export class Fixes {
     }
   }
 
-  public get(pckg: string): string[] {
+  public addActions(pckg: string, actions: Actions[]): void {
+    if (!this._fixes.has(pckg)) {
+      this._fixes.set(pckg, new Set(actions));
+    } else {
+      const actionSet = this._fixes.get(pckg) as Set<Actions>;
+
+      for (const action of actions) {
+        actionSet.add(action);
+      }
+    }
+  }
+
+  public addFixes(fixes: [string, ActionKey[]][]): void {
+    for (const [pckg, actions] of fixes) {
+      this.addActions(pckg, actions.map((action): Actions => Actions[action]));
+    }
+  }
+
+  public get(pckg: string): ActionKey[] {
     if (!this._fixes.has(pckg)) {
       return [];
     }
 
     return [...(this._fixes.get(pckg) as Set<Actions>)]
       .sort(compare)
-      .map((action): string => Actions[action]);
+      .map((action: Actions): ActionKey => Actions[action] as ActionKey);
   }
 
-  public getFixes(): [string, string[]][] {
-    return Array.from(this._fixes.keys()).map((pckg): [string, string[]] => {
+  public getFixes(): [string, ActionKey[]][] {
+    return Array.from(this._fixes.keys()).map((pckg): [string, ActionKey[]] => {
       return [pckg, this.get(pckg)];
     });
   }
@@ -72,7 +93,7 @@ export default class Fixer {
     )();
   }
 
-  public getFixes(): [string, string[]][] {
+  public getFixes(): [string, ActionKey[]][] {
     return this._fixes.getFixes();
   }
 
@@ -102,7 +123,7 @@ export class Remediator {
     );
 
     if (match) {
-      this._fixes.add(match[1], Actions["yo wupjs"]);
+      this._fixes.addAction(match[1], Actions["yo wupjs"]);
       return true;
     }
 
@@ -114,23 +135,23 @@ export class Remediator {
       switch (match[2]) {
         case "git":
         case "npm":
-          this._fixes.add(match[1], Actions["gulp sanity-check"]);
+          this._fixes.addAction(match[1], Actions["gulp sanity-check"]);
           return true;
 
         case "eslint":
-          this._fixes.add(match[1], Actions["gulp lint"]);
+          this._fixes.addAction(match[1], Actions["gulp lint"]);
           return true;
 
         case "mochawesome":
           if (match[3] === "mochawesome-dev") {
-            this._fixes.add(match[1], Actions["gulp test"]);
+            this._fixes.addAction(match[1], Actions["gulp test"]);
           } else {
-            this._fixes.add(match[1], Actions["gulp dist-test"]);
+            this._fixes.addAction(match[1], Actions["gulp dist-test"]);
           }
           return true;
 
         case "typescript":
-          this._fixes.add(match[1], Actions["gulp types"]);
+          this._fixes.addAction(match[1], Actions["gulp types"]);
           return true;
       }
     }
@@ -224,7 +245,20 @@ export class Remediator {
     }
   }
 
-  public getFixes(): [string, string[]][] {
+  public getFixes(): [string, ActionKey[]][] {
     return this._fixes.getFixes();
+  }
+
+  public async readFixes(filepath: string): Promise<void> {
+    const easy: [string, ActionKey[]][] = (await easyRead(
+      filepath
+    )) as EasyArray;
+    this._fixes.addFixes(easy);
+  }
+
+  public async writeFixes(filepath: string): Promise<void> {
+    const json = this._fixes.getFixes();
+    const easy = easyJson(json);
+    await easy.$write(filepath);
   }
 }
