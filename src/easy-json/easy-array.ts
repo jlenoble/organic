@@ -19,8 +19,9 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
 
       this.$filepath = filepath;
 
-      this.$deepAssign(require(this.$filepath));
+      this.$deepAssign(fse.readJsonSync(this.$filepath));
     } else {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       super(filepath);
 
@@ -102,7 +103,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     });
   }
 
-  public async $read(filepath: string = ""): Promise<void> {
+  public async $read(filepath = ""): Promise<void> {
     if (filepath) {
       this.$filepath = filepath;
     }
@@ -112,7 +113,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     this.$deepAssign(json);
   }
 
-  public async $write(filepath: string = ""): Promise<void> {
+  public async $write(filepath = ""): Promise<void> {
     if (filepath) {
       this.$filepath = filepath;
     }

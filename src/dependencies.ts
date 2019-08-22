@@ -52,7 +52,7 @@ export default class Dependencies {
     return this._packageName;
   }
 
-  protected _packageName: string = "";
+  protected _packageName = "";
   public readonly packageDir: string;
 
   protected _fromConfig: Deps;

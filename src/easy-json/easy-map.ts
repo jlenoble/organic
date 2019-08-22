@@ -14,7 +14,7 @@ export default class EasyMap implements Easy {
   public $: GenericMap<EasyValue>;
   public $filepath: string;
 
-  public constructor(filepath: string = "") {
+  public constructor(filepath = "") {
     this.$ = {};
     this.$filepath = filepath;
 
@@ -24,7 +24,7 @@ export default class EasyMap implements Easy {
     });
 
     if (this.$filepath) {
-      this.$deepAssign(require(this.$filepath));
+      this.$deepAssign(fse.readJsonSync(this.$filepath));
     }
   }
 
@@ -115,7 +115,7 @@ export default class EasyMap implements Easy {
     });
   }
 
-  public async $read(filepath: string = ""): Promise<void> {
+  public async $read(filepath = ""): Promise<void> {
     if (filepath) {
       this.$filepath = filepath;
     }
@@ -125,7 +125,7 @@ export default class EasyMap implements Easy {
     this.$deepAssign(json);
   }
 
-  public async $write(filepath: string = ""): Promise<void> {
+  public async $write(filepath = ""): Promise<void> {
     if (filepath) {
       this.$filepath = filepath;
     }
@@ -142,6 +142,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
     easy.$[key] = easyFactory(json[key]);
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore We cannot add a index signature to EasyMap because we cannot
   // add the construct [key in Exclude<string, keyof Easy>] to it: it is
   // interpreted as a computed property name.
@@ -152,6 +153,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
         return obj.$[prop];
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore No index signature for EasyMap, see above explanation
       return obj[prop];
     },

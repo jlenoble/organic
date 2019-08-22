@@ -15,7 +15,7 @@ interface DistTags {
   latest: string;
 }
 
-function noop(): void {}
+function noop(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
 const config = {
   log: {

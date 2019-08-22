@@ -206,6 +206,7 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
 
 export class DepMeshNode<T> {
   public readonly name: string;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore value IS assigned, because of "singleton-ness"
   public readonly value: T;
   public readonly mesh: DepMesh<T>;
