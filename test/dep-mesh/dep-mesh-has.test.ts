@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import DepMesh, { DepMeshNode } from "../../src/dep-mesh";
+import { defaultOptions } from "./options";
 
 describe("Testing class DepMeshNode", (): void => {
-  const mesh = new DepMesh({ create(): void {} });
+  const mesh = new DepMesh(defaultOptions);
   it("Testing hasParent(name)", (): void => {
     const root = new DepMeshNode({
       name: "root",
@@ -15,7 +16,7 @@ describe("Testing class DepMeshNode", (): void => {
   });
 
   it("Testing hasChild(name)", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
       mesh
@@ -27,7 +28,7 @@ describe("Testing class DepMeshNode", (): void => {
   });
 
   it("Testing hasAncestor(name)", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
       mesh
@@ -44,7 +45,7 @@ describe("Testing class DepMeshNode", (): void => {
   });
 
   it("Testing hasDescendant(name)", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
       mesh

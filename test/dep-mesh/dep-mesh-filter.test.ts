@@ -1,9 +1,10 @@
 import { expect } from "chai";
 import DepMesh from "../../src/dep-mesh";
+import { defaultOptions } from "./options";
 
 describe("Testing class DepMesh", (): void => {
   it("filter", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
 
     mesh.addLink({ name: "root" }, { name: "p1" });
     mesh.addLink({ name: "root" }, { name: "p2" });
@@ -50,7 +51,7 @@ describe("Testing class DepMesh", (): void => {
   });
 
   it("some/every", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
 
     mesh.addLink({ name: "root" }, { name: "p1" });
     mesh.addLink({ name: "root" }, { name: "p2" });

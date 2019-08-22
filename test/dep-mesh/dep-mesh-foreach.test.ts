@@ -1,9 +1,10 @@
 import { expect } from "chai";
 import DepMesh, { DepMeshNode } from "../../src/dep-mesh";
+import { defaultOptions } from "./options";
 
 describe("Testing class DepMesh", (): void => {
   it("keys/values/entries generators", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
       mesh
@@ -109,7 +110,7 @@ describe("Testing class DepMesh", (): void => {
   });
 
   it("forEach/map", (): void => {
-    const mesh = new DepMesh({ create(): void {} });
+    const mesh = new DepMesh(defaultOptions);
 
     mesh.addLink({ name: "root" }, { name: "p1" });
     mesh.addLink({ name: "root" }, { name: "p2" });
