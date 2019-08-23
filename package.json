@@ -28,7 +28,7 @@
     "node": ">=10.16.1"
   },
   "dependencies": {
-    "@types/eslint": "^6.1.0",
+    "@types/eslint": "^6.1.1",
     "@types/fs-extra": "^8.0.0",
     "@types/semver": "^6.0.1",
     "child-process-data": "^0.8.0-0",
