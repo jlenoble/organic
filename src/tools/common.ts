@@ -3,9 +3,11 @@ export type Option = boolean | string;
 export interface Options {
   babel?: Option;
   eslint?: Option;
+  git?: Option;
   gulp?: Option;
   mocha?: Option;
   node?: Option;
+  npm?: Option;
   prettier?: Option;
   typescript?: Option;
 }
