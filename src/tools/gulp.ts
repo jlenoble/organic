@@ -23,7 +23,8 @@ export default class GulpConfig extends Deps {
         "polypath",
         "stream-to-promise",
         "chalk",
-        "organon"
+        "organon",
+        "child-process-data"
       ]);
 
       if (babel) {
@@ -36,13 +37,12 @@ export default class GulpConfig extends Deps {
 
       if (mocha) {
         this._addDeps([
+          "mocha",
           "gulp-mocha",
           "chai",
           "mochawesome",
           "source-map-support"
         ]);
-
-        this._addDeps({ mocha: "<6" });
       }
 
       if (typescript) {
