@@ -10,7 +10,9 @@ enum Actions {
   "gulp lint",
   "gulp dist-test",
   "gulp types",
-  "gulp sanity-check"
+  "gulp sanity-check",
+  "atom -w .",
+  "gulp push"
 }
 
 type ActionKey = keyof typeof Actions;
@@ -88,7 +90,8 @@ export default class Fixer {
     await chDir(
       pckg,
       async (): Promise<void> => {
-        await childProcessData(spawn(cmd, args, { stdio: "pipe" }));
+        await childProcessData(spawn(cmd, args));
+        await childProcessData(spawn("gulp", ["prepublish"]));
       }
     )();
   }
@@ -106,6 +109,13 @@ export default class Fixer {
       break;
     }
   }
+
+  public async readFixes(filepath: string): Promise<void> {
+    const easy: [string, ActionKey[]][] = (await easyRead(
+      filepath
+    )) as EasyArray;
+    this._fixes.addFixes(easy);
+  }
 }
 
 export class Remediator {
@@ -118,16 +128,28 @@ export class Remediator {
   }
 
   public addFix(message: string): boolean {
-    let match = message.match(
+    return (
+      this.addLatestWupFix(message) ||
+      this.addMissingReportFix(message) ||
+      this.addGitFix(message)
+    );
+  }
+
+  public addLatestWupFix(message: string): boolean {
+    const match = message.match(
       /"(.+)" is not managed by latest Wup@\d+\.\d+\.\d+(?:-\d+)?/
     );
 
     if (match) {
-      this._fixes.addAction(match[1], Actions["yo wupjs"]);
-      return true;
+      // this._fixes.addAction(match[1], Actions["yo wupjs"]);
+      // return true;
     }
 
-    match = message.match(
+    return false;
+  }
+
+  public addMissingReportFix(message: string): boolean {
+    const match = message.match(
       /"(.+)": Report (.+)-report\/(.+).json could not be found/
     );
 
@@ -154,6 +176,26 @@ export class Remediator {
           this._fixes.addAction(match[1], Actions["gulp types"]);
           return true;
       }
+    }
+
+    return false;
+  }
+
+  public addGitFix(message: string): boolean {
+    let match = message.match(
+      /"(.+)": Modification in "(.+)" is not committed/
+    );
+
+    if (match) {
+      this._fixes.addAction(match[1], Actions["atom -w ."]);
+      return true;
+    }
+
+    match = message.match(/"(.+)": Git branch "(.+)" differs from "(.+)"/);
+
+    if (match) {
+      this._fixes.addAction(match[1], Actions["gulp push"]);
+      return true;
     }
 
     return false;
@@ -247,13 +289,6 @@ export class Remediator {
 
   public getFixes(): [string, ActionKey[]][] {
     return this._fixes.getFixes();
-  }
-
-  public async readFixes(filepath: string): Promise<void> {
-    const easy: [string, ActionKey[]][] = (await easyRead(
-      filepath
-    )) as EasyArray;
-    this._fixes.addFixes(easy);
   }
 
   public async writeFixes(filepath: string): Promise<void> {

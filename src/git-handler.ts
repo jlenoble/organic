@@ -1,9 +1,14 @@
-import simplegit, { SimpleGit, DiffResult } from "simple-git/promise";
+import simplegit, {
+  SimpleGit,
+  DiffResult,
+  StatusResult
+} from "simple-git/promise";
 import path from "path";
 import fse from "fs-extra";
 
 export interface GitReport {
   [packageName: string]: {
+    status: StatusResult;
     dev: DiffResult;
     origin: DiffResult;
     changed: boolean;
@@ -51,13 +56,19 @@ export default class GitHandler {
     };
   }
 
+  public async status(): Promise<StatusResult> {
+    return this._git.status();
+  }
+
   public async report(): Promise<GitReport> {
     if (!this._report) {
       const dev = await this.diffDev();
       const origin = await this.diffOrigin();
+      const status = await this.status();
 
       this._report = {
         [this.packageName]: {
+          status,
           dev: dev.diffSummary,
           origin: origin.diffSummary,
           changed:
@@ -95,6 +106,10 @@ export default class GitHandler {
         if (!report.onDev) {
           messages.push(`Git branch "dev" is not the working branch`);
         }
+
+        report.status.files.forEach((file): void => {
+          messages.push(`Modification in "${file.path}" is not committed`);
+        });
 
         if (report.dev.changed) {
           messages.push(`Git branch "dev" differs from "master"`);
