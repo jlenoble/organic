@@ -59,7 +59,7 @@ export default class NpmHandler {
 
   public constructor(baseDir: string) {
     this.packageDir = baseDir;
-    this.packageName = path.basename(baseDir);
+    this.packageName = require(path.join(baseDir, "package.json")).name;
   }
 
   public async devVersion(): Promise<string> {
