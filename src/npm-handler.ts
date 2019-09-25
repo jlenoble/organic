@@ -39,7 +39,8 @@ function getDistTags(uri: string): Promise<DistTags> {
       if (error) {
         if (
           /Registry returned 404 for GET/.test(error.message) ||
-          /no such package available/.test(error.message)
+          /no such package available/.test(error.message) ||
+          /File not found/.test(error.message)
         ) {
           return resolve({ latest: "0.0.0" });
         }
@@ -68,14 +69,24 @@ export default class NpmHandler {
 
   public async verdaccioVersion(): Promise<string> {
     const uri = `http://localhost:4873/-/package/${this.packageName}/dist-tags`;
-    const data = await getDistTags(uri);
-    return data.latest;
+
+    try {
+      const data = await getDistTags(uri);
+      return data.latest;
+    } catch (e) {
+      return "NEVER PUBLISHED";
+    }
   }
 
   public async npmVersion(): Promise<string> {
     const uri = `https://registry.npmjs.org/-/package/${this.packageName}/dist-tags`;
-    const data = await getDistTags(uri);
-    return data.latest;
+
+    try {
+      const data = await getDistTags(uri);
+      return data.latest;
+    } catch (e) {
+      return "NEVER PUBLISHED";
+    }
   }
 
   public async report(): Promise<NpmReport> {
