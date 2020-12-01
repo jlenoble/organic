@@ -24,7 +24,9 @@ export default class GulpConfig extends Deps {
         "stream-to-promise",
         "chalk",
         "organon",
-        "child-process-data"
+        "child-process-data",
+        "gulp-debug",
+        "fancy-log"
       ]);
 
       if (babel) {
