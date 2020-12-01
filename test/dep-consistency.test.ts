@@ -1,16 +1,14 @@
 import getPackages from "./packages";
 
-describe("Testing dependency consistency of organized packages", function(): void {
+describe("Testing dependency consistency of organized packages", function (): void {
   this.timeout(20000); // eslint-disable-line no-invalid-this
 
-  it("All packages are consistent with regard to prod deps", async (): Promise<
-    void
-  > => {
+  it("All packages are consistent with regard to prod deps", async (): Promise<void> => {
     const packages = await getPackages();
 
     const message = packages.getErrorMessage([
       "prodMissingDeps",
-      "prodExtraDeps"
+      "prodExtraDeps",
     ]);
 
     if (message) {
@@ -18,14 +16,12 @@ describe("Testing dependency consistency of organized packages", function(): voi
     }
   });
 
-  it("All packages are consistent with regard to dev deps", async (): Promise<
-    void
-  > => {
+  it("All packages are consistent with regard to dev deps", async (): Promise<void> => {
     const packages = await getPackages();
 
     const message = packages.getErrorMessage([
       "devMissingDeps",
-      "devExtraDeps"
+      "devExtraDeps",
     ]);
 
     if (message) {

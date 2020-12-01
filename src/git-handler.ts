@@ -1,7 +1,7 @@
 import simplegit, {
   SimpleGit,
   DiffResult,
-  StatusResult
+  StatusResult,
 } from "simple-git/promise";
 import path from "path";
 import fse from "fs-extra";
@@ -46,13 +46,13 @@ export default class GitHandler {
     return {
       onDev,
       hasDev,
-      diffSummary: { files: [], insertions: 0, deletions: 0, changed: 0 }
+      diffSummary: { files: [], insertions: 0, deletions: 0, changed: 0 },
     };
   }
 
   public async diffOrigin(): Promise<{ diffSummary: DiffResult }> {
     return {
-      diffSummary: await this._git.diffSummary(["master", "origin/master"])
+      diffSummary: await this._git.diffSummary(["master", "origin/master"]),
     };
   }
 
@@ -75,8 +75,8 @@ export default class GitHandler {
             (dev.diffSummary && dev.diffSummary.changed > 0) ||
             origin.diffSummary.changed > 0,
           onDev: dev.onDev,
-          hasDev: dev.hasDev
-        }
+          hasDev: dev.hasDev,
+        },
       };
     }
 

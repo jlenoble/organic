@@ -12,7 +12,7 @@ enum Actions {
   "gulp types",
   "gulp sanity-check",
   "atom -w .",
-  "gulp push"
+  "gulp push",
 }
 
 type ActionKey = keyof typeof Actions;
@@ -52,7 +52,10 @@ export class Fixes {
 
   public addFixes(fixes: [string, ActionKey[]][]): void {
     for (const [pckg, actions] of fixes) {
-      this.addActions(pckg, actions.map((action): Actions => Actions[action]));
+      this.addActions(
+        pckg,
+        actions.map((action): Actions => Actions[action])
+      );
     }
   }
 

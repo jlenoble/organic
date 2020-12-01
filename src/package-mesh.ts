@@ -12,7 +12,7 @@ export default class PackageMesh extends DepMesh<PackageStatus> {
     super({
       create(options: PackageStatusOptions): PackageStatus {
         return new PackageStatus(options);
-      }
+      },
     });
   }
 
@@ -34,7 +34,7 @@ export default class PackageMesh extends DepMesh<PackageStatus> {
 
         const parentName = childStatus.addDependency({
           name: depName,
-          version: depVersion
+          version: depVersion,
         });
 
         const depNode = new DepMeshNode({ name: depName, mesh: this });
@@ -44,7 +44,7 @@ export default class PackageMesh extends DepMesh<PackageStatus> {
 
         depStatus.addDependant({
           name: childName,
-          version: depVersion
+          version: depVersion,
         });
 
         this.addLink({ name: childName }, { name: parentName });

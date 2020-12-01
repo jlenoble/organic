@@ -5,7 +5,7 @@ import {
   EasyValue,
   EasyArgument,
   EasyMapProxy,
-  EasyObjectProxy
+  EasyObjectProxy,
 } from "./easy";
 import isAssignable from "./is-assignable";
 import { easyFactory } from "./easy-json";
@@ -20,7 +20,7 @@ export default class EasyMap implements Easy {
 
     Object.defineProperties(this, {
       $: { writable: false, enumerable: false },
-      $filepath: { enumerable: false }
+      $filepath: { enumerable: false },
     });
 
     if (this.$filepath) {
@@ -42,9 +42,9 @@ export default class EasyMap implements Easy {
     if (typeof json === "object" && !Array.isArray(json)) {
       Object.keys(json).forEach((key): void => {
         if (isAssignable(this.$[key], json[key])) {
-          (this.$[key] as EasyObjectProxy).$deepAssign(json[
-            key
-          ] as EasyObjectProxy);
+          (this.$[key] as EasyObjectProxy).$deepAssign(
+            json[key] as EasyObjectProxy
+          );
         } else {
           this.$[key] = easyFactory(json[key]);
         }
@@ -183,7 +183,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
 
     getOwnPropertyDescriptor: (obj, prop): PropertyDescriptor | undefined => {
       return Object.getOwnPropertyDescriptor(obj.$, prop);
-    }
+    },
   });
 
   return proxy;

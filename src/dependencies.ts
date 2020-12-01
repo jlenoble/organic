@@ -81,7 +81,7 @@ export default class Dependencies {
     localDeps,
     packageDir,
     wup,
-    organon = {}
+    organon = {},
   }: DependenciesOptions) {
     this._fromConfig = { ...deps };
     this._fromFiles = new Set();
@@ -225,7 +225,7 @@ export default class Dependencies {
   protected _getErrorMessage({
     stem,
     key,
-    latestWup
+    latestWup,
   }: NormalizedErrorOptions): string {
     switch (key) {
       case "missing":
@@ -352,7 +352,7 @@ export class ProdDependencies extends Dependencies {
       deps: pckg.dependencies || {},
       packageDir,
       wup: yo["generator-wupjs"],
-      organon: yo.organon
+      organon: yo.organon,
     });
 
     this._packageName = pckg.name;
@@ -386,12 +386,12 @@ export class DevDependencies extends Dependencies {
       glob: rebaseGlob(glob, packageDir),
       deps: {
         ...dependencies,
-        ...devDependencies
+        ...devDependencies,
       },
       localDeps: devDependencies,
       packageDir,
       wup: yo["generator-wupjs"],
-      organon: yo.organon
+      organon: yo.organon,
     });
 
     this._packageName = pckg.name;

@@ -12,7 +12,7 @@ class Presets {
         } else {
           return preset;
         }
-      })
+      }),
     ];
   }
 
@@ -24,10 +24,10 @@ class Presets {
             "@babel/preset-env",
             {
               targets: {
-                node: typeof node === "string" ? node : "current"
-              }
-            }
-          ]
+                node: typeof node === "string" ? node : "current",
+              },
+            },
+          ],
         ];
       } else {
         this.presets = ["@babel/preset-env"];
@@ -37,8 +37,8 @@ class Presets {
         this.presets.push([
           "@babel/preset-typescript",
           {
-            allExtensions: true
-          }
+            allExtensions: true,
+          },
         ]);
       }
     } else {
@@ -59,7 +59,7 @@ class Plugins {
         } else {
           return plugin;
         }
-      })
+      }),
     ];
   }
 
@@ -71,11 +71,11 @@ class Plugins {
             [
               "@babel/plugin-proposal-decorators",
               {
-                decoratorsBeforeExport: true
-              }
+                decoratorsBeforeExport: true,
+              },
             ],
             "@babel/plugin-proposal-object-rest-spread",
-            "babel-plugin-add-module-exports"
+            "babel-plugin-add-module-exports",
           ]
         : node
         ? ["babel-plugin-add-module-exports"]

@@ -7,7 +7,7 @@ describe("Testing class DepMeshNode", (): void => {
     const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
-      mesh
+      mesh,
     });
 
     const p1 = root.addParent({ name: "p1" });
@@ -60,7 +60,7 @@ describe("Testing class DepMeshNode", (): void => {
       "p5",
       "p6",
       "p2",
-      "p3"
+      "p3",
     ]);
     expect([...p1.ancestorNames()]).to.eql(["p4", "p7"]);
     expect([...p2.ancestorNames()]).to.eql(["p7", "p5", "p6"]);
@@ -93,7 +93,7 @@ describe("Testing class DepMeshNode", (): void => {
     const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
-      mesh
+      mesh,
     });
 
     const p1 = root.addChild({ name: "p1" });
@@ -146,7 +146,7 @@ describe("Testing class DepMeshNode", (): void => {
       "p5",
       "p7",
       "p6",
-      "p3"
+      "p3",
     ]);
     expect([...p1.descendantNames()]).to.eql(["p4", "p7"]);
     expect([...p2.descendantNames()]).to.eql(["p5", "p7", "p6"]);

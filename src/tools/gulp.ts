@@ -27,7 +27,7 @@ export default class GulpConfig extends Deps {
         "child-process-data",
         "gulp-debug",
         "fancy-log",
-        "execa"
+        "execa",
       ]);
 
       if (babel) {
@@ -44,7 +44,7 @@ export default class GulpConfig extends Deps {
           "gulp-mocha",
           "chai",
           "mochawesome",
-          "source-map-support"
+          "source-map-support",
         ]);
       }
 

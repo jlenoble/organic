@@ -24,7 +24,7 @@ describe("Testint EasyJson", (): void => {
       b: true,
       c: [2, 3, 4],
       d: { e: ["hello", "bye"] },
-      f: { a: { b: { c: { d: [{ e: [{ f: 4, u: 2 }, 14] }, 15] } } }, z: [5] }
+      f: { a: { b: { c: { d: [{ e: [{ f: 4, u: 2 }, 14] }, 15] } } }, z: [5] },
     };
 
     const json2 = {
@@ -32,7 +32,7 @@ describe("Testint EasyJson", (): void => {
       c: [3, 4],
       d: { e: ["bye"], f: 21 },
       g: 42,
-      f: { a: { b: { c: { d: [{ e: [{ f: "changed" }] }] } } }, x: true }
+      f: { a: { b: { c: { d: [{ e: [{ f: "changed" }] }] } } }, x: true },
     };
 
     const json3 = {
@@ -44,8 +44,8 @@ describe("Testint EasyJson", (): void => {
       f: {
         a: { b: { c: { d: [{ e: [{ f: "changed", u: 2 }, 14] }, 15] } } },
         z: [5],
-        x: true
-      }
+        x: true,
+      },
     };
 
     const easy = easyJson(json1) as EasyMap;
@@ -60,7 +60,7 @@ describe("Testint EasyJson", (): void => {
       true,
       [2, 3, 4],
       { e: ["hello", "bye"] },
-      { a: { b: { c: { d: [{ e: [{ f: 4, u: 2 }, 14] }, 15] } } }, z: [5] }
+      { a: { b: { c: { d: [{ e: [{ f: 4, u: 2 }, 14] }, 15] } } }, z: [5] },
     ];
 
     const json2: JsonArray = [
@@ -69,7 +69,7 @@ describe("Testint EasyJson", (): void => {
       [3, 4],
       { e: ["bye"], f: 21 },
       { a: { b: { c: { d: [{ e: [{ f: "changed" }] }] } } }, x: true },
-      42
+      42,
     ];
 
     const json3: JsonArray = [
@@ -80,9 +80,9 @@ describe("Testint EasyJson", (): void => {
       {
         a: { b: { c: { d: [{ e: [{ f: "changed", u: 2 }, 14] }, 15] } } },
         z: [5],
-        x: true
+        x: true,
       },
-      42
+      42,
     ];
 
     const easy = easyJson(json1) as EasyMap;
@@ -117,13 +117,13 @@ describe("Testint EasyJson", (): void => {
 
     easy2.$deepAssign({
       c: [2, 3, 4, 5, 6],
-      d: { e: ["hello", "bye"] }
+      d: { e: ["hello", "bye"] },
     });
 
     easy3.$deepAssign({
       f: 33,
       c: [2, 3, 4],
-      d: { e: ["hello"], g: 3 }
+      d: { e: ["hello"], g: 3 },
     });
 
     expect(easy).to.eql(json);
@@ -163,7 +163,7 @@ describe("Testint EasyJson", (): void => {
     easy2.$deepAssign({
       f: 33,
       c: [2, 3, 4, 5, 6],
-      d: { e: ["hello", "bye"], g: 3 }
+      d: { e: ["hello", "bye"], g: 3 },
     });
 
     expect(easy.$includes(easy2)).to.be.false;
@@ -180,7 +180,7 @@ describe("Testint EasyJson", (): void => {
       true,
       [2, 3, 4, 5, 6],
       { e: ["hello", "bye"], g: 3 },
-      33
+      33,
     ]);
 
     expect(easy.$includes(easy2)).to.be.false;
@@ -195,7 +195,7 @@ describe("Testint EasyJson", (): void => {
     easy2.$deepAssign({
       f: 33,
       c: [2, 3, 4, 5, 6],
-      d: { e: ["hello", "bye"], g: 3 }
+      d: { e: ["hello", "bye"], g: 3 },
     });
 
     expect(easy.$isIncluded(easy2)).to.be.true;
@@ -212,7 +212,7 @@ describe("Testint EasyJson", (): void => {
       true,
       [2, 3, 4, 5, 6],
       { e: ["hello", "bye"], g: 3 },
-      33
+      33,
     ]);
 
     expect(easy.$isIncluded(easy2)).to.be.true;
@@ -272,7 +272,7 @@ describe("Testint EasyJson", (): void => {
     expect(easy.d).to.eql({
       e: ["foo", "blah", "blah", "blah"],
       f: "u",
-      g: "v"
+      g: "v",
     });
     expect(easy.d.e).to.eql(["foo", "blah", "blah", "blah"]);
     expect(easy.d.e[0]).to.eql("foo");
@@ -296,7 +296,7 @@ describe("Testint EasyJson", (): void => {
     expect(easy.d).to.eql({
       e: ["foo2", "blah2", "blah", "blah"],
       f: "u2",
-      g: "v"
+      g: "v",
     });
     expect(easy.d.e).to.eql(["foo2", "blah2", "blah", "blah"]);
     expect(easy.d.e[0]).to.eql("foo2");
@@ -329,7 +329,7 @@ describe("Testint EasyJson", (): void => {
     expect(easy[3]).to.eql({
       e: ["foo", "blah", "blah", "blah"],
       f: "u",
-      g: "v"
+      g: "v",
     });
     expect(easy[3].e).to.eql(["foo", "blah", "blah", "blah"]);
     expect(easy[3].e[0]).to.eql("foo");
@@ -353,7 +353,7 @@ describe("Testint EasyJson", (): void => {
     expect(easy[3]).to.eql({
       e: ["foo2", "blah2", "blah", "blah"],
       f: "u2",
-      g: "v"
+      g: "v",
     });
     expect(easy[3].e).to.eql(["foo2", "blah2", "blah", "blah"]);
     expect(easy[3].e[0]).to.eql("foo2");

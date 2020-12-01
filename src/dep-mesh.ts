@@ -151,7 +151,7 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
         const node = new DepMeshNode({
           ...this.options,
           ...node0.options,
-          mesh
+          mesh,
         });
 
         for (const parent of node0.parents()) {
@@ -367,7 +367,7 @@ export class DepMeshNode<T> {
         node = new DepMeshNode({
           ...this.options,
           ...options,
-          mesh: this.mesh
+          mesh: this.mesh,
         });
       } else {
         if (this === node) {
@@ -403,7 +403,7 @@ export class DepMeshNode<T> {
         node = new DepMeshNode({
           ...this.options,
           ...options,
-          mesh: this.mesh
+          mesh: this.mesh,
         });
       } else {
         if (this === node) {

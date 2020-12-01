@@ -26,13 +26,13 @@ describe("Testing class DepMesh", (): void => {
     mesh.addLink({ name: "c7" }, { name: "c1" }); // Mesh converges downstream
 
     expect([
-      ...mesh.filter((link): boolean => link.name[0] === "c").keys()
+      ...mesh.filter((link): boolean => link.name[0] === "c").keys(),
     ]).to.eql(["c1", "c2", "c3", "c4", "c5", "c6", "c7"]);
 
     expect([
       ...mesh
         .filter((link): boolean => link.name !== "p1" && link.name !== "c2")
-        .keys()
+        .keys(),
     ]).to.eql([
       "p4",
       "p7",
@@ -46,7 +46,7 @@ describe("Testing class DepMesh", (): void => {
       "c4",
       "c5",
       "c6",
-      "c7"
+      "c7",
     ]);
   });
 

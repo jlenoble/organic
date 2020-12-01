@@ -25,7 +25,7 @@ export default class Globs {
     this.testGlob = this._buildGlob(["test"], this.srcExts);
     this.gulpGlob = this._buildGlob(["gulp"], [".js"]).concat([
       "gulpfile.js",
-      "gulpfile.babel.js"
+      "gulpfile.babel.js",
     ]);
 
     this.devGlob = this.gulpGlob.concat(this.testGlob);

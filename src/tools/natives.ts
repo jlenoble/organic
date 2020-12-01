@@ -4,7 +4,7 @@ const natives: Set<string> = new Set([
   "fs",
   "path",
   "readline",
-  "stream"
+  "stream",
 ]);
 
 export default natives;

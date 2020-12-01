@@ -5,7 +5,7 @@ import {
   EasyValue,
   EasyArgument,
   EasyArrayProxy,
-  EasyObjectProxy
+  EasyObjectProxy,
 } from "./easy";
 import isAssignable from "./is-assignable";
 import { easyFactory } from "./easy-json";
@@ -29,7 +29,7 @@ export default class EasyArray extends Array<EasyValue> implements Easy {
     }
 
     Object.defineProperties(this, {
-      $filepath: { enumerable: false }
+      $filepath: { enumerable: false },
     });
   }
 
@@ -144,7 +144,7 @@ export function easyArray(json: JsonArray): EasyArrayProxy {
       }
 
       return false;
-    }
+    },
   });
 
   return proxy;

@@ -17,7 +17,7 @@ export {
   NpmConfig,
   natives,
   Tools,
-  TypescriptConfig
+  TypescriptConfig,
 };
 
 export * from "./common";

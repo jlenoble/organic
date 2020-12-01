@@ -17,7 +17,7 @@ export default class EslintConfig extends Deps {
       this.parserOptions = {
         ecmaVersion: 2019,
         sourceType: "module",
-        ecmaFeatures: {}
+        ecmaFeatures: {},
       };
 
       this.plugins = [];
@@ -30,14 +30,14 @@ export default class EslintConfig extends Deps {
 
       Object.assign(this.rules, {
         "require-jsdoc": ["off"],
-        "prefer-arrow-callback": ["error"]
+        "prefer-arrow-callback": ["error"],
       });
 
       if (prettier) {
         this._addDeps([
           "prettier",
           "eslint-config-prettier",
-          "eslint-plugin-prettier"
+          "eslint-plugin-prettier",
         ]);
 
         this.extends.push("plugin:prettier/recommended");
@@ -49,7 +49,7 @@ export default class EslintConfig extends Deps {
         this._addDeps([
           this.parser,
           "@typescript-eslint/eslint-plugin",
-          "@typescript-eslint/typescript-estree"
+          "@typescript-eslint/typescript-estree",
         ]);
 
         this.extends.push("plugin:@typescript-eslint/recommended");

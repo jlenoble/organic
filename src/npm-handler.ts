@@ -26,8 +26,8 @@ const config = {
     silly: noop,
     http: noop,
     pause: noop,
-    resume: noop
-  }
+    resume: noop,
+  },
 };
 
 function getDistTags(uri: string): Promise<DistTags> {
@@ -94,7 +94,7 @@ export default class NpmHandler {
       const [devVersion, verdaccioVersion, npmVersion] = await Promise.all([
         this.devVersion(),
         this.verdaccioVersion(),
-        this.npmVersion()
+        this.npmVersion(),
       ]);
 
       this._report = {
@@ -103,8 +103,8 @@ export default class NpmHandler {
           verdaccioVersion,
           npmVersion,
           changed:
-            devVersion !== verdaccioVersion || verdaccioVersion !== npmVersion
-        }
+            devVersion !== verdaccioVersion || verdaccioVersion !== npmVersion,
+        },
       };
     }
 

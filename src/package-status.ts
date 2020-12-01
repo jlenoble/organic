@@ -65,7 +65,7 @@ export default class PackageStatus {
 
   public addDependency({
     name,
-    version
+    version,
   }: {
     name: string;
     version: string;
@@ -81,7 +81,7 @@ export default class PackageStatus {
 
   public addDependant({
     name,
-    version
+    version,
   }: {
     name: string;
     version: string;

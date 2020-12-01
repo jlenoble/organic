@@ -3,7 +3,7 @@ import path from "path";
 import { error } from "explanation";
 import Dependencies, {
   ProdDependencies,
-  DevDependencies
+  DevDependencies,
 } from "./dependencies";
 import Globs from "./globs";
 
@@ -78,12 +78,15 @@ export default class Packages {
     this._localProdDeps = [];
     this._localDevDeps = [];
 
-    this.ready = this._addPackages().then((): true => true, (): false => false);
+    this.ready = this._addPackages().then(
+      (): true => true,
+      (): false => false
+    );
   }
 
   protected async _addPackages({
     packageDir,
-    scope
+    scope,
   }: { packageDir?: string; scope?: string } = {}): Promise<void> {
     if (packageDir) {
       packageDir = path.resolve(packageDir);
@@ -180,7 +183,7 @@ export default class Packages {
         default:
           error({
             message: "Unhandled key in getErrorMessage",
-            explain: [["key was", key]]
+            explain: [["key was", key]],
           });
       }
 

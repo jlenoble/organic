@@ -7,7 +7,7 @@ describe("Testing class DepMesh", (): void => {
     const mesh = new DepMesh(defaultOptions);
     const root = new DepMeshNode({
       name: "root",
-      mesh
+      mesh,
     });
 
     const p1 = root.addParent({ name: "p1" });
@@ -51,7 +51,7 @@ describe("Testing class DepMesh", (): void => {
       c4,
       c5,
       c6,
-      c7
+      c7,
     ]);
 
     expect([...root.mesh.keys()]).to.eql([
@@ -69,7 +69,7 @@ describe("Testing class DepMesh", (): void => {
       "c4",
       "c5",
       "c6",
-      "c7"
+      "c7",
     ]);
 
     expect([...root.mesh.entries()]).to.eql([
@@ -87,7 +87,7 @@ describe("Testing class DepMesh", (): void => {
       ["c4", c4],
       ["c5", c5],
       ["c6", c6],
-      ["c7", c7]
+      ["c7", c7],
     ]);
 
     expect([...root.mesh]).to.eql([
@@ -105,7 +105,7 @@ describe("Testing class DepMesh", (): void => {
       ["c4", c4],
       ["c5", c5],
       ["c6", c6],
-      ["c7", c7]
+      ["c7", c7],
     ]);
   });
 
@@ -146,7 +146,7 @@ describe("Testing class DepMesh", (): void => {
       "c4",
       "c5",
       "c6",
-      "c7"
+      "c7",
     ];
     const names: string[] = [];
 

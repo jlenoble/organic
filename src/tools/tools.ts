@@ -16,7 +16,7 @@ const defaultOptions: Options = {
   node: "current",
   npm: true,
   prettier: true,
-  typescript: true
+  typescript: true,
 };
 
 export default class Tools extends Deps {

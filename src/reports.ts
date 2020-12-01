@@ -105,7 +105,7 @@ class Report {
   protected constructor({
     packageDir,
     reportDir,
-    reportName
+    reportName,
   }: {
     packageDir: string;
     reportDir: string;
@@ -142,7 +142,7 @@ export class BuildReport extends Report {
     super({
       packageDir,
       reportDir: "mochawesome-report",
-      reportName: "mochawesome-dev.json"
+      reportName: "mochawesome-dev.json",
     });
   }
 
@@ -156,7 +156,7 @@ export class DistReport extends Report {
     super({
       packageDir,
       reportDir: "mochawesome-report",
-      reportName: "mochawesome.json"
+      reportName: "mochawesome.json",
     });
   }
 
@@ -176,7 +176,7 @@ export class LintReport extends Report {
     super({
       packageDir,
       reportDir: "eslint-report",
-      reportName: "report.json"
+      reportName: "report.json",
     });
   }
 
@@ -207,7 +207,7 @@ export class TypesReport extends Report {
     super({
       packageDir,
       reportDir: "typescript-report",
-      reportName: "report.json"
+      reportName: "report.json",
     });
   }
 
@@ -224,7 +224,7 @@ export class GitReport extends Report {
     super({
       packageDir,
       reportDir: "git-report",
-      reportName: "report.json"
+      reportName: "report.json",
     });
   }
 
@@ -238,7 +238,7 @@ export class NpmReport extends Report {
     super({
       packageDir,
       reportDir: "npm-report",
-      reportName: "report.json"
+      reportName: "report.json",
     });
   }
 
