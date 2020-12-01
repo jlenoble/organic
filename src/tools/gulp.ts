@@ -26,7 +26,8 @@ export default class GulpConfig extends Deps {
         "organon",
         "child-process-data",
         "gulp-debug",
-        "fancy-log"
+        "fancy-log",
+        "execa"
       ]);
 
       if (babel) {
