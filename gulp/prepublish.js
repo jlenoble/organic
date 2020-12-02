@@ -1,13 +1,13 @@
 import gulp from "gulp";
 import chalk from "chalk";
-// import { GitHandler, NpmHandler } from "organon";
-import { GitHandler, NpmHandler } from "../src";
+import { GitHandler, NpmHandler } from "organon";
 
 import "./test";
 import "./lint";
 import "./dist-clean";
 import "./doc";
 import "./dist-test";
+import "./todo";
 import "./types";
 
 const sanityCheck = async () => {
@@ -19,7 +19,6 @@ const sanityCheck = async () => {
     await Promise.all([
       git.outputReport("git-report/report.json"),
       npm.outputReport("npm-report/report.json"),
-      todo.outputReport("todo-report/report.json"),
     ]);
 
     const warnMessages = [
@@ -42,6 +41,6 @@ gulp.task(
     "test",
     gulp.parallel("lint", "dist-clean", "doc"),
     "dist-test",
-    gulp.parallel("types", "sanity-check")
+    gulp.parallel("types", "todo", "sanity-check")
   )
 );

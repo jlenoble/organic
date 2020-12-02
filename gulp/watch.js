@@ -3,6 +3,7 @@ import path from "path";
 import del from "del";
 import { handleBuild as build } from "./build";
 import { handleTest as test } from "./test";
+import { todoGlob, todoCheck } from "./todo";
 import "./package-watch";
 
 const buildDir = "build";
@@ -20,6 +21,7 @@ export const startWatching = (done) => {
   });
 
   watch(buildGlob, test);
+  watch(todoGlob, todoCheck);
 
   done();
 };

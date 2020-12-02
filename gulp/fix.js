@@ -1,6 +1,6 @@
 import { task, series } from "gulp";
 import path from "path";
-import Fixer from "../src/fixer";
+import Fixer from "organon";
 
 const packageDir = path.join(process.cwd(), "packages");
 const reportPath = path.join(process.cwd(), "fix-report", "report.json");

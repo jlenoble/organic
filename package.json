@@ -101,7 +101,7 @@
     "mkdirp": "^1.0.4",
     "mocha": "^8.2.1",
     "mochawesome": "^6.2.1",
-    "organon": "^0.1.0-8",
+    "organon": "file:.",
     "plumb-gulp": "^0.2.2",
     "prettier": "^2.2.1",
     "source-map-support": "^0.5.19",
