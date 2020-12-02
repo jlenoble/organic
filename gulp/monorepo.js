@@ -13,7 +13,7 @@ function execGulpTask(options) {
   return childProcessData(childProcess);
 }
 
-export const watchMonorepo = done => {
+export const watchMonorepo = (done) => {
   done();
 };
 

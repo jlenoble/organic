@@ -6,11 +6,11 @@ class GitHandler {
   async getActiveBranch() {
     if (!this.activeBranch) {
       const result = await childProcessData(["git", ["branch"]], {
-        silent: true
+        silent: true,
       });
 
       this.lines = result.out().split("\n");
-      const filteredLines = this.lines.filter(line => /^\* \w+/.test(line));
+      const filteredLines = this.lines.filter((line) => /^\* \w+/.test(line));
 
       if (filteredLines.length === 1) {
         this.activeBranch = filteredLines[0].substring(2);
@@ -30,7 +30,7 @@ class GitHandler {
       if (activeBranch === "master") {
         if (this.lines.length === 2) {
           this.devBranch = this.lines
-            .filter(line => !/^\* \w+/.test(line))[0]
+            .filter((line) => !/^\* \w+/.test(line))[0]
             .substring(2);
         } else {
           throw new Error(

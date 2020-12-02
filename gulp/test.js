@@ -11,8 +11,8 @@ export const handleTest = () => {
       require: ["source-map-support/register"],
       reporter: "mochawesome",
       reporterOptions: {
-        reportFilename: "mochawesome-dev"
-      }
+        reportFilename: "mochawesome-dev",
+      },
     })
   );
 };

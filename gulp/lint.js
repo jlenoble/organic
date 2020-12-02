@@ -7,7 +7,7 @@ import eslint from "gulp-eslint";
 const reportDir = "eslint-report";
 const srcGlob = ["src/**/*.ts", "test/**/*.ts", "src/**/*.js", "test/**/*.js"];
 
-const createReportDir = path => {
+const createReportDir = (path) => {
   const mkReportDirp = () => mkdirp(path);
   return mkReportDirp;
 };

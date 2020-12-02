@@ -12,12 +12,12 @@ const buildDir = "build";
 
 md.includePattern = /^#include\s"\/?((\w|-)+\/)*(\w|-)+(\.test)?\.md"/gm;
 
-md.reset = function() {
+md.reset = function () {
   md.tableOfContents = "";
   md.build = {};
 };
 
-md.buildLink = function(title, _anchor) {
+md.buildLink = function (title, _anchor) {
   const anchor = _anchor
     .replace(/\W+/g, "-")
     .replace(/--+/g, "-")
@@ -37,7 +37,7 @@ export const jsToDocs = () => {
   return gulp
     .src(examplesGlob, {
       base: process.cwd(),
-      since: gulp.lastRun(jsToDocs)
+      since: gulp.lastRun(jsToDocs),
     })
     .pipe(
       wrap(
@@ -49,7 +49,7 @@ export const jsToDocs = () => {
             }
 
             return `// File "./${path.basename(file.path)}"\n`;
-          }
+          },
         },
         { parse: false, engine: "ejs" }
       )
@@ -58,7 +58,7 @@ export const jsToDocs = () => {
     .pipe(replace(/path.join\(__dirname,\s+"([^"]+)"\s*\)/gm, '"./$1"'))
     .pipe(
       rename({
-        extname: ".md"
+        extname: ".md",
       })
     )
     .pipe(gulp.dest(buildDir));
@@ -68,7 +68,7 @@ export const jsToTests = () => {
   return gulp
     .src(examplesGlob, {
       base: process.cwd(),
-      since: gulp.lastRun(jsToTests)
+      since: gulp.lastRun(jsToTests),
     })
     .pipe(
       wrap(
