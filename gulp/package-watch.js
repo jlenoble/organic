@@ -5,13 +5,16 @@ import path from "path";
 
 export const startWatchingPackages = async (done) => {
   try {
-    const dirs = await resolveGlob("packages/*");
+    const dirs = (await resolveGlob("packages/*")).map((dir) =>
+      dir.replace(process.cwd(), ".")
+    );
     const reportGlob = dirs
       .filter((dir) => !dir.includes("organon"))
       .reduce((glb, dir) => {
         return glb.concat([
           path.join(dir, "*.json"),
-          path.join(dir, "*-report/*.json"),
+          path.join(dir, "*-report/report.json"),
+          path.join(dir, "mochawesome-report/*.json"),
         ]);
       }, [])
       .concat(
