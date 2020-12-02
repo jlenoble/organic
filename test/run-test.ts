@@ -4,7 +4,7 @@ import getRemediator from "./remediator";
 
 export default function runTest(
   hints: string | string[],
-  options?: object
+  options?: Record<string, unknown>
 ): () => Promise<void> {
   return async (): Promise<void> => {
     const packages = await getPackages();

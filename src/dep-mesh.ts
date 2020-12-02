@@ -1,12 +1,12 @@
 export interface DepMeshOptions<T> {
   create: (options: DepMeshNodeOptions<T>) => T;
-  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  [key: string]: any; // eslint-disable-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 }
 
 export interface DepMeshNodeOptions<T> {
   name: string;
   value?: T;
-  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  [key: string]: any; // eslint-disable-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 }
 
 export interface DepMeshNodeCtorOptions<T> extends DepMeshNodeOptions<T> {
@@ -106,7 +106,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
       key: string,
       map: Map<string, DepMeshNode<T>>
     ) => void,
-    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    thisArg?: any
   ): void {
     for (const node of this.values()) {
       cb.call(thisArg, node, node.name, this);
@@ -119,7 +120,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
       key: string,
       map: Map<string, DepMeshNode<T>>
     ) => U,
-    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    thisArg?: any
   ): U[] {
     const array: U[] = [];
 
@@ -136,7 +138,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
       key: string,
       map: Map<string, DepMeshNode<T>>
     ) => boolean,
-    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    thisArg?: any
   ): DepMesh<T> {
     const mesh: DepMesh<T> = new DepMesh(this.options);
     const tested = new WeakMap();
@@ -175,7 +178,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
       key: string,
       map: Map<string, DepMeshNode<T>>
     ) => boolean,
-    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    thisArg?: any
   ): boolean {
     for (const node of this.values()) {
       if (cb.call(thisArg, node, node.name, this)) {
@@ -192,7 +196,8 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
       key: string,
       map: Map<string, DepMeshNode<T>>
     ) => boolean,
-    thisArg?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    thisArg?: any
   ): boolean {
     for (const node of this.values()) {
       if (!cb.call(thisArg, node, node.name, this)) {
@@ -206,7 +211,7 @@ export default class DepMesh<T> extends Map<string, DepMeshNode<T>> {
 
 export class DepMeshNode<T> {
   public readonly name: string;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore value IS assigned, because of "singleton-ness"
   public readonly value: T;
   public readonly mesh: DepMesh<T>;

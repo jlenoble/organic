@@ -1,4 +1,6 @@
 import path from "path";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore no defs for next package
 import RegClient from "npm-registry-client";
 import fse from "fs-extra";
 
@@ -60,10 +62,12 @@ export default class NpmHandler {
 
   public constructor(baseDir: string) {
     this.packageDir = baseDir;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     this.packageName = require(path.join(baseDir, "package.json")).name;
   }
 
   public async devVersion(): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require(path.join(this.packageDir, "package.json")).version;
   }
 

@@ -142,7 +142,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
     easy.$[key] = easyFactory(json[key]);
   });
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore We cannot add a index signature to EasyMap because we cannot
   // add the construct [key in Exclude<string, keyof Easy>] to it: it is
   // interpreted as a computed property name.
@@ -153,7 +153,7 @@ export function easyMap(json: JsonMap): EasyMapProxy {
         return obj.$[prop];
       }
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore No index signature for EasyMap, see above explanation
       return obj[prop];
     },

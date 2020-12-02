@@ -7,6 +7,7 @@ describe("Testing dev environment for packages", function (): void {
   it("All packages are managed by Wup", runTest("hasWup"));
 
   it("All packages are managed by latest Wup", (): Promise<void> => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const latestWup = require(path.join(
       process.cwd(),
       "packages",
