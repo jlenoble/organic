@@ -1,0 +1,7 @@
+{
+  "build": "README.md",
+  "files": ["doc/index.md"],
+  "tableOfContents": {
+    "heading": "# organon\n\nhelps organize my codes"
+  }
+}
