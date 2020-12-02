@@ -153,7 +153,7 @@ export default class PackageMesh extends DepMesh<PackageStatus> {
         const message = status.getErrorMessage();
 
         if (message) {
-          messages.push(status.getErrorMessage());
+          messages.push(message);
         }
       }
     }
