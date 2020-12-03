@@ -15,6 +15,10 @@ interface PartialTodo {
 
 type TodoInitializer = string | PartialTodo;
 
+const messageReducer = (messages1: string[], messages2: string[]): string[] => {
+  return messages1.concat(messages2);
+};
+
 export class Todo implements ValidTodo {
   private readonly _errorMessages: string[];
 
@@ -52,23 +56,15 @@ export class Todo implements ValidTodo {
   public getErrorMessages(): string[] {
     return this.todos
       .map((todo) => todo.getErrorMessages())
-      .reduce((messages1: string[], messages2: string[]): string[] => {
-        return messages1.concat(messages2);
-      }, [])
+      .reduce(messageReducer, [])
       .concat(this._errorMessages);
   }
 
-  private _getMessages(): string[] {
-    return this.todos
-      .map((todo) => todo._getMessages())
-      .reduce((messages1: string[], messages2: string[]): string[] => {
-        return messages1.concat(messages2);
-      }, [])
-      .concat("TODO: " + this.todo.trim());
-  }
-
   public getMessages(): string[] {
-    return this.getErrorMessages().concat(this._getMessages());
+    return this.todos
+      .map((todo) => todo.getMessages())
+      .reduce(messageReducer, [])
+      .concat(`TODO[${this.evaluation}]: ${this.todo.trim()}`);
   }
 }
 
@@ -132,7 +128,6 @@ export default class TodoHandler {
       });
 
       messages = todo.getMessages();
-      messages.pop(); // this.packageName is not really a todo
     }
 
     return messages;
