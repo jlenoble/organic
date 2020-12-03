@@ -1,7 +1,78 @@
 import path from "path";
 import fse from "fs-extra";
 
-type Todos = string[];
+interface ValidTodo {
+  readonly todo: string;
+  readonly todos: ValidTodo[];
+  readonly evaluation: number;
+}
+
+interface PartialTodo {
+  readonly todo: string;
+  readonly evaluation?: number;
+  readonly todos?: TodoInitializer[];
+}
+
+type TodoInitializer = string | PartialTodo;
+
+export class Todo implements ValidTodo {
+  private readonly _errorMessages: string[];
+
+  public readonly todo: string;
+  public readonly todos: Todo[];
+  public readonly evaluation: number;
+
+  public constructor(todo: TodoInitializer) {
+    if (typeof todo === "string") {
+      this.todo = todo;
+      this.todos = [];
+      this.evaluation = NaN;
+    } else {
+      this.todo = todo.todo;
+
+      if (Array.isArray(todo.todos)) {
+        this.todos = todo.todos.map((todo) => new Todo(todo));
+        this.evaluation = this.todos.reduce(
+          (evaluation: number, todo: Todo): number => {
+            return evaluation + todo.evaluation;
+          },
+          0
+        );
+      } else {
+        this.todos = [];
+        this.evaluation = todo.evaluation || NaN;
+      }
+    }
+
+    this._errorMessages = isNaN(this.evaluation)
+      ? [`EVALUATE TODO: "${this.todo}" needs to be evaluated or decomposed`]
+      : [];
+  }
+
+  public getErrorMessages(): string[] {
+    return this.todos
+      .map((todo) => todo.getErrorMessages())
+      .reduce((messages1: string[], messages2: string[]): string[] => {
+        return messages1.concat(messages2);
+      }, [])
+      .concat(this._errorMessages);
+  }
+
+  private _getMessages(): string[] {
+    return this.todos
+      .map((todo) => todo._getMessages())
+      .reduce((messages1: string[], messages2: string[]): string[] => {
+        return messages1.concat(messages2);
+      }, [])
+      .concat("TODO: " + this.todo.trim());
+  }
+
+  public getMessages(): string[] {
+    return this.getErrorMessages().concat(this._getMessages());
+  }
+}
+
+type Todos = Todo[];
 
 export interface TodoReport {
   [packageName: string]: {
@@ -51,14 +122,17 @@ export default class TodoHandler {
   }
 
   public getErrorMessages(): string[] {
-    const messages: string[] = [];
+    let messages: string[] = [];
 
     if (this._report) {
       const { todos } = this._report[this.packageName];
+      const todo = new Todo({
+        todo: this.packageName,
+        todos,
+      });
 
-      for (const todo of todos) {
-        messages.push("TODO: " + todo.trim());
-      }
+      messages = todo.getMessages();
+      messages.pop(); // this.packageName is not really a todo
     }
 
     return messages;
