@@ -35,7 +35,7 @@ export class Todo implements ValidTodo {
     } else {
       this.todo = todo.todo;
 
-      if (Array.isArray(todo.todos)) {
+      if (Array.isArray(todo.todos) && todo.todos.length) {
         this.todos = todo.todos.map((todo) => new Todo(todo));
         this.evaluation = this.todos.reduce(
           (evaluation: number, todo: Todo): number => {
@@ -61,7 +61,7 @@ export class Todo implements ValidTodo {
       .concat(this._errorMessages);
   }
 
-  public getMessages(
+  private _getMessages(
     depth = 0,
     timeOffsets: Map<number, number> = new Map()
   ): string[] {
@@ -77,9 +77,13 @@ export class Todo implements ValidTodo {
           .humanize(true)})`,
     ].concat(
       this.todos
-        .map((todo) => todo.getMessages(depth + 1, timeOffsets))
+        .map((todo) => todo._getMessages(depth + 1, timeOffsets))
         .reduce(messageReducer, [])
     );
+  }
+
+  public getMessages(): string[] {
+    return this.getErrorMessages().concat(this._getMessages());
   }
 }
 
