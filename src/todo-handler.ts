@@ -1,5 +1,6 @@
 import path from "path";
 import fse from "fs-extra";
+import moment from "moment";
 
 interface ValidTodo {
   readonly todo: string;
@@ -60,12 +61,23 @@ export class Todo implements ValidTodo {
       .concat(this._errorMessages);
   }
 
-  public getMessages(depth = 0): string[] {
+  public getMessages(
+    depth = 0,
+    timeOffsets: Map<number, number> = new Map()
+  ): string[] {
+    const timeOffset = (timeOffsets.get(depth) || 0) + this.evaluation;
+    timeOffsets.set(depth, timeOffset);
+
     return [
-      "".padEnd(depth * 2) + `TODO[${this.evaluation}]: ${this.todo.trim()}`,
+      "".padEnd(depth * 2) +
+        `TODO: ${this.todo.trim()} (duration ${
+          this.evaluation
+        } minutes, completion ${moment
+          .duration(timeOffset, "m")
+          .humanize(true)})`,
     ].concat(
       this.todos
-        .map((todo) => todo.getMessages(depth + 1))
+        .map((todo) => todo.getMessages(depth + 1, timeOffsets))
         .reduce(messageReducer, [])
     );
   }
