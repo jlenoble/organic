@@ -60,11 +60,14 @@ export class Todo implements ValidTodo {
       .concat(this._errorMessages);
   }
 
-  public getMessages(): string[] {
-    return this.todos
-      .map((todo) => todo.getMessages())
-      .reduce(messageReducer, [])
-      .concat(`TODO[${this.evaluation}]: ${this.todo.trim()}`);
+  public getMessages(depth = 0): string[] {
+    return [
+      "".padEnd(depth * 2) + `TODO[${this.evaluation}]: ${this.todo.trim()}`,
+    ].concat(
+      this.todos
+        .map((todo) => todo.getMessages(depth + 1))
+        .reduce(messageReducer, [])
+    );
   }
 }
 
