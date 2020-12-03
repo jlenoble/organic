@@ -243,6 +243,9 @@ export default class Dependencies {
 
       case "reports":
         return this.getReportErrorMessage();
+
+      case "todos":
+        return this.getReportTodoMessage();
     }
 
     return "";
@@ -320,6 +323,18 @@ export default class Dependencies {
 
       return !msg.includes("Error: The following errors");
     });
+
+    if (!messages.length) {
+      return "";
+    }
+
+    messages = [JSON.stringify(this._packageName) + ":"].concat(messages);
+
+    return messages.join("\n         - ");
+  }
+
+  public getReportTodoMessage(): string {
+    let messages = this._reports.getTodoMessages();
 
     if (!messages.length) {
       return "";

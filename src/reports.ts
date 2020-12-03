@@ -298,9 +298,17 @@ export default class Reports {
   public getErrorMessages(): string[] {
     let messages: string[] = [];
 
-    this.reports.forEach((report): void => {
-      messages = messages.concat(report.getErrorMessages());
-    });
+    this.reports
+      .filter((report) => report !== this.todoReport)
+      .forEach((report): void => {
+        messages = messages.concat(report.getErrorMessages());
+      });
+
+    return messages.map((msg): string => stripAnsi(msg));
+  }
+
+  public getTodoMessages(): string[] {
+    const messages: string[] = this.todoReport.getErrorMessages();
 
     return messages.map((msg): string => stripAnsi(msg));
   }

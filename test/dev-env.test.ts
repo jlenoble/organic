@@ -19,4 +19,6 @@ describe("Testing dev environment for packages", function (): void {
   });
 
   it("All reports were generated for packages", runTest("reports"));
+
+  it("All TODOs were collected for packages", runTest("todos"));
 });
