@@ -63,23 +63,27 @@ export class Todo implements ValidTodo {
 
   private _getMessages(
     depth = 0,
-    timeOffsets: Map<number, number> = new Map()
+    options: { timeOffset: number } = { timeOffset: 0 }
   ): string[] {
-    const timeOffset = (timeOffsets.get(depth) || 0) + this.evaluation;
-    timeOffsets.set(depth, timeOffset);
-
-    return [
+    const messages: string[] = [
       "".padEnd(depth * 2) +
         `TODO: ${this.todo.trim()} (duration ${
           this.evaluation
         } minutes, completion ${moment
-          .duration(timeOffset, "m")
+          .duration(options.timeOffset + this.evaluation, "m")
           .humanize(true)})`,
     ].concat(
       this.todos
-        .map((todo) => todo._getMessages(depth + 1, timeOffsets))
+        .map((todo) => todo._getMessages(depth + 1, options))
         .reduce(messageReducer, [])
     );
+
+    if (!this.todos.length) {
+      // Only terminal nodes contribute to the offset
+      options.timeOffset += this.evaluation;
+    }
+
+    return messages;
   }
 
   public getMessages(): string[] {
