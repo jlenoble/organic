@@ -90,9 +90,7 @@ export class Todo implements ValidTodo {
 type Todos = Todo[];
 
 export interface TodoReport {
-  [packageName: string]: {
-    todos: Todos;
-  };
+  todos: Todos;
 }
 
 export default class TodoHandler {
@@ -105,7 +103,7 @@ export default class TodoHandler {
     this.todosPath = path.join(baseDir, "todo-report", "todos.json");
   }
 
-  public async report(): Promise<TodoReport> {
+  public async report(extraTodos: Todo[] = []): Promise<TodoReport> {
     if (!this._report) {
       let todos: Todos;
 
@@ -116,31 +114,29 @@ export default class TodoHandler {
       }
 
       this._report = {
-        [this.packageName]: {
-          todos,
-        },
+        todos: extraTodos.concat(todos),
       };
     }
 
     return this._report;
   }
 
-  public async outputReport(path: string): Promise<void> {
-    const report = await this.report();
+  public async outputReport(
+    path: string,
+    extraTodos: Todo[] = []
+  ): Promise<void> {
+    const report = await this.report(extraTodos);
+    console.log(report);
     const messages = this.getErrorMessages();
 
-    await fse.outputJson(
-      path,
-      { messages, ...report[this.packageName] },
-      { spaces: 2 }
-    );
+    await fse.outputJson(path, { messages, ...report }, { spaces: 2 });
   }
 
   public getErrorMessages(): string[] {
     let messages: string[] = [];
 
     if (this._report) {
-      const { todos } = this._report[this.packageName];
+      const { todos } = this._report;
       const todo = new Todo({
         todo: this.packageName,
         todos,
