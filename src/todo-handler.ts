@@ -126,7 +126,6 @@ export default class TodoHandler {
     extraTodos: Todo[] = []
   ): Promise<void> {
     const report = await this.report(extraTodos);
-    console.log(report);
     const messages = this.getErrorMessages();
 
     await fse.outputJson(path, { messages, ...report }, { spaces: 2 });
