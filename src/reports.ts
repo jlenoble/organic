@@ -271,15 +271,7 @@ export default class Reports {
   public readonly todoReport: TodoReport;
 
   public get reports(): Report[] {
-    const reports = [this.buildReport, this.distReport, this.lintReport];
-
-    if (this.typesReport !== undefined) {
-      reports.push(this.typesReport);
-    }
-
-    reports.push(this.gitReport, this.npmReport, this.todoReport);
-
-    return reports;
+    return this.getReports();
   }
 
   public constructor(packageDir: string, options: Wup) {
@@ -295,14 +287,28 @@ export default class Reports {
     }
   }
 
+  public getReports(includeTodoReport = true): Report[] {
+    const reports = [this.buildReport, this.distReport, this.lintReport];
+
+    if (this.typesReport !== undefined) {
+      reports.push(this.typesReport);
+    }
+
+    reports.push(this.gitReport, this.npmReport);
+
+    if (includeTodoReport) {
+      reports.push(this.todoReport);
+    }
+
+    return reports;
+  }
+
   public getErrorMessages(): string[] {
     let messages: string[] = [];
 
-    this.reports
-      .filter((report) => report !== this.todoReport)
-      .forEach((report): void => {
-        messages = messages.concat(report.getErrorMessages());
-      });
+    this.getReports(false).forEach((report): void => {
+      messages = messages.concat(report.getErrorMessages());
+    });
 
     return messages.map((msg): string => stripAnsi(msg));
   }
