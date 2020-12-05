@@ -8,19 +8,19 @@ import {
   testDir,
 } from "./dirs";
 
-export const docExamplesGlob = path.join(docExamplesDir, "**", "*.ts");
-export const gulpGlob = path.join(gulpDir, "**", "*.ts");
-export const srcGlob = path.join(srcDir, "**", "*.ts");
-export const testGlob = path.join(testDir, "**", "*.ts");
+type Glob = string[];
 
-export const execBuildGlob = srcGlob
+export const docExamplesGlob: Glob = [path.join(docExamplesDir, "**", "*.ts")];
+export const gulpGlob: Glob = [path.join(gulpDir, "**", "*.ts")];
+export const srcGlob: Glob = [path.join(srcDir, "**", "*.ts")];
+export const testGlob: Glob = [path.join(testDir, "**", "*.ts")];
+
+export const execBuildGlob: Glob = srcGlob
   .concat(testGlob)
   .concat(docExamplesGlob)
   .concat(gulpGlob);
 
-export const execTestGlob = path.join(buildTestDir, "**", "*.test.js");
-export const execDistTestGlob = path.join(
-  buildDocExamplesDir,
-  "**",
-  "*.test.js"
-);
+export const execTestGlob: Glob = [path.join(buildTestDir, "**", "*.test.js")];
+export const execDistTestGlob: Glob = [
+  path.join(buildDocExamplesDir, "**", "*.test.js"),
+];
