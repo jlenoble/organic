@@ -16,7 +16,8 @@ const useOriginalGulpSrc = require("plumb-gulp").useOriginalGulpSrc;
 
 const gulpSrc = "gulp/**/*.js";
 const buildDir = "build";
-const gulpDir = path.join(`${buildDir}`, "gulp");
+const gulpDir = "gulp";
+const buildGulpDir = path.join(`${buildDir}`, "gulp");
 const autoTask = "tdd";
 const privateAutoTask = "private:tdd";
 
@@ -43,35 +44,38 @@ function watchGulp(done) {
 }
 
 try {
-  // Attempt to load all include files from gulpDir
-  fs.readdirSync(gulpDir)
+  // Attempt to load all include files from buildGulpDir
+  fs.readdirSync(buildGulpDir)
     .filter((filename) => {
       return filename.match(/\.js$/);
     })
     .forEach((filename) => {
-      require(path.join(process.cwd(), gulpDir, filename));
+      require(path.join(process.cwd(), buildGulpDir, filename));
     });
 
   gulp.task(privateAutoTask, gulp.parallel(watchGulp, autoTask));
 
   // If success, start infinite dev process with autoreload
-  gulp.task("default", autoreload(privateAutoTask, gulpDir));
+  gulp.task(
+    "default",
+    gulp.series(transpileGulp, autoreload(privateAutoTask, buildGulpDir))
+  );
 } catch (err) {
   // If error, try to regenerate include files
 
   // First make sure to abort on first subsequent error
   useOriginalGulpSrc();
 
-  // Distinguish between missing gulpDir ...
+  // Distinguish between missing gulpDir errors ...
   if (
     err.message.match(
-      new RegExp(`no such file or directory, scandir '${gulpDir}'`)
+      new RegExp(`no such file or directory, scandir '${buildGulpDir}'`)
     ) ||
     err.message.match(/Task never defined/) ||
     err.message.match(/Cannot find module '\.\.?\//)
   ) {
     log(chalk.red(err.message));
-    log(chalk.yellow(`'${gulpDir}/**/*.js' incomplete; Regenerating`));
+    log(chalk.yellow(`'${buildGulpDir}/**/*.js' incomplete; Regenerating`));
 
     // ... And errors due to corrupted files
   } else {
@@ -96,6 +100,6 @@ try {
 
   gulp.task(
     "default",
-    gulp.series(transpileGulp, autoreload(autoTask, gulpDir))
+    gulp.series(transpileGulp, autoreload(autoTask, buildGulpDir))
   );
 }
