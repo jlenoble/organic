@@ -1,7 +1,7 @@
 import { task, series } from "gulp";
 
 import "./test";
-import "./watch";
 import "./todos";
+import "./watch";
 
 task("tdd", series("test", "todos", "watch"));

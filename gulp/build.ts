@@ -4,16 +4,15 @@ import sourcemaps from "gulp-sourcemaps";
 import cached from "gulp-cached";
 import newer from "gulp-newer";
 
-const buildDir = "build";
-const srcGlob = ["src/**/*.ts", "test/**/*.ts", "src/**/*.js", "test/**/*.js"];
+import { buildDir, cacheName, execBuildGlob } from "./common";
 
-export const handleBuild = () => {
-  return src(srcGlob, {
+export const handleBuild = (): NodeJS.ReadWriteStream => {
+  return src(execBuildGlob, {
     base: process.cwd(),
     since: lastRun(handleBuild),
   })
-    .pipe(newer(buildDir))
-    .pipe(cached())
+    .pipe(newer({ dest: buildDir, ext: ".js" }))
+    .pipe(cached(cacheName))
     .pipe(sourcemaps.init())
     .pipe(babel())
     .pipe(

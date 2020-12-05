@@ -291,7 +291,7 @@ export default class Reports {
     return this.getReports();
   }
 
-  public constructor(packageDir: string, options: Wup) {
+  public constructor(packageDir: string, options: Partial<Wup>) {
     this.buildReport = new BuildReport(packageDir);
     this.distReport = new DistReport(packageDir);
     this.lintReport = new LintReport(packageDir);

@@ -4,12 +4,12 @@ import { TodoHandler } from "organon";
 
 export const todoGlob = "todo-report/todos.json";
 
-export const todoCheck = async () => {
+export const todoCheck = async (): Promise<void> => {
   try {
     const cwd = process.cwd();
     const todo = new TodoHandler(cwd);
 
-    await Promise.all([todo.outputReport("todo-report/report.json")]);
+    await todo.outputReport("todo-report/report.json");
 
     const warnMessages = [
       chalk.red("The following warnings were encountered during TODO check:"),

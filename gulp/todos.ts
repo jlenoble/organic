@@ -8,10 +8,10 @@ import debug from "gulp-debug";
 import changed from "gulp-changed";
 import through2 from "through2";
 
-let dirs;
-let reportGlobForTodos;
+let dirs: string[];
+let reportGlobForTodos: string[];
 
-export const getDirs = async () => {
+export const getDirs = async (): Promise<string[]> => {
   if (dirs === undefined) {
     dirs = (await resolveGlob("packages/*")).map((dir) =>
       dir.replace(process.cwd(), ".")
@@ -21,7 +21,7 @@ export const getDirs = async () => {
   return dirs;
 };
 
-export const getReportGlobForTodos = async () => {
+export const getReportGlobForTodos = async (): Promise<string[]> => {
   if (reportGlobForTodos === undefined) {
     reportGlobForTodos = (await getDirs()).reduce((glb, dir) => {
       return glb.concat([
@@ -37,7 +37,7 @@ export const getReportGlobForTodos = async () => {
   return reportGlobForTodos;
 };
 
-export const generateAutoTodos = () => {
+export const generateAutoTodos = (): NodeJS.ReadWriteStream => {
   const cwd = process.cwd();
 
   return gulp
@@ -59,7 +59,7 @@ export const generateAutoTodos = () => {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const typescript = require(path.join(packageDir, ".yo-rc.json"))[
               "generator-wupjs"
-            ].typescript;
+            ].typescript as boolean;
 
             const reports = new Reports(packageDir, { typescript });
             const todo = new TodoHandler(packageDir);
@@ -86,13 +86,17 @@ export const generateAutoTodos = () => {
       })
     )
     .pipe(cached("TODOS"))
-    .pipe(changed(cwd, { hasChanged: changed.compareContents }))
+    .pipe(
+      changed(cwd, {
+        hasChanged: changed.compareContents,
+      })
+    )
     .pipe(debug({ title: "Updated TODO report(s):" }))
     .pipe(gulp.dest(cwd));
 };
 
-export const printTodos = async () => {
-  const cache = cached.caches["TODOS"];
+export const printTodos = async (): Promise<void> => {
+  const cache: Record<string, string> = cached.caches["TODOS"];
   const packages = process.cwd() + "/packages/";
 
   Object.entries(cache).forEach(([key, value]) => {
@@ -103,7 +107,9 @@ export const printTodos = async () => {
             path.dirname(key).replace(packages, "")
           )}:`
         ),
-      ].concat(JSON.parse(value).messages.map((msg) => chalk.yellow(msg)));
+      ].concat(
+        JSON.parse(value).messages.map((msg: string) => chalk.yellow(msg))
+      );
 
       if (warnMessages.length > 1) {
         console.warn(warnMessages.join("\n  - "));
