@@ -1,13 +1,13 @@
 import { task, watch } from "gulp";
 import { handleTest as test } from "./test";
-import { resolveGlob } from "polypath";
 import path from "path";
+import { getDirs, getReportGlobForTodos } from "./todos";
+import gulp from "gulp";
 
-export const startWatchingPackages = async (done) => {
+export const startWatchingPackages = async () => {
   try {
-    const dirs = (await resolveGlob("packages/*")).map((dir) =>
-      dir.replace(process.cwd(), ".")
-    );
+    const dirs = await getDirs();
+
     const reportGlob = dirs
       .filter((dir) => !dir.includes("organon"))
       .reduce((glb, dir) => {
@@ -29,11 +29,16 @@ export const startWatchingPackages = async (done) => {
           }, [])
       );
 
-    watch(reportGlob, { events: ["add", "change"] }, test);
+    const reportGlobForTodos = await getReportGlobForTodos();
 
-    done();
+    watch(reportGlob, { events: ["add", "change"] }, test);
+    watch(
+      reportGlobForTodos,
+      { events: ["add", "change"] },
+      gulp.series("todos")
+    );
   } catch (e) {
-    done(e);
+    console.error(e);
   }
 };
 

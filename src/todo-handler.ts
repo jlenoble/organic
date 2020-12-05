@@ -16,7 +16,10 @@ interface PartialTodo {
 
 type TodoInitializer = string | PartialTodo;
 
-const messageReducer = (messages1: string[], messages2: string[]): string[] => {
+export const messageReducer = (
+  messages1: string[],
+  messages2: string[]
+): string[] => {
   return messages1.concat(messages2);
 };
 

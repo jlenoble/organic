@@ -1,6 +1,8 @@
 import path from "path";
 import stripAnsi from "strip-ansi";
 import { Wup } from "./dependencies";
+import { Todo } from "./todo-handler";
+import fse from "fs-extra";
 
 interface RawReport {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -116,7 +118,9 @@ class Report {
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      this._report = require(path.join(packageDir, reportDir, reportName));
+      this._report = fse.readJSONSync(
+        path.join(packageDir, reportDir, reportName)
+      );
     } catch (e) {
       this._report = {};
     }
@@ -130,6 +134,19 @@ class Report {
     }
 
     return this._getErrorMessages();
+  }
+
+  public getTodo(): Todo | null {
+    const messages = this.getErrorMessages();
+
+    if (messages.length) {
+      return new Todo({
+        todo: `Fix ${messages.length} error(s) in ${this.reportName}`,
+        evaluation: messages.length * 5,
+      });
+    }
+
+    return null;
   }
 
   protected _getErrorMessages(): string[] {
@@ -313,9 +330,14 @@ export default class Reports {
     return messages.map((msg): string => stripAnsi(msg));
   }
 
+  public getAutoTodos(): Todo[] {
+    return this.getReports(false)
+      .map((report) => report.getTodo())
+      .filter((todo): todo is Todo => todo !== null);
+  }
+
   public getTodoMessages(): string[] {
     const messages: string[] = this.todoReport.getErrorMessages();
-
     return messages.map((msg): string => stripAnsi(msg));
   }
 }
