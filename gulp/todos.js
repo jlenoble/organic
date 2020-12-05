@@ -45,9 +45,7 @@ export const generateAutoTodos = () => {
       since: gulp.lastRun(generateAutoTodos),
       base: process.cwd(),
     })
-    .pipe(debug())
     .pipe(cached("TODOS"))
-    .pipe(debug())
     .pipe(
       through2.obj((file, encoding, done) => {
         if (file.isNull()) {
@@ -87,11 +85,9 @@ export const generateAutoTodos = () => {
         }
       })
     )
-    .pipe(debug())
     .pipe(cached("TODOS"))
-    .pipe(debug())
     .pipe(changed(cwd, { hasChanged: changed.compareContents }))
-    .pipe(debug())
+    .pipe(debug({ title: "Updated TODO report(s):" }))
     .pipe(gulp.dest(cwd));
 };
 
